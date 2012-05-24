@@ -7,7 +7,7 @@ warnings = -Wall \
 
 flags = -isrc -odir build -hidir build
 
-make_main = --make $(flags) $(warnings) -o build/$(exename) src/Main.hs
+make_main = --make $(flags) $(warnings) -o build/main src/Main.hs
 
 build:
 	ghc -rtsopts $(make_main)
