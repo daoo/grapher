@@ -35,7 +35,7 @@ vertex i (x@(Object i' _ _ _) : xs) | i == i'   = x
                                     | otherwise = vertex i xs
 
 iteration :: Time -> Graph -> [Object] -> [Object]
-iteration t g objs = magic repel objs
+iteration t g = integrate t . magic repel
 
 integrate :: Time -> [Object] -> [Object]
 integrate t = map (\o -> o { pos = (pos o + (t `mult` vel o))})
@@ -60,7 +60,7 @@ repel (a, b) =
    in (a {vel = vel a + va}, b {vel = vel b + vb})
 
 main = do
-  print defaultGraph
+  print $ iteration 1 defaultGraph defaultObjs
 
 defaultObjs :: [Object]
 defaultObjs =
