@@ -1,26 +1,25 @@
 module World where
 
-import Data.List
-import Data.Graph
 import Extensions
-import Vector2
 
-type Pair     = (Object, Object)
+import Backend.Backend
+import Math.Vector2
+
+type Time = Double
+
+type Mass     = Double
 type Point    = Vector2D
 type Velocity = Vector2D
-type Mass     = Double
-type Time     = Double
+
+type Pair = (Object, Object)
+
+type Connection = (Int, Int)
 
 data Object = Object
-  { vert :: Vertex
-  , pos :: Point
+  { pos :: Point
   , vel :: Velocity
   , mass :: Mass }
   deriving (Show)
-
-instance Eq Object where
-  o1 == o2 = vert o1 == vert o2
-  o1 /= o2 = vert o1 /= vert o2
 
 maxForce, maxDist, gravity :: Double
 maxForce = 100.0
@@ -30,11 +29,8 @@ gravity = 10.0
 force :: Object -> Object -> Double
 force o1 o2 = (gravity * mass o1 * mass o2) / (distSquared (pos o1) (pos o2))
 
-vertex :: Int -> [Object] -> Maybe Object
-vertex i = find ((== i) . vert)
-
-iteration :: Time -> Graph -> [Object] -> [Object]
-iteration t g = integrate t . magic repel
+iteration :: Time -> [Object] -> [Object]
+iteration t = integrate t . magic repel
 
 integrate :: Time -> [Object] -> [Object]
 integrate t = map (\o -> o { pos = (pos o + (t `mult` vel o))})
@@ -57,3 +53,26 @@ repel (a, b) =
       va   = (ra * val) `mult` da
       vb   = (rb * val) `mult` db
    in (a {vel = vel a + va}, b {vel = vel b + vb})
+
+connect :: [Object] -> [Connection] -> [Pair]
+connect obj = map (\(a, b) -> (obj !! a, obj !! b))
+
+render :: Backend a => Settings -> Size -> [Object] -> [Connection] -> a ()
+render set (w, h) objs cons = do
+  setColor $ getBgColor set
+  fillRectangle zero (w, h)
+
+  mapM_ g (connect objs cons)
+  mapM_ f objs
+
+  where
+    f o = do
+      setColor $ getFgColor set
+      fillCircle 10 (pos o)
+      setColor (0.937255, 0.160784, 0.160784)
+      fillCircle 8 (pos o)
+
+    g (o, c) = do
+      setColor $ getFgColor set
+      strokeLine (pos o, pos c)
+

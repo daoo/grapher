@@ -6,13 +6,15 @@ import Test.QuickCheck
 floatEq :: Float -> Float -> Bool
 floatEq a b = (abs $ a - b) < 0.000001
 
-propDotEqualAbsSquared :: Vector2 Integer -> Bool
+type Vector2I = Vector Integer
+
+propDotEqualAbsSquared :: Vector2I -> Bool
 propDotEqualAbsSquared u = (u `dot` u) == magSquared u
 
-propAddCommutative :: Vector2 Integer -> Vector2 Integer -> Bool
+propAddCommutative :: Vector2I -> Vector2I -> Bool
 propAddCommutative u v = u + v == v + u
 
-propAddAssociative :: Vector2 Integer -> Vector2 Integer -> Vector2 Integer -> Bool
+propAddAssociative :: Vector2I -> Vector2I -> Vector2I -> Bool
 propAddAssociative u v w = u + (v + w) == (u + v) + w
 
 propNormalizedLength :: Vector2F -> Bool

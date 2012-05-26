@@ -1,6 +1,6 @@
-module Vector2 where
+module Math.Vector2 where
 
-import Test.QuickCheck
+import Test.QuickCheck.Arbitrary
 
 square :: Num a => a -> a
 square x = x * x
