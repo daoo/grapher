@@ -1,50 +1,57 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Main where
 
 import Control.Arrow
 
 import Backend.Backend (defaultSettings)
 import Backend.Cairo ()
-import Graphics.UI.Gtk hiding (Object())
+import qualified Graphics.UI.Gtk as Gtk
 import Math.Vector2
 import Reactive.Banana
 
 import World
 
-setupUI :: IO Window
-setupUI = do
-  w <- windowNew
-  c <- drawingAreaNew
+type EventSource a = (AddHandler a, a -> IO ())
 
-  set w [ windowTitle := "Graph"
-        , containerChild := c ]
+addHandler :: EventSource a -> AddHandler a
+addHandler = fst
 
-  _ <- w `on` deleteEvent $ liftIO mainQuit >> return False
-  _ <- w `on` configureEvent $ liftIO (draw c) >> return False
+fire :: EventSource a -> a -> IO ()
+fire = snd
 
-  return w
-
-draw :: DrawingArea -> IO ()
-draw c = do
-  win <- widgetGetDrawWindow c
-  size <- widgetGetSize c
-  renderWithDrawable win $
-    render defaultSettings (f size) defaultObjs defaultGraph
+draw :: Gtk.DrawingArea -> [Connection] -> [Object] -> IO ()
+draw c cons objs = do
+  win <- Gtk.widgetGetDrawWindow c
+  size <- Gtk.widgetGetSize c
+  Gtk.renderWithDrawable win $
+    render defaultSettings (f size) objs cons
 
   where f = realToFrac *** realToFrac
 
+setupNetwork :: ([Object] -> IO ()) -> EventSource () -> IO EventNetwork
+setupNetwork d esDraw = compile $ do
+  eDraw <- fromAddHandler (addHandler esDraw)
+
+  let eObjects = accumE defaultObjs $ (id <$ eDraw)
+
+  reactimate $ d <$> eObjects
+
 main :: IO ()
-main = initGUI >> setupUI >>= widgetShowAll >> mainGUI
+main = do
+  _ <- Gtk.initGUI
 
-defaultObjs :: [Object]
-defaultObjs =
-  [ Object (Vector2 250 250) zero 0
-  , Object (Vector2 100 200) zero 1
-  , Object (Vector2 200 250) zero 1
-  , Object (Vector2 100 540) zero 1 ]
+  w <- Gtk.windowNew
+  c <- Gtk.drawingAreaNew
 
-defaultGraph :: [Connection]
-defaultGraph =
-  [ (0, 1)
-  , (0, 2)
-  , (2, 3)
-  ]
+  Gtk.set w [ Gtk.windowTitle Gtk.:= "Graph"
+            , Gtk.containerChild Gtk.:= c ]
+
+  esDraw <- newAddHandler
+  network <- setupNetwork (draw c defaultGraph) esDraw
+  actuate network
+
+  _ <- w `Gtk.on` Gtk.deleteEvent $ liftIO Gtk.mainQuit >> return False
+  _ <- w `Gtk.on` Gtk.configureEvent $ liftIO (fire esDraw ()) >> return False
+
+  Gtk.mainGUI
