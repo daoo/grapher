@@ -7,9 +7,10 @@ import Control.Arrow
 import Backend.Backend (defaultSettings)
 import Backend.Cairo ()
 import qualified Graphics.UI.Gtk as Gtk
-import Math.Vector2
+
 import Reactive.Banana
 
+import Defaults
 import World
 
 type EventSource a = (AddHandler a, a -> IO ())
@@ -20,22 +21,20 @@ addHandler = fst
 fire :: EventSource a -> a -> IO ()
 fire = snd
 
-draw :: Gtk.DrawingArea -> [Connection] -> [Object] -> IO ()
-draw c cons objs = do
+draw :: Gtk.DrawingArea -> World -> IO ()
+draw c w = do
   win <- Gtk.widgetGetDrawWindow c
   size <- Gtk.widgetGetSize c
   Gtk.renderWithDrawable win $
-    render defaultSettings (f size) objs cons
+    render defaultSettings (f size) (worldObjects w) (worldConnections w)
 
   where f = realToFrac *** realToFrac
 
-setupNetwork :: ([Object] -> IO ()) -> EventSource () -> IO EventNetwork
-setupNetwork d esDraw = compile $ do
-  eDraw <- fromAddHandler (addHandler esDraw)
-
-  let eObjects = accumE defaultObjs $ (id <$ eDraw)
-
-  reactimate $ d <$> eObjects
+setupNetwork :: World -> (World -> IO ()) -> EventSource () -> IO EventNetwork
+setupNetwork world d esLoop = compile $ do
+  eLoop <- fromAddHandler (addHandler esLoop)
+  let eWorld = accumE world $ (iteration 10 <$ eLoop)
+  reactimate $ d <$> eWorld
 
 main :: IO ()
 main = do
@@ -47,11 +46,15 @@ main = do
   Gtk.set w [ Gtk.windowTitle Gtk.:= "Graph"
             , Gtk.containerChild Gtk.:= c ]
 
-  esDraw <- newAddHandler
-  network <- setupNetwork (draw c defaultGraph) esDraw
+  esLoop <- newAddHandler
+  network <- setupNetwork defaultWorld (draw c) esLoop
   actuate network
 
   _ <- w `Gtk.on` Gtk.deleteEvent $ liftIO Gtk.mainQuit >> return False
-  _ <- w `Gtk.on` Gtk.configureEvent $ liftIO (fire esDraw ()) >> return False
+  _ <- w `Gtk.on` Gtk.configureEvent $ liftIO (fire esLoop ()) >> return False
+  _ <- c `Gtk.on` Gtk.scrollEvent $ liftIO (fire esLoop ()) >> return False
 
+  _ <- Gtk.timeoutAdd (liftIO (fire esLoop ()) >> return True) 100
+
+  Gtk.widgetShowAll w
   Gtk.mainGUI

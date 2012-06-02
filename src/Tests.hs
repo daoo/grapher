@@ -1,12 +1,13 @@
 module Tests where
 
-import Vector2
+import Math.Vector2
 import Test.QuickCheck
+import World
 
 floatEq :: Float -> Float -> Bool
 floatEq a b = (abs $ a - b) < 0.000001
 
-type Vector2I = Vector Integer
+type Vector2I = Vector2 Integer
 
 propDotEqualAbsSquared :: Vector2I -> Bool
 propDotEqualAbsSquared u = (u `dot` u) == magSquared u

@@ -1,8 +1,9 @@
 module World where
 
-import Extensions
+import Data.List
 
 import Backend.Backend
+import Extensions
 import Math.Vector2
 
 type Time = Double
@@ -12,7 +13,6 @@ type Point    = Vector2D
 type Velocity = Vector2D
 
 type Pair = (Object, Object)
-
 type Connection = (Int, Int)
 
 data Object = Object
@@ -21,16 +21,26 @@ data Object = Object
   , mass :: Mass }
   deriving (Show)
 
+data World = World
+  { worldObjects :: [Object]
+  , worldConnections :: [Connection] }
+  deriving Show
+
+showWorld :: World -> String
+showWorld = intercalate "\n" . map showObject . worldObjects
+
+showObject :: Object -> String
+showObject (Object p v m) = "Object " ++ show m ++ " " ++ showVector2 p ++ " " ++ showVector2 v
+
 maxForce, maxDist, gravity :: Double
 maxForce = 100.0
 maxDist = 10.0
-gravity = 10.0
+gravity = 10000.0
 
-force :: Object -> Object -> Double
-force o1 o2 = (gravity * mass o1 * mass o2) / (distSquared (pos o1) (pos o2))
-
-iteration :: Time -> [Object] -> [Object]
-iteration t = integrate t . magic repel
+iteration :: Time -> World -> World
+iteration t = g (integrate t . magic repel)
+  where
+    g f w = w { worldObjects = f (worldObjects w) }
 
 integrate :: Time -> [Object] -> [Object]
 integrate t = map (\o -> o { pos = (pos o + (t `mult` vel o))})
@@ -40,6 +50,9 @@ constraint :: Object -> Object -> Object
 constraint a b = let da = pos b - pos a
                      db = pos a - pos b
                   in a
+
+force :: Object -> Object -> Double
+force o1 o2 = (gravity * mass o1 * mass o2) / (dist (pos o1) (pos o2))
 
 -- |Calculate and apply force between two objects
 repel :: Pair -> Pair

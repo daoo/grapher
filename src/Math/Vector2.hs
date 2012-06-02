@@ -8,6 +8,9 @@ square x = x * x
 data Vector2 a = Vector2 a a
   deriving (Eq, Show)
 
+showVector2 :: Show a => Vector2 a -> String
+showVector2 (Vector2 x y) = "(" ++ show x ++ ", " ++ show y ++ ")"
+
 type Vector2F = Vector2 Float
 type Vector2D = Vector2 Double
 
