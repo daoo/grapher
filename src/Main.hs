@@ -22,11 +22,15 @@ fire :: EventSource a -> a -> IO ()
 fire = snd
 
 draw :: Gtk.DrawingArea -> World -> IO ()
-draw c w = do
-  win <- Gtk.widgetGetDrawWindow c
-  size <- Gtk.widgetGetSize c
-  Gtk.renderWithDrawable win $
-    render defaultSettings (f size) (worldObjects w) (worldConnections w)
+draw canvas world = do
+  dw <- Gtk.widgetGetDrawWindow canvas
+  size@(w, h) <- Gtk.widgetGetSize canvas
+
+  regio <- Gtk.regionRectangle $ Gtk.Rectangle 0 0 w h
+  Gtk.drawWindowBeginPaintRegion dw regio
+  Gtk.renderWithDrawable dw $
+    render defaultSettings (f size) (worldObjects world) (worldConnections world)
+  Gtk.drawWindowEndPaint dw
 
   where f = realToFrac *** realToFrac
 
