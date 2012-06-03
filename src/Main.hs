@@ -52,7 +52,6 @@ main = do
 
   _ <- w `Gtk.on` Gtk.deleteEvent $ liftIO Gtk.mainQuit >> return False
   _ <- w `Gtk.on` Gtk.configureEvent $ liftIO (fire esLoop ()) >> return False
-  _ <- c `Gtk.on` Gtk.scrollEvent $ liftIO (fire esLoop ()) >> return False
 
   _ <- Gtk.timeoutAdd (liftIO (fire esLoop ()) >> return True) 100
 
