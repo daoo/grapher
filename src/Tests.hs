@@ -5,7 +5,7 @@ import Test.QuickCheck
 import World
 
 floatEq :: Float -> Float -> Bool
-floatEq a b = (abs $ a - b) < 0.000001
+floatEq a b = abs (a - b) < 0.000001
 
 type Vector2I = Vector2 Integer
 

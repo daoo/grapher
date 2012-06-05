@@ -1,5 +1,6 @@
 module World where
 
+import Control.Arrow
 import Data.List
 
 import Backend.Backend
@@ -19,7 +20,7 @@ data Object = Object
   { pos :: Point
   , vel :: Velocity
   , mass :: Mass }
-  deriving (Show)
+  deriving Show
 
 data World = World
   { worldObjects :: [Object]
@@ -43,7 +44,7 @@ iteration t = g (integrate t . magic repel)
     g f w = w { worldObjects = f (worldObjects w) }
 
 integrate :: Time -> [Object] -> [Object]
-integrate t = map (\o -> o { pos = (pos o + (t `mult` vel o))})
+integrate t = map (\o -> o { pos = pos o + (t `mult` vel o) })
 
 -- |Constraint movement between two objects
 constraint :: Object -> Object -> Object
@@ -52,14 +53,14 @@ constraint a b = let da = pos b - pos a
                   in a
 
 force :: Object -> Object -> Double
-force o1 o2 = (gravity * mass o1 * mass o2) / (dist (pos o1) (pos o2))
+force o1 o2 = (gravity * mass o1 * mass o2) / dist (pos o1) (pos o2)
 
 -- |Calculate and apply force between two objects
 repel :: Pair -> Pair
 repel (a, b) =
   let val  = min (force a b) maxForce
-      da   = normalize $ (pos b) - (pos a)
-      db   = normalize $ (pos a) - (pos b)
+      da   = normalize $ pos b - pos a
+      db   = normalize $ pos a - pos b
       mtot = mass a + mass b
       ra   = mass a / mtot
       rb   = mass b / mtot
@@ -68,7 +69,7 @@ repel (a, b) =
    in (a {vel = vel a + va}, b {vel = vel b + vb})
 
 connect :: [Object] -> [Connection] -> [Pair]
-connect obj = map (\(a, b) -> (obj !! a, obj !! b))
+connect obj = map ((obj !!) *** (obj !!))
 
 render :: Backend a => Settings -> Size -> [Object] -> [Connection] -> a ()
 render set (w, h) objs cons = do

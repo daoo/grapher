@@ -1,20 +1,39 @@
 module Backend.Cairo where
 
+import Control.Arrow
+
 import Math.Vector2
+
 import Backend.Backend
-import Graphics.Rendering.Cairo
+import qualified Graphics.Rendering.Cairo as Cairo
+import qualified Graphics.UI.Gtk as Gtk
 
-instance Backend Render where
-  setColor (r, g, b) = setSourceRGB r g b
-  setLineWidth = Graphics.Rendering.Cairo.setLineWidth
+import World
 
-  strokeRectangle (Vector2 x y) (w, h) = rectangle x y w h >> stroke
-  fillRectangle (Vector2 x y) (w, h)   = rectangle x y w h >> fill
+instance Backend Cairo.Render where
+  setColor (r, g, b) = Cairo.setSourceRGB r g b
+  setLineWidth       = Cairo.setLineWidth
 
-  strokeLine (Vector2 x1 y1, Vector2 x2 y2) = moveTo x1 y1 >> lineTo x2 y2 >> stroke
+  strokeRectangle (Vector2 x y) (w, h) = Cairo.rectangle x y w h >> Cairo.stroke
+  fillRectangle (Vector2 x y) (w, h)   = Cairo.rectangle x y w h >> Cairo.fill
 
-  fillCircle r (Vector2 x y)  = arc x y r 0 pi2 >> fill
-  fillArcs r (Vector2 x y) cs = mapM_ f cs >> fill
+  strokeLine (Vector2 x1 y1, Vector2 x2 y2) = Cairo.moveTo x1 y1 >> Cairo.lineTo x2 y2 >> Cairo.stroke
+
+  fillCircle r (Vector2 x y)  = Cairo.arc x y r 0 pi2 >> Cairo.fill
+  fillArcs r (Vector2 x y) cs = mapM_ f cs >> Cairo.fill
     where
-      f (c, (a, b)) = setColor c >> arc x y r a b
+      f (c, (a, b)) = setColor c >> Cairo.arc x y r a b
+
+drawWorld :: Gtk.DrawingArea -> World -> IO ()
+drawWorld canvas world = do
+  dw <- Gtk.widgetGetDrawWindow canvas
+  size@(w, h) <- Gtk.widgetGetSize canvas
+
+  regio <- Gtk.regionRectangle $ Gtk.Rectangle 0 0 w h
+  Gtk.drawWindowBeginPaintRegion dw regio
+  Gtk.renderWithDrawable dw $
+    render defaultSettings (f size) (worldObjects world) (worldConnections world)
+  Gtk.drawWindowEndPaint dw
+
+  where f = realToFrac *** realToFrac
 

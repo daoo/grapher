@@ -2,10 +2,7 @@
 
 module Main where
 
-import Control.Arrow
-
-import Backend.Backend (defaultSettings)
-import Backend.Cairo ()
+import Backend.Cairo
 import qualified Graphics.UI.Gtk as Gtk
 
 import Reactive.Banana
@@ -21,23 +18,10 @@ addHandler = fst
 fire :: EventSource a -> a -> IO ()
 fire = snd
 
-draw :: Gtk.DrawingArea -> World -> IO ()
-draw canvas world = do
-  dw <- Gtk.widgetGetDrawWindow canvas
-  size@(w, h) <- Gtk.widgetGetSize canvas
-
-  regio <- Gtk.regionRectangle $ Gtk.Rectangle 0 0 w h
-  Gtk.drawWindowBeginPaintRegion dw regio
-  Gtk.renderWithDrawable dw $
-    render defaultSettings (f size) (worldObjects world) (worldConnections world)
-  Gtk.drawWindowEndPaint dw
-
-  where f = realToFrac *** realToFrac
-
 setupNetwork :: World -> (World -> IO ()) -> EventSource () -> IO EventNetwork
 setupNetwork world d esLoop = compile $ do
   eLoop <- fromAddHandler (addHandler esLoop)
-  let eWorld = accumE world $ (iteration 10 <$ eLoop)
+  let eWorld = accumE world $ iteration 10 <$ eLoop
   reactimate $ d <$> eWorld
 
 main :: IO ()
@@ -51,7 +35,7 @@ main = do
             , Gtk.containerChild Gtk.:= c ]
 
   esLoop <- newAddHandler
-  network <- setupNetwork defaultWorld (draw c) esLoop
+  network <- setupNetwork defaultWorld (drawWorld c) esLoop
   actuate network
 
   _ <- w `Gtk.on` Gtk.deleteEvent $ liftIO Gtk.mainQuit >> return False
