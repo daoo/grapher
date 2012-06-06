@@ -33,10 +33,9 @@ showWorld = intercalate "\n" . map showObject . worldObjects
 showObject :: Object -> String
 showObject (Object p v m) = "Object " ++ show m ++ " " ++ showVector2 p ++ " " ++ showVector2 v
 
-maxForce, maxDist, gravity :: Double
-maxForce = 100.0
-maxDist = 10.0
-gravity = 10000.0
+maxDist, gravity :: Double
+maxDist = square 10.0
+gravity = 100
 
 iteration :: Time -> World -> World
 iteration t = g (integrate t . magic repel)
@@ -53,14 +52,14 @@ constraint a b = let da = pos b - pos a
                   in a
 
 force :: Object -> Object -> Double
-force o1 o2 = (gravity * mass o1 * mass o2) / dist (pos o1) (pos o2)
+force o1 o2 = gravity * (mass o1 + mass o2) / dist (pos o1) (pos o2)
 
 -- |Calculate and apply force between two objects
 repel :: Pair -> Pair
 repel (a, b) =
-  let val  = min (force a b) maxForce
-      da   = normalize $ pos b - pos a
-      db   = normalize $ pos a - pos b
+  let val  = force a b
+      da   = normalize $ pos a - pos b
+      db   = normalize $ pos b - pos a
       mtot = mass a + mass b
       ra   = mass a / mtot
       rb   = mass b / mtot
