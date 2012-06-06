@@ -4,25 +4,16 @@ module Main where
 
 import Backend.Cairo
 import qualified Graphics.UI.Gtk as Gtk
-
 import Reactive.Banana
 
 import Defaults
+import Time
 import World
 
-type EventSource a = (AddHandler a, a -> IO ())
-
-addHandler :: EventSource a -> AddHandler a
-addHandler = fst
-
-fire :: EventSource a -> a -> IO ()
-fire = snd
-
-setupNetwork :: World -> (World -> IO ()) -> EventSource () -> IO EventNetwork
-setupNetwork world d esLoop = compile $ do
-  eLoop <- fromAddHandler (addHandler esLoop)
-  let eWorld = accumE world $ iteration 10 <$ eLoop
-  reactimate $ d <$> eWorld
+setupNetwork :: World -> (World -> IO ()) -> AddHandler Double -> IO EventNetwork
+setupNetwork world draw handler = compile $ do
+  eTime <- fromAddHandler handler
+  reactimate $ fmap draw $ accumE world (iteration <$> eTime)
 
 main :: IO ()
 main = do
@@ -34,14 +25,20 @@ main = do
   Gtk.set w [ Gtk.windowTitle Gtk.:= "Graph"
             , Gtk.containerChild Gtk.:= c ]
 
+  clock <- newClock
+
   esLoop <- newAddHandler
-  network <- setupNetwork defaultWorld (drawWorld c) esLoop
+  network <- setupNetwork defaultWorld (drawWorld c) (fst esLoop)
   actuate network
 
   _ <- w `Gtk.on` Gtk.deleteEvent $ liftIO Gtk.mainQuit >> return False
-  _ <- w `Gtk.on` Gtk.configureEvent $ liftIO (fire esLoop ()) >> return False
-
-  _ <- Gtk.timeoutAdd (liftIO (fire esLoop ()) >> return True) 100
+  _ <- Gtk.timeoutAdd (timeout clock (snd esLoop)) 10
 
   Gtk.widgetShowAll w
   Gtk.mainGUI
+
+  where
+    timeout clock event = do
+      delta <- clockDelta clock
+      _ <- event delta
+      return True
