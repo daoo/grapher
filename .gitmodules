@@ -1,0 +1,3 @@
+[submodule "math-lib"]
+	path = math-lib
+	url = file:///home/daniel/.git/haskell/math-lib.git

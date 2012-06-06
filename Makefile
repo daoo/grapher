@@ -5,7 +5,7 @@ warnings = -Wall \
 	   -fwarn-unused-do-bind \
 	   -fno-warn-orphans \
 
-flags = -isrc -odir build -hidir build
+flags = -imath-lib/src:src -odir build -hidir build
 
 make_main = --make $(flags) $(warnings) -o build/main src/Main.hs
 
