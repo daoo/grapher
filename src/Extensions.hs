@@ -11,8 +11,12 @@ magic f (x : xs) = let (x', xs') = g x xs
                        (y'', zs') = g y' zs
                     in (y'', z' : zs')
 
-foldAll :: (a -> a -> a) -> [a] -> [a]
-foldAll f xs = map (\x -> foldl f x xs) xs
+foldlAll :: (a -> a -> a) -> [a] -> [a]
+foldlAll f xs = map (\x -> foldl f x xs) xs
+
+mapCombinations :: (a -> a -> b) -> [a] -> [b]
+mapCombinations f xs = concatMap g xs
+  where g a = map (f a) xs
 
 mapIndex :: (a -> a) -> Int -> [a] -> [a]
 mapIndex _ _ []       = []
