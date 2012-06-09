@@ -5,14 +5,14 @@ import System.Time
 
 -- |Returns the current system time in pico seconds.
 timeInPicoSeconds :: IO Integer
-timeInPicoSeconds = (\(TOD i p) -> i * ps + p) `fmap` getClockTime
+timeInPicoSeconds = (\(TOD s p) -> s * ps + p) `fmap` getClockTime
   where
     ps :: Integer
-    ps = 1000000000000
+    ps = 10 ^ 12
 
 -- |Converts pico seconds to seconds.
 picoToSeconds :: Integer -> Double
-picoToSeconds = (*) 10.0e-12 . fromInteger
+picoToSeconds = (* 1.0e-12) . fromInteger
 
 data Clock = Clock { clockRef :: IORef Integer }
 
