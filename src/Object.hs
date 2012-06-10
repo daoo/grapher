@@ -12,8 +12,8 @@ data Object = Object
   { pos :: Point
   , vel :: Velocity
   , invMass :: Mass
-  , charge :: Charge }
-  deriving (Show, Eq)
+  , charge :: Charge
+  } deriving (Show, Eq)
 
 instance Arbitrary Object where
   arbitrary = do
