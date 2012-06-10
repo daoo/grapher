@@ -22,13 +22,3 @@ repel x y = x { vel = vel x + a }
   where
     f = force x y
     a = invMass x `mult` f
-
--- |Constraint movement between two objects
-constraint :: Object -> Object -> Object
-constraint a b | mag d > maxDist = a { vel = v }
-               | otherwise       = a
-  where
-    d = pos b - pos a
-    p = normalize $ orthogonal d
-    s = mag (vel a)
-    v = s `mult` p
