@@ -15,11 +15,11 @@ import Physics
 type Time = Double
 
 type Pair = (Object, Object)
-type Connection = (Int, Int)
+type Rope = (Int, Int)
 
 data World = World
   { worldObjects :: [Object]
-  , worldConnections :: [Connection] }
+  , worldRopes :: [Rope] }
   deriving Show
 
 instance Arbitrary World where
@@ -32,21 +32,31 @@ showWorld :: World -> String
 showWorld = intercalate "\n" . map show . worldObjects
 
 iteration :: Time -> World -> World
-iteration t (World objs cons) = World (map (i . r) objs) cons
+iteration t (World objs cons) = World (go 0 objs) cons
   where
-    i :: Object -> Object
-    i = integrate t
+    go :: Int -> [Object] -> [Object]
+    go _ []       = []
+    go i (x : xs) = integrate t (object x objs (map (objs !!) $ asdf i cons)) : go (i + 1) xs
 
-    r :: Object -> Object
-    r obj = foldl repel obj objs
+object :: Object -> [Object] -> [Object] -> Object
+object obj objs cons = obj { vel = vel obj + (invMass obj `mult` totForce) }
+  where
+    repels = sum $ map (repel obj) objs
+    drags  = sum $ map (drag obj) cons
+    totForce = repels + drags
 
 integrate :: Time -> Object -> Object
 integrate t obj = obj { pos = pos obj + (t `mult` vel obj) }
 
-connect :: [Object] -> [Connection] -> [Pair]
-connect obj = map ((obj !!) *** (obj !!))
+asdf :: Int -> [Rope] -> [Int]
+asdf i []                        = []
+asdf i ((x, y) : zs) | x == i    = y : asdf i zs
+                     | otherwise = asdf i zs
 
-render :: Backend a => Settings -> Size -> [Object] -> [Connection] -> a ()
+connect :: [Object] -> [Rope] -> [Pair]
+connect xs = map ((xs !!) *** (xs !!))
+
+render :: Backend a => Settings -> Size -> [Object] -> [Rope] -> a ()
 render set (w, h) objs cons = do
   setColor $ getBgColor set
   fillRectangle zero (w, h)

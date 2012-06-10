@@ -32,7 +32,7 @@ drawWorld canvas world = do
   regio <- Gtk.regionRectangle $ Gtk.Rectangle 0 0 w h
   Gtk.drawWindowBeginPaintRegion dw regio
   Gtk.renderWithDrawable dw $
-    render defaultSettings (f size) (worldObjects world) (worldConnections world)
+    render defaultSettings (f size) (worldObjects world) (worldRopes world)
   Gtk.drawWindowEndPaint dw
 
   where f = realToFrac *** realToFrac
