@@ -5,23 +5,23 @@ import Math.Vector2
 
 import Object
 
-maxDist, chargeConstant :: Double
+maxDist, repelConst :: Double
 maxDist = 100.0
-chargeConstant = 100.0
+repelConst = 100.0
 
-force :: Object -> Object -> Double
-force a b = r * c
+-- | F = G * m1 * m2 / r^2
+force :: Object -> Object -> Vector2D
+force x y = f `mult` normalize (pos x - pos y)
   where
-    r = invMass a `divZero` (invMass a + invMass b)
-    c = (chargeConstant * charge a * charge b) `divZero` distSquared (pos a) (pos b)
+    f = (repelConst * charge x * charge y) `divZero` distSquared (pos x) (pos y)
 
 -- |Calculate and apply the force that object b exerts on object a
+-- F = m * a => a = F / m
 repel :: Object -> Object -> Object
-repel a b = a { vel = vel a + v }
+repel x y = x { vel = vel x + a }
   where
-    f = force a b
-    d = normalize $ pos a - pos b
-    v = f `mult` d
+    f = force x y
+    a = invMass x `mult` f
 
 -- |Constraint movement between two objects
 constraint :: Object -> Object -> Object
