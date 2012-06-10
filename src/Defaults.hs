@@ -1,6 +1,8 @@
 module Defaults where
 
 import Math.Vector2
+
+import Object
 import World
 
 defaultWorld :: World
