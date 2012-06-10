@@ -9,6 +9,9 @@ import Object
 import Physics
 import World
 
+propTimes :: NonNegative Int -> Bool
+propTimes (NonNegative i) = times (+1) 0 i == i
+
 object1, object2, object3 :: Object
 object1 = Object (Vector2 100 100) (Vector2 1 1) 1 100
 object2 = Object (Vector2 200 200) (Vector2 0 1) 1 100
@@ -25,8 +28,12 @@ vector2Eq :: (Fractional f, Ord f) => Vector2 f -> Vector2 f -> Bool
 vector2Eq a b = magSquared (a - b) < 0.0001
 
 internalForces :: [Object] -> [Vector2 Double]
-internalForces xs = mapCombinations (\a b -> force a b `mult` (normalize $ pos b - pos a)) xs
+internalForces = mapCombinations force
 
-propInternalForcesEqualsZero :: NonEmptyList Object -> Bool
-propInternalForcesEqualsZero (NonEmpty xs) =
-  (vector2Eq zero) $ sum $ internalForces xs
+propInternalForces :: NonEmptyList Object -> Bool
+propInternalForces (NonEmpty xs) =
+  vector2Eq zero $ sum $ internalForces xs
+
+propInternalForces2 :: World -> Property
+propInternalForces2 w = forAll (choose (0, 10)) $
+  \i -> vector2Eq zero $ sum $ internalForces $ worldObjects $ times (iteration 1) i w
