@@ -3,6 +3,8 @@ module World where
 import Control.Arrow
 import Data.List
 
+import Test.QuickCheck.Arbitrary
+
 import Backend.Backend
 
 import Math.Vector2
@@ -19,6 +21,12 @@ data World = World
   { worldObjects :: [Object]
   , worldConnections :: [Connection] }
   deriving Show
+
+instance Arbitrary World where
+  arbitrary = do
+    objs <- arbitrary
+    conns <- arbitrary
+    return $ World objs conns
 
 showWorld :: World -> String
 showWorld = intercalate "\n" . map show . worldObjects

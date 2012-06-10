@@ -22,3 +22,8 @@ mapIndex :: (a -> a) -> Int -> [a] -> [a]
 mapIndex _ _ []       = []
 mapIndex f 0 (x : xs) = f x : xs
 mapIndex f i (x : xs) = x : mapIndex f (i - 1) xs
+
+times :: (a -> a) -> Int -> a -> a
+times f i x | i == 0    = x
+            | i < 0     = error "Negative times"
+            | otherwise = times f (i - 1) (f x)
