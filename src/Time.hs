@@ -3,16 +3,16 @@ module Time (newClock, clockDelta) where
 import Data.IORef
 import System.Time
 
+ps :: Num a => a
+ps = 10 ^ 12
+
 -- |Returns the current system time in pico seconds.
 timeInPicoSeconds :: IO Integer
 timeInPicoSeconds = (\(TOD s p) -> s * ps + p) `fmap` getClockTime
-  where
-    ps :: Integer
-    ps = 10 ^ 12
 
 -- |Converts pico seconds to seconds.
 picoToSeconds :: Integer -> Double
-picoToSeconds = (* 1.0e-12) . fromInteger
+picoToSeconds = (/ ps) . fromInteger
 
 data Clock = Clock { clockRef :: IORef Integer }
 
