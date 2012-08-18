@@ -1,11 +1,11 @@
 module Tests where
 
-import Extensions
+import ForceGraph.Extensions
+import ForceGraph.Object
+import ForceGraph.Physics
+import ForceGraph.World
 import Math.Vector2
-import Object
-import Physics
 import Test.QuickCheck
-import World
 
 propTimes :: NonNegative Int -> Bool
 propTimes (NonNegative i) = times (+1) 0 i == i
@@ -26,7 +26,7 @@ vector2Eq :: (Fractional f, Ord f) => Vector2 f -> Vector2 f -> Bool
 vector2Eq a b = magSquared (a - b) < 0.0001
 
 internalForces :: [Object] -> [Vector2 Double]
-internalForces = mapCombinations force
+internalForces = mapCombinations drag
 
 propInternalForces :: NonEmptyList Object -> Bool
 propInternalForces (NonEmpty xs) =

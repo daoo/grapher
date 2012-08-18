@@ -16,13 +16,13 @@ release:
 	ghc -O3 $(make_main)
 
 ghci:
-	ghci $(warnings) $(flags) src/Tests.hs
+	ghci $(warnings) $(flags) tests/Tests.hs
 
 clean:
 	rm -r build/*
 
 ctags:
-	echo ":ctags" | ghci -isrc/:build/ -v0 src/TestProperties.hs
+	echo ":ctags" | ghci $(flags) -v0 src/Tests.hs
 
 lint:
 	hlint src -c

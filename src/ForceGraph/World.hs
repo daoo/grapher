@@ -1,6 +1,5 @@
 module ForceGraph.World where
 
-import Control.Arrow
 import Data.List
 import ForceGraph.Backend.Backend
 import ForceGraph.Object
@@ -11,53 +10,40 @@ import Test.QuickCheck.Arbitrary
 type Time = Double
 
 type Pair = (Object, Object)
-type Rope = (Int, Int)
 
 data World = World
-  { worldObjects :: [Object]
-  , worldRopes :: [Rope] }
+  { worldObjects :: [Object] }
   deriving Show
 
 instance Arbitrary World where
   arbitrary = do
     objs <- arbitrary
-    conns <- arbitrary
-    return $ World objs conns
+    return $ World objs
+
+  shrink (World objs) = map World (tails objs)
 
 showWorld :: World -> String
 showWorld = intercalate "\n" . map show . worldObjects
 
 iteration :: Time -> World -> World
-iteration t (World objs cons) = World (go 0 objs) cons
+iteration t (World objs) = World (go 0 objs)
   where
     go :: Int -> [Object] -> [Object]
     go _ []       = []
-    go i (x : xs) = integrate t (object x objs (map (objs !!) $ asdf i cons)) : go (i + 1) xs
+    go i (x : xs) = integrate t (object x objs) : go (i + 1) xs
 
-object :: Object -> [Object] -> [Object] -> Object
-object obj objs cons = obj { vel = vel obj + (invMass obj `mult` totForce) }
+object :: Object -> [Object] -> Object
+object obj objs = obj { vel = vel obj + (invMass obj `mult` repels) }
   where
     repels = sum $ map (repel obj) objs
-    drags  = sum $ map (drag obj) cons
-    totForce = repels + drags
 
 integrate :: Time -> Object -> Object
 integrate t obj = obj { pos = pos obj + (t `mult` vel obj) }
 
-asdf :: Int -> [Rope] -> [Int]
-asdf _ []                        = []
-asdf i ((x, y) : zs) | x == i    = y : asdf i zs
-                     | otherwise = asdf i zs
-
-connect :: [Object] -> [Rope] -> [Pair]
-connect xs = map ((xs !!) *** (xs !!))
-
-render :: Backend a => Settings -> Size -> [Object] -> [Rope] -> a ()
-render set (w, h) objs cons = do
+render :: Backend a => Settings -> Size -> [Object] -> a ()
+render set (w, h) objs = do
   setColor $ getBgColor set
   fillRectangle zero (w, h)
-
-  mapM_ g (connect objs cons)
   mapM_ f objs
 
   where
