@@ -1,4 +1,4 @@
-module Extensions where
+module ForceGraph.Extensions where
 
 -- |Magic no duplication pairing of all elements in a list
 magic :: ((a, a) -> (a, a)) -> [a] -> [a]

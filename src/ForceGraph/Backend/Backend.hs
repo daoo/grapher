@@ -1,4 +1,4 @@
-module Backend.Backend where
+module ForceGraph.Backend.Backend where
 
 import Math.Vector2
 

@@ -2,13 +2,12 @@
 
 module Main where
 
-import Backend.Cairo
-import qualified Graphics.UI.Gtk as Gtk
+import ForceGraph.Backend.Cairo
+import ForceGraph.Defaults
+import ForceGraph.Time
+import ForceGraph.World
 import Reactive.Banana
-
-import Defaults
-import Time
-import World
+import qualified Graphics.UI.Gtk as Gtk
 
 setupNetwork :: World -> (World -> IO ()) -> AddHandler Double -> IO EventNetwork
 setupNetwork world draw handler = compile $ do

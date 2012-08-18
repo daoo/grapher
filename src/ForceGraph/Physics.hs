@@ -1,9 +1,8 @@
-module Physics where
+module ForceGraph.Physics where
 
+import ForceGraph.Object
 import Math.Algebra
 import Math.Vector2
-
-import Object
 
 dragConst, repelConst :: Double
 dragConst = 100.0

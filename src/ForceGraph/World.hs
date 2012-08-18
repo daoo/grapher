@@ -1,16 +1,12 @@
-module World where
+module ForceGraph.World where
 
 import Control.Arrow
 import Data.List
-
-import Test.QuickCheck.Arbitrary
-
-import Backend.Backend
-
+import ForceGraph.Backend.Backend
+import ForceGraph.Object
+import ForceGraph.Physics
 import Math.Vector2
-
-import Object
-import Physics
+import Test.QuickCheck.Arbitrary
 
 type Time = Double
 
@@ -49,7 +45,7 @@ integrate :: Time -> Object -> Object
 integrate t obj = obj { pos = pos obj + (t `mult` vel obj) }
 
 asdf :: Int -> [Rope] -> [Int]
-asdf i []                        = []
+asdf _ []                        = []
 asdf i ((x, y) : zs) | x == i    = y : asdf i zs
                      | otherwise = asdf i zs
 

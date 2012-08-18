@@ -1,9 +1,8 @@
-module Defaults where
+module ForceGraph.Defaults where
 
+import ForceGraph.Object
+import ForceGraph.World
 import Math.Vector2
-
-import Object
-import World
 
 defaultWorld :: World
 defaultWorld = World

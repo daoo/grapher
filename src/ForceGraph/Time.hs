@@ -1,10 +1,10 @@
-module Time (newClock, clockDelta) where
+module ForceGraph.Time (newClock, clockDelta) where
 
 import Data.IORef
 import System.Time
 
 ps :: Num a => a
-ps = 10 ^ 12
+ps = 10 ^ (12 :: Integer)
 
 -- |Returns the current system time in pico seconds.
 timeInPicoSeconds :: IO Integer

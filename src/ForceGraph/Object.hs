@@ -1,4 +1,4 @@
-module Object where
+module ForceGraph.Object where
 
 import Math.Vector2
 import Test.QuickCheck

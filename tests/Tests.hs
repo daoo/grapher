@@ -1,12 +1,10 @@
 module Tests where
 
 import Extensions
-import Test.QuickCheck
-
 import Math.Vector2
-
 import Object
 import Physics
+import Test.QuickCheck
 import World
 
 propTimes :: NonNegative Int -> Bool

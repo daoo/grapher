@@ -1,14 +1,11 @@
-module Backend.Cairo where
+module ForceGraph.Backend.Cairo where
 
 import Control.Arrow
-
+import ForceGraph.Backend.Backend
+import ForceGraph.World
 import Math.Vector2
-
-import Backend.Backend
 import qualified Graphics.Rendering.Cairo as Cairo
 import qualified Graphics.UI.Gtk as Gtk
-
-import World
 
 instance Backend Cairo.Render where
   setColor (r, g, b) = Cairo.setSourceRGB r g b
@@ -36,4 +33,3 @@ drawWorld canvas world = do
   Gtk.drawWindowEndPaint dw
 
   where f = realToFrac *** realToFrac
-
