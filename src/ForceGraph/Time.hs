@@ -1,7 +1,9 @@
-module ForceGraph.Time (newClock, clockDelta) where
+module ForceGraph.Time (Time, newClock, clockDelta) where
 
 import Data.IORef
 import System.Time
+
+type Time = Double
 
 ps :: Num a => a
 ps = 10 ^ (12 :: Integer)
