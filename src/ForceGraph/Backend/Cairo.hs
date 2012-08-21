@@ -16,8 +16,9 @@ instance Backend Cairo.Render where
 
   strokeLine (Vector2 x1 y1, Vector2 x2 y2) = Cairo.moveTo x1 y1 >> Cairo.lineTo x2 y2 >> Cairo.stroke
 
-  fillCircle r (Vector2 x y)  = Cairo.arc x y r 0 pi2 >> Cairo.fill
-  fillArcs r (Vector2 x y) cs = mapM_ f cs >> Cairo.fill
+  fillCircle r (Vector2 x y)   = Cairo.arc x y r 0 pi2 >> Cairo.fill
+  strokeCircle r (Vector2 x y) = Cairo.arc x y r 0 pi2 >> Cairo.stroke
+  fillArcs r (Vector2 x y) cs  = mapM_ f cs >> Cairo.fill
     where
       f (c, (a, b)) = setColor c >> Cairo.arc x y r a b
 
@@ -29,7 +30,7 @@ drawWorld canvas world = do
   regio <- Gtk.regionRectangle $ Gtk.Rectangle 0 0 w h
   Gtk.drawWindowBeginPaintRegion dw regio
   Gtk.renderWithDrawable dw $
-    render defaultSettings (f size) (worldBalls world)
+    render defaultSettings (f size) world
   Gtk.drawWindowEndPaint dw
 
   where f = realToFrac *** realToFrac

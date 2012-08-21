@@ -15,6 +15,7 @@ class (Monad a) => Backend a where
 
   strokeLine :: Line -> a ()
   strokeRectangle :: Vector2D -> Size -> a ()
+  strokeCircle :: Double -> Vector2D -> a ()
   fillRectangle :: Vector2D -> Size -> a ()
   fillCircle :: Double -> Vector2D -> a ()
   fillArcs :: Double -> Vector2D -> [(Color, (Double, Double))] -> a ()

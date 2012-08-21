@@ -9,51 +9,56 @@ import Math.Vector2
 import Test.QuickCheck
 
 data World = World
-  { size :: Size
+  { worldLimitPos :: Vector2D
+  , worldLimitRadius :: Double
   , worldBalls :: [Ball]
   }
   deriving Show
 
 instance Arbitrary World where
   arbitrary = do
-    w <- choose (100, 10000)
-    h <- choose (100, 10000)
+    x <- choose (100, 10000)
+    y <- choose (100, 10000)
+    r <- choose (100, 10000)
     b <- arbitrary
-    return $ World (w, h) b
+    return $ World (Vector2 x y) r b
 
-  shrink (World s objs) = map (World s) (tails objs)
+  shrink (World p r objs) = map (World p r) (tails objs)
 
 showWorld :: World -> String
 showWorld = unlines . map show . worldBalls
 
 iteration :: Time -> World -> World
-iteration t (World s objs) = World s (map f objs)
+iteration t w@(World p r objs) = World p r (map f objs)
   where
-    f = limit s . integrate t . updateBall objs
+    f = integrate t . limit w . updateBall objs
 
 mulVec :: Num a => Vector2 a -> Vector2 a -> Vector2 a
 mulVec (Vector2 ax ay) (Vector2 bx by) = Vector2 (ax * bx) (ay * by)
 
-limit :: Size -> Ball -> Ball
-limit (w, h) b = b { vel = v' `mulVec` vel b }
+limit :: World -> Ball -> Ball
+limit w b = b { vel = v' }
   where
-    r = radius b
-    Vector2 px py = pos b
+    wc = worldLimitPos w
+    wr = worldLimitRadius w
+    br = radius b
+    bp = pos b
 
-    v' | px <= r || px + r >= w = Vector2 0 1
-       | py <= r || py + r >= h = Vector2 1 0
-       | otherwise              = Vector2 1 1
+    v' | bp `dist` wc > wr - br = mag (vel b) `mult` normalize (wc - bp)
+       | otherwise              = vel b
 
 updateBall :: [Ball] -> Ball -> Ball
 updateBall objs obj = addVel obj (invMass obj `mult` repels)
   where
     repels = sum $ map (repel obj) objs
 
-render :: Backend a => Settings -> Size -> [Ball] -> a ()
-render set (w, h) objs = do
+render :: Backend a => Settings -> Size -> World -> a ()
+render set (w, h) world = do
   setColor $ getBgColor set
   fillRectangle zero (w, h)
-  mapM_ f objs
+  setColor $ (0, 0, 0)
+  strokeCircle (worldLimitRadius world) (worldLimitPos world)
+  mapM_ f $ worldBalls world
 
   where
     f o = do

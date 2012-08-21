@@ -22,7 +22,7 @@ clean:
 	rm -r build/*
 
 ctags:
-	echo ":ctags" | ghci $(flags) -v0 src/Tests.hs
+	echo ":ctags" | ghci $(flags) -v0 */*.hs
 
 lint:
 	hlint src -c
