@@ -30,3 +30,6 @@ integrate t obj = obj { pos = pos obj + (t `mult` vel obj) }
 
 addVel :: Ball -> Velocity -> Ball
 addVel b v = b { vel = vel b + v }
+
+setVel :: Ball -> Velocity -> Ball
+setVel b v = b { vel = v }

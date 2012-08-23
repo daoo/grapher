@@ -27,21 +27,34 @@ showWorld = unlines . map show . worldBalls
 iteration :: Time -> World -> World
 iteration t w = w { worldBalls = map f (worldBalls w) }
   where
-    f = integrate t . limit w . updateBall (worldBalls w)
+    f = integrate t . limitVelocity . limitPosition w . updateBall (worldBalls w)
 
 mulVec :: Num a => Vector2 a -> Vector2 a -> Vector2 a
 mulVec (Vector2 ax ay) (Vector2 bx by) = Vector2 (ax * bx) (ay * by)
 
-limit :: World -> Ball -> Ball
-limit w b = b { vel = v' }
+limitVelocity :: Ball -> Ball
+limitVelocity b = if mag (vel b) > maxSpeed
+  then setVel b $ maxSpeed `mult` normalize (vel b)
+  else b
+  where
+    maxSpeed = 1000
+
+limitPosition :: World -> Ball -> Ball
+limitPosition w b = if d > 0
+  then b { pos = p', vel = v' }
+  else b
   where
     wc = circlePos $ worldBoundary w
     wr = circleRadius $ worldBoundary w
     br = radius b
     bp = pos b
 
-    v' | bp `dist` wc > wr - br = mag (vel b) `mult` normalize (wc - bp)
-       | otherwise              = vel b
+    tc  = wc - bp
+    tcn = normalize tc
+
+    d  = bp `dist` wc - wr + br
+    v' = mag (vel b) `mult` tcn
+    p' = bp + (d + br) `mult` tcn
 
 updateBall :: [Ball] -> Ball -> Ball
 updateBall objs obj = addVel obj (invMass obj `mult` repels)
