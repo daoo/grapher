@@ -2,6 +2,7 @@
 
 module Main where
 
+import Control.Arrow
 import ForceGraph.Backend.Cairo
 import ForceGraph.Defaults
 import ForceGraph.Time
@@ -11,10 +12,15 @@ import Reactive.Banana
 import qualified Graphics.UI.Gtk as Gtk
 
 setupNetwork :: World -> (World -> IO ()) -> AddHandler Double -> AddHandler (Vector2D, Double) -> IO EventNetwork
-setupNetwork world draw esTime esConfigure = compile $ do
-  eTime <- fromAddHandler esTime
-  eConfigure <- fromChanges (Vector2 0 0, 0) esConfigure
-  reactimate $ draw <$> apply (updateWorld <$> eConfigure) (accumE world $ iteration <$> eTime)
+setupNetwork world draw estime esconfigure = compile $ do
+  etime <- fromAddHandler estime
+  econfigure <- fromAddHandler esconfigure
+
+  let eiteration = iteration <$> etime
+      ecircle = updateWorld <$> econfigure
+      eworld = accumE world (eiteration `union` ecircle)
+
+  reactimate $ draw <$> eworld
 
 updateWorld :: (Vector2D, Double) -> World -> World
 updateWorld (p, r) w = w { worldLimitPos = p, worldLimitRadius = r }
@@ -31,14 +37,14 @@ main = do
 
   clock <- newClock
 
-  esLoop <- newAddHandler
-  esConfigure <- newAddHandler
-  network <- setupNetwork defaultWorld (drawWorld c) (fst esLoop) (fst esConfigure)
+  esloop <- newAddHandler
+  esconfigure <- newAddHandler
+  network <- setupNetwork defaultWorld (drawWorld c) (fst esloop) (fst esconfigure)
   actuate network
 
   _ <- w `Gtk.on` Gtk.deleteEvent $ liftIO Gtk.mainQuit >> return False
-  _ <- w `Gtk.on` Gtk.configureEvent $ liftIO (updateSize c (snd esConfigure)) >> return False
-  _ <- Gtk.timeoutAdd (timeout clock (snd esLoop)) 10
+  _ <- w `Gtk.on` Gtk.configureEvent $ liftIO (updateSize w (snd esconfigure)) >> return False
+  _ <- Gtk.timeoutAdd (timeout clock (snd esloop)) 10
 
   Gtk.widgetShowAll w
   Gtk.mainGUI
@@ -49,12 +55,12 @@ main = do
       _ <- event delta
       return True
 
-updateSize :: Gtk.DrawingArea -> ((Vector2D, Double) -> IO ()) -> IO ()
-updateSize c f = do
-  (w, h) <- fmap (\(Gtk.Requisition w h) -> (realToFrac w, realToFrac h)) $ Gtk.widgetSizeRequest c
+updateSize :: Gtk.Window -> ((Vector2D, Double) -> IO ()) -> IO ()
+updateSize window f = do
+  (w, h) <- fmap (realToFrac *** realToFrac) $ Gtk.widgetGetSize window
   f (p w h, r w h)
   where
     p w h = Vector2 (w / 2) (h / 2)
     r w h = case w `compare` h of
-      GT -> h * 9 / 10.0
-      _  -> w * 9 / 10.0
+      GT -> h * 9 / 20.0
+      _  -> w * 9 / 20.0
