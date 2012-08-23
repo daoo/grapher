@@ -14,5 +14,9 @@ defaultWorld = World
     , Ball (Vector2 200 250) zero 10 1 100
     , Ball (Vector2 100 540) zero 10 1 100
     , Ball (Vector2 500 540) zero 10 1 100
+    , Ball (Vector2 510 570) zero 10 1 100
+    , Ball (Vector2 520 540) zero 10 1 100
+    , Ball (Vector2 530 530) zero 10 1 100
+    , Ball (Vector2 540 520) zero 10 1 100
     ]
   }
