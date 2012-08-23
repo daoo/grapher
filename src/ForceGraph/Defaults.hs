@@ -1,13 +1,13 @@
 module ForceGraph.Defaults where
 
 import ForceGraph.Ball
+import ForceGraph.Circle
 import ForceGraph.World
 import Math.Vector2
 
 defaultWorld :: World
 defaultWorld = World
-  { worldLimitPos = Vector2 500 500
-  , worldLimitRadius = 490
+  { worldBoundary = Circle (Vector2 500 500) 490
   , worldBalls =
     [ Ball (Vector2 250 250) zero 10 0 100
     , Ball (Vector2 150 200) zero 10 1 100

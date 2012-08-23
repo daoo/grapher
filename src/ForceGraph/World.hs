@@ -1,29 +1,25 @@
 module ForceGraph.World where
 
+import Control.Applicative
 import Data.List
 import ForceGraph.Backend.Backend
 import ForceGraph.Ball
+import ForceGraph.Circle
 import ForceGraph.Physics
 import ForceGraph.Time
 import Math.Vector2
 import Test.QuickCheck
 
 data World = World
-  { worldLimitPos :: Vector2D
-  , worldLimitRadius :: Double
+  { worldBoundary :: Circle
   , worldBalls :: [Ball]
   }
   deriving Show
 
 instance Arbitrary World where
-  arbitrary = do
-    x <- choose (100, 10000)
-    y <- choose (100, 10000)
-    r <- choose (100, 10000)
-    b <- arbitrary
-    return $ World (Vector2 x y) r b
+  arbitrary = liftA2 World arbitrary arbitrary
 
-  shrink (World p r objs) = map (World p r) (tails objs)
+  shrink (World c objs) = map (World c) (tails objs)
 
 showWorld :: World -> String
 showWorld = unlines . map show . worldBalls
@@ -39,8 +35,8 @@ mulVec (Vector2 ax ay) (Vector2 bx by) = Vector2 (ax * bx) (ay * by)
 limit :: World -> Ball -> Ball
 limit w b = b { vel = v' }
   where
-    wc = worldLimitPos w
-    wr = worldLimitRadius w
+    wc = circlePos $ worldBoundary w
+    wr = circleRadius $ worldBoundary w
     br = radius b
     bp = pos b
 
@@ -57,7 +53,7 @@ render set (w, h) world = do
   setColor $ getBgColor set
   fillRectangle zero (w, h)
   setColor $ getFgColor set
-  strokeCircle (worldLimitRadius world) (worldLimitPos world)
+  strokeCircle (circleRadius $ worldBoundary world) (circlePos $ worldBoundary world)
   mapM_ f $ worldBalls world
 
   where

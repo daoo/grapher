@@ -4,6 +4,7 @@ module Main where
 
 import Control.Arrow
 import ForceGraph.Backend.Cairo
+import ForceGraph.Circle
 import ForceGraph.Defaults
 import ForceGraph.Time
 import ForceGraph.World
@@ -11,7 +12,7 @@ import Math.Vector2
 import Reactive.Banana
 import qualified Graphics.UI.Gtk as Gtk
 
-setupNetwork :: World -> (World -> IO ()) -> AddHandler Double -> AddHandler (Vector2D, Double) -> IO EventNetwork
+setupNetwork :: World -> (World -> IO ()) -> AddHandler Double -> AddHandler Circle -> IO EventNetwork
 setupNetwork world draw estime esconfigure = compile $ do
   etime <- fromAddHandler estime
   econfigure <- fromAddHandler esconfigure
@@ -22,8 +23,8 @@ setupNetwork world draw estime esconfigure = compile $ do
 
   reactimate $ draw <$> eworld
 
-updateWorld :: (Vector2D, Double) -> World -> World
-updateWorld (p, r) w = w { worldLimitPos = p, worldLimitRadius = r }
+updateWorld :: Circle -> World -> World
+updateWorld c w = w { worldBoundary = c }
 
 main :: IO ()
 main = do
@@ -55,10 +56,10 @@ main = do
       _ <- event delta
       return True
 
-updateSize :: Gtk.Window -> ((Vector2D, Double) -> IO ()) -> IO ()
+updateSize :: Gtk.Window -> (Circle -> IO ()) -> IO ()
 updateSize window f = do
   (w, h) <- fmap (realToFrac *** realToFrac) $ Gtk.widgetGetSize window
-  f (p w h, r w h)
+  f $ Circle (p w h) (r w h)
   where
     p w h = Vector2 (w / 2) (h / 2)
     r w h = case w `compare` h of
