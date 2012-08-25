@@ -2,12 +2,12 @@ module ForceGraph.World where
 
 import Control.Applicative
 import Data.List
+import Data.Vector2
 import ForceGraph.Backend.Backend
 import ForceGraph.Ball
 import ForceGraph.Circle
 import ForceGraph.Physics
 import ForceGraph.Time
-import Math.Vector2
 import Test.QuickCheck
 
 data World = World

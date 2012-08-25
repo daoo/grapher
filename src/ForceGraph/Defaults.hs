@@ -1,9 +1,9 @@
 module ForceGraph.Defaults where
 
+import Data.Vector2
 import ForceGraph.Ball
 import ForceGraph.Circle
 import ForceGraph.World
-import Math.Vector2
 
 defaultWorld :: World
 defaultWorld = World

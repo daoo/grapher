@@ -3,12 +3,12 @@
 module Main where
 
 import Control.Arrow
+import Data.Vector2
 import ForceGraph.Backend.Cairo
 import ForceGraph.Circle
 import ForceGraph.Defaults
 import ForceGraph.Time
 import ForceGraph.World
-import Math.Vector2
 import Reactive.Banana
 import qualified Graphics.UI.Gtk as Gtk
 

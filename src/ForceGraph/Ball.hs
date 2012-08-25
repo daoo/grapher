@@ -1,8 +1,8 @@
 module ForceGraph.Ball where
 
 import Control.Monad
+import Data.Vector2
 import ForceGraph.Time
-import Math.Vector2
 import Test.QuickCheck
 
 type Mass     = Double

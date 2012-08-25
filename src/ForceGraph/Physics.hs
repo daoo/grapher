@@ -1,8 +1,8 @@
 module ForceGraph.Physics where
 
+import Data.Vector2
 import ForceGraph.Ball
 import Math.Algebra
-import Math.Vector2
 
 dragConst, repelConst :: Double
 dragConst = 100.0

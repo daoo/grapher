@@ -1,7 +1,7 @@
 module ForceGraph.Circle where
 
 import Control.Applicative
-import Math.Vector2
+import Data.Vector2
 import Test.QuickCheck
 
 data Circle = Circle
