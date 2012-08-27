@@ -5,13 +5,13 @@ import Data.List
 import Data.Vector2
 import ForceGraph.Backend.Backend
 import ForceGraph.Ball
-import ForceGraph.Circle
 import ForceGraph.Physics
+import ForceGraph.Rectangle
 import ForceGraph.Time
 import Test.QuickCheck
 
 data World = World
-  { worldBoundary :: Circle
+  { worldBoundary :: Rectangle
   , worldBalls :: [Ball]
   }
   deriving Show
@@ -27,7 +27,7 @@ showWorld = unlines . map show . worldBalls
 iteration :: Time -> World -> World
 iteration t w = w { worldBalls = map f (worldBalls w) }
   where
-    f = integrate t . limitSpeed . limitPosition w . updateBall (worldBalls w)
+    f = integrate t . limitSpeed . limitPosition (worldBoundary w) . updateBall (worldBalls w)
 
 mulVec :: Num a => Vector2 a -> Vector2 a -> Vector2 a
 mulVec (Vector2 ax ay) (Vector2 bx by) = Vector2 (ax * bx) (ay * by)
@@ -39,22 +39,19 @@ limitSpeed b = if mag (vel b) > maxSpeed
   where
     maxSpeed = 1000
 
-limitPosition :: World -> Ball -> Ball
-limitPosition w b = if d > 0
-  then b { pos = p', vel = v' }
-  else b
+limitPosition :: Rectangle -> Ball -> Ball
+limitPosition rect b = b { pos = Vector2 px' py', vel = Vector2 vx' vy' }
   where
-    wc = circlePos $ worldBoundary w
-    wr = circleRadius $ worldBoundary w
-    br = radius b
-    bp = pos b
+    r = radius b
+    Vector2 px py = pos b
+    Vector2 vx vy = vel b
 
-    tc  = wc - bp
-    tcn = normalize tc
+    (px', vx') = f px vx $ rectWidth rect
+    (py', vy') = f py vy $ rectHeight rect
 
-    d  = bp `dist` wc - wr + br
-    v' = mag (vel b) `mult` tcn
-    p' = bp + (d + br) `mult` tcn
+    f p v s | p < 0     = (r, -v)
+            | p + r > s = (s - r, -v)
+            | otherwise = (p, v)
 
 updateBall :: [Ball] -> Ball -> Ball
 updateBall objs obj = addVel obj (invMass obj `mult` repels)
@@ -65,8 +62,6 @@ render :: Backend a => Settings -> Size -> World -> a ()
 render set (w, h) world = do
   setColor $ getBgColor set
   fillRectangle zero (w, h)
-  setColor $ getFgColor set
-  strokeCircle (circleRadius $ worldBoundary world) (circlePos $ worldBoundary world)
   mapM_ f $ worldBalls world
 
   where
