@@ -3,7 +3,7 @@ module ForceGraph.Ball where
 import Control.Monad
 import Data.Vector2
 import ForceGraph.Time
-import Test.QuickCheck
+import Test.QuickCheck.Arbitrary
 
 type Mass     = Double
 type Charge   = Double

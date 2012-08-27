@@ -18,4 +18,4 @@ repel x y = f `mult` normalize (pos x - pos y)
 drag :: Ball -> Ball -> Vector2D
 drag x y = f `mult` normalize (pos y - pos x)
   where
-    f = distSquared (pos x) (pos y) * invMass x * invMass y / dragConst 
+    f = distSquared (pos x) (pos y) * invMass x * invMass y / dragConst
