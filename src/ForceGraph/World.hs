@@ -49,7 +49,7 @@ limitPosition rect b = b { pos = Vector2 px' py', vel = Vector2 vx' vy' }
     (px', vx') = f px vx $ rectWidth rect
     (py', vy') = f py vy $ rectHeight rect
 
-    f p v s | p < 0     = (r, -v)
+    f p v s | p - r < 0 = (r, -v)
             | p + r > s = (s - r, -v)
             | otherwise = (p, v)
 
