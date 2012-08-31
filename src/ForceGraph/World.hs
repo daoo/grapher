@@ -54,7 +54,7 @@ limitPosition rect b = b { pos = Vector2 px' py', vel = Vector2 vx' vy' }
             | otherwise = (p, v)
 
 repelAcc :: Time -> [Ball] -> Ball -> Ball
-repelAcc t objs obj = addVel obj ((t * mass obj) `mult` repels)
+repelAcc t objs obj = addVel obj ((t / mass obj) `mult` repels)
   where
     repels = sum $ map (repel obj) objs
 
