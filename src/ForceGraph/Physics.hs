@@ -7,7 +7,7 @@ import Math.Algebra
 type Force = Vector2D
 
 repelConst :: Double
-repelConst = 10.0
+repelConst = 1000.0
 
 -- F = k * c1 * c2 / r^2
 repel :: Ball -> Ball -> Force
