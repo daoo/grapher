@@ -27,7 +27,7 @@ showWorld = unlines . map show . worldBalls
 iteration :: Time -> World -> World
 iteration t w = w { worldBalls = map f (worldBalls w) }
   where
-    f = integrate t . limitSpeed . limitPosition (worldBoundary w) . updateBall (worldBalls w)
+    f = integrate t . limitSpeed . limitPosition (worldBoundary w) . repelAcc t (worldBalls w)
 
 mulVec :: Num a => Vector2 a -> Vector2 a -> Vector2 a
 mulVec (Vector2 ax ay) (Vector2 bx by) = Vector2 (ax * bx) (ay * by)
@@ -53,8 +53,8 @@ limitPosition rect b = b { pos = Vector2 px' py', vel = Vector2 vx' vy' }
             | p + r > s = (s - r, -v)
             | otherwise = (p, v)
 
-updateBall :: [Ball] -> Ball -> Ball
-updateBall objs obj = addVel obj (invMass obj `mult` repels)
+repelAcc :: Time -> [Ball] -> Ball -> Ball
+repelAcc t objs obj = addVel obj ((t * mass obj) `mult` repels)
   where
     repels = sum $ map (repel obj) objs
 

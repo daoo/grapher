@@ -15,7 +15,7 @@ data Ball = Ball
   { pos :: Point
   , vel :: Velocity
   , radius :: Radius
-  , invMass :: Mass
+  , mass :: Mass
   , charge :: Charge
   } deriving (Show, Eq)
 
