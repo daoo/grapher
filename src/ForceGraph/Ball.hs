@@ -2,14 +2,11 @@ module ForceGraph.Ball where
 
 import Control.Monad
 import Data.Vector2
+import ForceGraph.Physics
 import ForceGraph.Time
 import Test.QuickCheck.Arbitrary
 
-type Mass     = Double
-type Charge   = Double
-type Radius   = Double
-type Point    = Vector2D
-type Velocity = Vector2D
+type Radius = Double
 
 data Ball = Ball
   { pos :: Point
