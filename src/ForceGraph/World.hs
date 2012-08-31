@@ -70,7 +70,7 @@ limitPosition rect b = b { pos = Vector2 px' py', vel = Vector2 vx' vy' }
 repelAcc :: Time -> [Ball] -> Ball -> Ball
 repelAcc t objs obj = addVel obj ((t / mass obj) `mult` repels)
   where
-    repels = sum $ map (repel (f obj) . f) objs
+    repels = sum $ map (forceColumb (f obj) . f) objs
     f a = (pos a, charge a)
 
 render :: Backend a => Settings -> Size -> World -> a ()

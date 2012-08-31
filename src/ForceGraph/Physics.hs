@@ -13,8 +13,8 @@ repelConst :: Double
 repelConst = 1000.0
 
 -- F = k * c1 * c2 / r^2
-repel :: (Point, Charge) -> (Point, Charge) -> Force
-repel (pa, ca) (pb, cb) = f `mult` normalize (pa - pb)
+forceColumb :: (Point, Charge) -> (Point, Charge) -> Force
+forceColumb (pa, ca) (pb, cb) = f `mult` normalize (pa - pb)
   where
     f = (repelConst * ca * cb) `divZero` distSquared (pa) (pb)
 
