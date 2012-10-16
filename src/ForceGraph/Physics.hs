@@ -19,6 +19,11 @@ forceColumb (pa, ca) (pb, cb) = f `mult` normalize (pa - pb)
     f = (repelConst * ca * cb) `divZero` distSquared (pa) (pb)
 
 collision :: (Velocity, Mass) -> (Velocity, Mass) -> Velocity
-collision (va, ma) (vb, mb) = (1 / (ma + mb)) `mult` p
+collision (va, ma) (vb, mb) = (pm / (ma + mb)) `mult` pn
   where
     p = ma `mult` va + mb `mult` vb
+    pm = mag p
+    pn = normalize p
+
+maxDistance :: Double -> (Point, Velocity, Mass) -> (Point, Velocity, Mass) -> (Velocity, Velocity)
+maxDistance = undefined
