@@ -1,6 +1,6 @@
 module ForceGraph.Ball where
 
-import Control.Monad
+import Control.Applicative
 import Data.Vector2
 import ForceGraph.Physics
 import ForceGraph.Time
@@ -17,7 +17,7 @@ data Ball = Ball
   } deriving (Show, Eq)
 
 instance Arbitrary Ball where
-  arbitrary = liftM5 Ball arbitrary arbitrary arbitrary arbitrary arbitrary
+  arbitrary = Ball <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
 
   shrink (Ball p v r i c) =
     [Ball p' v' r i' c' | p' <- shrink p, v' <- shrink v, i' <- shrink i, c' <- shrink c]

@@ -16,7 +16,7 @@ timeInPicoSeconds = (\(TOD s p) -> s * ps + p) `fmap` getClockTime
 picoToSeconds :: Integer -> Double
 picoToSeconds = (/ ps) . fromInteger
 
-data Clock = Clock { clockRef :: IORef Integer }
+newtype Clock = Clock { clockRef :: IORef Integer }
 
 newClock :: IO Clock
 newClock = Clock `fmap` (timeInPicoSeconds >>= newIORef)

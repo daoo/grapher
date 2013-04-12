@@ -15,15 +15,19 @@ foldlAll :: (a -> a -> a) -> [a] -> [a]
 foldlAll f xs = map (\x -> foldl f x xs) xs
 
 mapCombinations :: (a -> a -> b) -> [a] -> [b]
-mapCombinations f xs = concatMap g xs
-  where g a = map (f a) xs
+mapCombinations f xs = concatMap ((`map` xs) . f) xs
 
 mapIndex :: (a -> a) -> Int -> [a] -> [a]
-mapIndex _ _ []       = []
-mapIndex f 0 (x : xs) = f x : xs
-mapIndex f i (x : xs) = x : mapIndex f (i - 1) xs
+mapIndex f i xs | i < 0 = undefined
+                | otherwise = go i xs
+  where
+    go _ []     = []
+    go 0 (y:ys) = f y : ys
+    go j (y:ys) = y : go (j - 1) ys
 
 times :: (a -> a) -> Int -> a -> a
-times f i x | i == 0    = x
-            | i < 0     = error "Negative times"
-            | otherwise = times f (i - 1) (f x)
+times f i x | i < 0     = undefined
+            | otherwise = go i x
+  where
+    go 0 y = y
+    go j y = go (j - 1) (f y)

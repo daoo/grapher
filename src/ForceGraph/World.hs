@@ -60,8 +60,8 @@ limitPosition rect b = b { pos = Vector2 px' py', vel = Vector2 vx' vy' }
     Vector2 px py = pos b
     Vector2 vx vy = vel b
 
-    (px', vx') = f px vx $ rectWidth rect
-    (py', vy') = f py vy $ rectHeight rect
+    (px', vx') = f px vx $ width rect
+    (py', vy') = f py vy $ height rect
 
     f p v s | p - r < 0 = (r, -v)
             | p + r > s = (s - r, -v)
