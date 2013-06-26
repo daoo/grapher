@@ -1,9 +1,9 @@
 module ForceGraph.Backend.Cairo where
 
 import Control.Arrow
-import Data.Vector2
 import ForceGraph.Backend.Backend
 import ForceGraph.World
+import Math.Vector2
 import qualified Graphics.Rendering.Cairo as Cairo
 import qualified Graphics.UI.Gtk as Gtk
 

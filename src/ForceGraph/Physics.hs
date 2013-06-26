@@ -1,7 +1,7 @@
 module ForceGraph.Physics where
 
-import Data.Vector2
 import Math.Algebra
+import Math.Vector2
 
 type Charge   = Double
 type Force    = Vector2D

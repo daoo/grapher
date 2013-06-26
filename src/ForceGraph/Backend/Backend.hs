@@ -1,6 +1,6 @@
 module ForceGraph.Backend.Backend where
 
-import Data.Vector2
+import Math.Vector2
 
 type Color = (Double, Double, Double)
 type Size  = (Double, Double)

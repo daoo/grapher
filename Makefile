@@ -1,30 +1,34 @@
-warnings = -Wall \
-	   -fwarn-incomplete-record-updates \
-	   -fwarn-monomorphism-restriction \
-	   -fwarn-tabs \
-	   -fwarn-unused-do-bind \
-	   -fno-warn-orphans \
-
-flags = -imath-lib/src:src -odir build -hidir build
-
-make_main = --make $(flags) $(warnings) -o build/main src/Main.hs
-
 build:
-	ghc -rtsopts $(make_main)
+	@cabal-dev build --ghc-options="-H64m -rtsopts"
+
+prof:
+	@cabal-dev build --ghc-options="-rtsopts -prof -fprof-auto -H64m"
 
 release:
-	ghc -O3 $(make_main)
+	@cabal-dev build --ghc-options="-fllvm -H64m -O2"
+
+install:
+	@cabal-dev install \
+		--reinstall \
+		--force-reinstalls
+
+conf:
+	@cabal-dev configure
+
+
+conf-tests:
+	@cabal-dev configure \
+		--enable-benchmarks \
+		--enable-tests
+
+test:
+	@cabal-dev test
 
 ghci:
-	ghci $(warnings) $(flags) tests/Tests.hs
+	@cabal-dev ghci
 
 clean:
-	rm -r build/*
-
-ctags:
-	echo ":ctags" | ghci $(flags) -v0 */*.hs
+	@cabal-dev clean --save-configure
 
 lint:
-	hlint src -c
-
-.PHONY: build clean ctags lint
+	@hlint src

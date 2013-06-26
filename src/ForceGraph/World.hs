@@ -1,13 +1,11 @@
 module ForceGraph.World where
 
 import Control.Applicative
-import Data.Vector2
 import ForceGraph.Backend.Backend
 import ForceGraph.Ball
 import ForceGraph.Extensions
-import ForceGraph.Physics
 import ForceGraph.Rectangle
-import ForceGraph.Time
+import Math.Vector2
 import Test.QuickCheck
 
 type Link = (Int, Int)
@@ -16,8 +14,13 @@ data World = World
   { worldBoundary :: Rectangle
   , worldBalls :: [Ball]
   , worldLinks :: [Link]
-  }
-  deriving Show
+  } deriving Show
+
+mapBalls :: ([Ball] -> [Ball]) -> World -> World
+mapBalls f w = w { worldBalls = f (worldBalls w) }
+
+setBoundary :: Rectangle -> World -> World
+setBoundary r w = w { worldBoundary = r }
 
 instance Arbitrary World where
   arbitrary = liftA3 World arbitrary arbitrary arbitrary
@@ -25,53 +28,19 @@ instance Arbitrary World where
 showWorld :: World -> String
 showWorld = unlines . map show . worldBalls
 
-iteration :: Time -> World -> World
-iteration t w = w { worldBalls = link (worldLinks w) $ map f (worldBalls w) }
-  where
-    f = integrate t
-      . limitSpeed
-      . limitPosition (worldBoundary w)
-      . repelAcc t (worldBalls w)
-
-link :: [Link] -> [Ball] -> [Ball]
-link = flip (foldr f)
-  where
-    f (i, j) balls = if pos a `dist` pos b > 200 then balls' else balls
-      where
-        a = balls !! i
-        b = balls !! j
-
-        v = collision (vel a, mass a) (vel b, mass b)
-
-        balls' = g i $ g j balls
-        g = mapIndex (`setVel` v)
-
-limitSpeed :: Ball -> Ball
-limitSpeed b = if mag (vel b) > maxSpeed
-  then setVel b $ maxSpeed `mult` normalize (vel b)
-  else b
-  where
-    maxSpeed = 1000
+iteration :: Double -> World -> World
+iteration t w = id
+  $ mapBalls (map $ limitPosition (worldBoundary w))
+  $ mapBalls (map $ integrate t)
+  $ w
 
 limitPosition :: Rectangle -> Ball -> Ball
-limitPosition rect b = b { pos = Vector2 px' py', vel = Vector2 vx' vy' }
+limitPosition rect b = b { pos = Vector2 px' py' }
   where
-    r = radius b
     Vector2 px py = pos b
-    Vector2 vx vy = vel b
 
-    (px', vx') = f px vx $ width rect
-    (py', vy') = f py vy $ height rect
-
-    f p v s | p - r < 0 = (r, -v)
-            | p + r > s = (s - r, -v)
-            | otherwise = (p, v)
-
-repelAcc :: Time -> [Ball] -> Ball -> Ball
-repelAcc t objs obj = addVel obj ((t / mass obj) `mult` repels)
-  where
-    repels = sum $ map (forceColumb (f obj) . f) objs
-    f a = (pos a, charge a)
+    px' = clamp 0 (width rect) px
+    py' = clamp 0 (height rect) py
 
 render :: Backend a => Settings -> Size -> World -> a ()
 render set (w, h) world = do

@@ -1,23 +1,27 @@
 module ForceGraph.Defaults where
 
-import Data.Vector2
 import ForceGraph.Ball
+import ForceGraph.Physics
 import ForceGraph.Rectangle
 import ForceGraph.World
+import Math.Vector2
+
+defaultBall :: Point -> Velocity -> Radius -> Mass -> Ball
+defaultBall p v r m = Ball { pos = p + v, pos' = p, radius = r, mass = m, charge = 100 }
 
 defaultWorld :: World
 defaultWorld = World
-  { worldBoundary = Rectangle 500 500
+  { worldBoundary = Rectangle 1920 1080
   , worldBalls =
-    [ Ball { pos = Vector2 250 250, vel = zero, radius = 20, mass = 10, charge = 100 }
-    , Ball { pos = Vector2 150 200, vel = zero, radius = 10, mass = 1, charge = 100 }
-    , Ball { pos = Vector2 200 250, vel = zero, radius = 10, mass = 1, charge = 100 }
-    , Ball { pos = Vector2 100 540, vel = zero, radius = 10, mass = 1, charge = 100 }
-    , Ball { pos = Vector2 500 540, vel = zero, radius = 10, mass = 1, charge = 100 }
-    , Ball { pos = Vector2 510 570, vel = zero, radius = 10, mass = 1, charge = 100 }
-    , Ball { pos = Vector2 520 540, vel = zero, radius = 10, mass = 1, charge = 100 }
-    , Ball { pos = Vector2 530 530, vel = zero, radius = 10, mass = 1, charge = 100 }
-    , Ball { pos = Vector2 540 520, vel = zero, radius = 10, mass = 1, charge = 100 }
+    [ defaultBall (Vector2 250 250) zero 20 10
+    , defaultBall (Vector2 150 200) (Vector2 1 0) 10 1
+    , defaultBall (Vector2 200 250) zero 10 1
+    , defaultBall (Vector2 100 540) zero 10 1
+    , defaultBall (Vector2 500 540) zero 10 1
+    , defaultBall (Vector2 510 570) zero 10 1
+    , defaultBall (Vector2 520 540) zero 10 1
+    , defaultBall (Vector2 530 530) zero 10 1
+    , defaultBall (Vector2 540 520) zero 10 1
     ]
   , worldLinks =
     [ (0, 1)

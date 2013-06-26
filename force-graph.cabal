@@ -1,0 +1,14 @@
+name:          force-graph
+version:       0.1.0.0
+synopsis:      Render graphs using verlet integration
+homepage:      github.com/daoo/force-graph
+license:       PublicDomain
+author:        daoo
+build-type:    Simple
+cabal-version: >=1.8
+
+executable force-graph
+  hs-source-dirs: src
+  main-is: Main.hs
+  build-depends: base, gtk, cairo, QuickCheck, time, transformers
+  ghc-options: -Wall -fno-warn-orphans
