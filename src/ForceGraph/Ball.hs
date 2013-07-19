@@ -1,11 +1,11 @@
 module ForceGraph.Ball
   ( Ball(..)
   , position
+  , velocity
   , integrate
-  , limitRect
+  , setForce
   ) where
 
-import ForceGraph.Rectangle
 import ForceGraph.Types
 import qualified ForceGraph.Particle as P
 
@@ -22,8 +22,11 @@ mapParticle f b = b { particle = f (particle b) }
 position :: Ball -> Point
 position = P.x1 . particle
 
+velocity :: Ball -> Velocity
+velocity b = P.x2 p - P.x1 p where p = particle b
+
 integrate :: Double -> Ball -> Ball
 integrate = mapParticle . P.integrate
 
-limitRect :: Rectangle -> Ball -> Ball
-limitRect = mapParticle . P.limitRect
+setForce :: Force -> Ball -> Ball
+setForce f b = mapParticle (\p -> p { P.accel = f }) b

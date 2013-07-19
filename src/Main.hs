@@ -13,7 +13,7 @@ main :: IO ()
 main = simulate
   (InWindow "Force Graph" (800, 600) (0, 0))
   white
-  100
+  60
   defaultWorld
   render
   simul
