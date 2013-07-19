@@ -2,48 +2,37 @@
 
 module Main where
 
-import Control.Monad.IO.Class
-import Data.IORef
-import ForceGraph.Backend.Cairo
+import Math.Vector2
+import Data.Monoid
+import ForceGraph.Ball
 import ForceGraph.Defaults
-import ForceGraph.Rectangle
-import ForceGraph.Time
 import ForceGraph.World
-import qualified Graphics.UI.Gtk as Gtk
+import Graphics.Gloss
 
 main :: IO ()
-main = do
-  _ <- Gtk.initGUI
+main = simulate
+  (InWindow "Force Graph" (800, 600) (0, 0))
+  white
+  100
+  defaultWorld
+  render
+  simul
 
-  w <- Gtk.windowNew
-  c <- Gtk.drawingAreaNew
-
-  Gtk.set w [ Gtk.windowTitle Gtk.:= "Graph"
-            , Gtk.containerChild Gtk.:= c
-            ]
-
-  clock <- newClock
-  worldRef <- newIORef defaultWorld
-
-  _ <- w `Gtk.on` Gtk.deleteEvent $ liftIO Gtk.mainQuit >> return False
-
-  _ <- w `Gtk.on` Gtk.configureEvent $ do
-    size <- Gtk.eventSize
-    liftIO (updateSize worldRef size)
-    return False
-
-  _ <- Gtk.timeoutAdd (timeout c worldRef clock) 10
-
-  Gtk.widgetShowAll w
-  Gtk.mainGUI
+render :: World -> Picture
+render world =
+  (mconcat $ map ball balls) <>
+  (mconcat $ map (\(i, j) -> line [p i, p j]) links) <>
+  (color white blank)
 
   where
-    timeout drawingArea worldRef clock = do
-      delta <- clockDelta clock
-      modifyIORef worldRef (iteration delta)
-      readIORef worldRef >>= drawWorld drawingArea
-      return True
+    balls = worldBalls world
+    links = worldLinks world
 
-updateSize :: IORef World -> (Int, Int) -> IO ()
-updateSize worldRef (w, h) =
-  modifyIORef worldRef (setBoundary $ Rectangle (realToFrac w) (realToFrac h))
+    p i = t $ position $ balls !! i
+
+    t (Vector2 x y) = (realToFrac x, realToFrac y)
+
+    ball b = color red $ uncurry translate (t $ position b) $ circleSolid (realToFrac $ radius b)
+
+simul :: t -> Float -> World -> World
+simul _ t w = iteration (realToFrac t) w

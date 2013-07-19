@@ -1,21 +1,22 @@
 module ForceGraph.Defaults where
 
 import ForceGraph.Ball
-import ForceGraph.Physics
+import ForceGraph.Particle
 import ForceGraph.Rectangle
+import ForceGraph.Types
 import ForceGraph.World
 import Math.Vector2
 
 defaultBall :: Point -> Velocity -> Radius -> Mass -> Ball
-defaultBall p v r m = Ball { pos = p + v, pos' = p, radius = r, mass = m, charge = 100 }
+defaultBall p v r m = Ball (Particle (p + v) p zero) r m 100
 
 defaultWorld :: World
 defaultWorld = World
   { worldBoundary = Rectangle 1920 1080
   , worldBalls =
-    [ defaultBall (Vector2 250 250) zero 20 10
+    [ defaultBall (Vector2 0 0) zero 20 10
     , defaultBall (Vector2 150 200) (Vector2 1 0) 10 1
-    , defaultBall (Vector2 200 250) zero 10 1
+    , defaultBall (Vector2 200 250) (Vector2 0 1) 10 1
     , defaultBall (Vector2 100 540) zero 10 1
     , defaultBall (Vector2 500 540) zero 10 1
     , defaultBall (Vector2 510 570) zero 10 1

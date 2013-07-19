@@ -1,13 +1,8 @@
 module ForceGraph.Physics where
 
+import ForceGraph.Types
 import Math.Algebra
 import Math.Vector2
-
-type Charge   = Double
-type Force    = Vector2D
-type Mass     = Double
-type Point    = Vector2D
-type Velocity = Vector2D
 
 repelConst :: Double
 repelConst = 1000.0

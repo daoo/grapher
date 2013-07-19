@@ -10,5 +10,5 @@ cabal-version: >=1.8
 executable force-graph
   hs-source-dirs: src
   main-is: Main.hs
-  build-depends: base, gtk, cairo, QuickCheck, time, transformers
+  build-depends: base, gloss, QuickCheck, transformers
   ghc-options: -Wall -fno-warn-orphans
