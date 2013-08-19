@@ -2,37 +2,48 @@
 
 module Main where
 
-import Math.Vector2
 import Data.Monoid
 import ForceGraph.Ball
 import ForceGraph.Defaults
+import ForceGraph.Particle
 import ForceGraph.World
-import Graphics.Gloss
+import Math.Vector2
+import qualified Graphics.Gloss as G
 
 main :: IO ()
-main = simulate
-  (InWindow "Force Graph" (800, 600) (0, 0))
-  white
+main = G.simulate
+  (G.InWindow "Force Graph" (800, 600) (0, 0))
+  G.white
   60
   defaultWorld
   render
-  simul
+  (const simul)
 
-render :: World -> Picture
+render :: World -> G.Picture
 render world =
-  (mconcat $ map ball balls) <>
-  (mconcat $ map (\(i, j) -> line [p i, p j]) links) <>
-  (color white blank)
+  mconcat (map ball balls) <>
+  mconcat (map (\(i, j) -> line (index i) (index j)) links)
 
   where
     balls = worldBalls world
     links = worldLinks world
 
-    p i = t $ position $ balls !! i
-
     t (Vector2 x y) = (realToFrac x, realToFrac y)
 
-    ball b = color red $ uncurry translate (t $ position b) $ circleSolid (realToFrac $ radius b)
+    line x y = G.line [t x, t y]
+    circle r = G.circleSolid (realToFrac r)
 
-simul :: t -> Float -> World -> World
-simul _ t w = iteration (realToFrac t) w
+    index i = position $ balls !! i
+
+    arrow p d = line p (p + d)
+
+    ball b = uncurry G.translate (t $ position b)
+           $ f <> a <> body
+      where
+        body = G.color G.red  $ circle (radius b)
+
+        a = G.color G.blue $ arrow zero (accel (particle b))
+        f = G.color G.green $ arrow zero (forces world b)
+
+simul :: Float -> World -> World
+simul = iteration . realToFrac

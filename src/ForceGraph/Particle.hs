@@ -12,4 +12,4 @@ data Particle = Particle
 integrate :: Double -> Particle -> Particle
 integrate t p = Particle next (x1 p) (accel p)
   where
-    next = x1 p + (x1 p - x2 p) + (t * t) `mult` accel p
+    next = x1 p + (x1 p - x2 p) + (t * t) .* accel p

@@ -1,6 +1,7 @@
 module ForceGraph.World where
 
 import ForceGraph.Ball
+import ForceGraph.Extensions
 import ForceGraph.Physics
 import ForceGraph.Types
 import Math.Vector2
@@ -17,18 +18,26 @@ showWorld :: World -> String
 showWorld = unlines . map show . worldBalls
 
 iteration :: Double -> World -> World
-iteration t w = id
-  $ mapBalls (map $ forces w)
-  $ mapBalls (map $ integrate t)
-  $ w
+iteration t w = mapBalls (map $ (\b -> setForce (forces w b) b))
+              $ mapBalls (map $ integrate t) w
 
-forces :: World -> Ball -> Ball
-forces w b = setForce (repell (worldBalls w) b + centerPull b) b
+forces :: World -> Ball -> Force
+forces w b =
+  airDrag b +
+  maxForce (repell (worldBalls w) b)
 
 repell :: [Ball] -> Ball -> Force
-repell bs b = sum $ map (force 1 (f b) . f) bs
+repell bs b = sum $ map (\y -> force 1000 (f y) (f b)) bs
   where
     f x = (position x, charge x)
 
-centerPull :: Ball -> Force
-centerPull b = force 20 (zero, 1) (position b, mass b)
+maxForce :: Force -> Force
+maxForce (Vector2 x y) = Vector2 (f x) (f y)
+  where f = clamp (-200) 200
+
+airDrag :: Ball -> Force
+airDrag b = m .* d
+  where
+    m = magSquared v
+    d = normalize v
+    v = velocity b

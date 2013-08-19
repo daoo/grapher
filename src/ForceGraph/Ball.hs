@@ -6,6 +6,7 @@ module ForceGraph.Ball
   , setForce
   ) where
 
+import ForceGraph.Physics
 import ForceGraph.Types
 import qualified ForceGraph.Particle as P
 
@@ -29,4 +30,4 @@ integrate :: Double -> Ball -> Ball
 integrate = mapParticle . P.integrate
 
 setForce :: Force -> Ball -> Ball
-setForce f b = mapParticle (\p -> p { P.accel = f }) b
+setForce f b = mapParticle (\p -> p { P.accel = acceleration (mass b) f }) b
