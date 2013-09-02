@@ -39,7 +39,7 @@ render world =
       where
         q = p + d
         l = mag d
-        s = l * 0.10
+        s = l * 0.03
 
         d'  = s .* normalize d
         d'' = orthogonal d'
