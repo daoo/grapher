@@ -63,7 +63,7 @@ invert :: Num a => Vector2 a -> Vector2 a
 invert (Vector2 x y) = Vector2 (negate x) (negate y)
 
 orthogonal :: Num a => Vector2 a -> Vector2 a
-orthogonal (Vector2 x y) = Vector2 (negate x) y
+orthogonal (Vector2 x y) = Vector2 (negate y) x
 
 normalize :: (Ord a, Floating a) => Vector2 a -> Vector2 a
 normalize v =
