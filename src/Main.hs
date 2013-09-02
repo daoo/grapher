@@ -22,7 +22,7 @@ main = G.simulate
 render :: World -> G.Picture
 render world =
   mconcat (map ball balls) <>
-  mconcat (map (\(i, j) -> line (index i) (index j)) links)
+  mconcat (map (\(i, j) -> line [index i, index j]) links)
 
   where
     balls = worldBalls world
@@ -30,12 +30,23 @@ render world =
 
     t (Vector2 x y) = (realToFrac x, realToFrac y)
 
-    line x y = G.line [t x, t y]
+    line     = G.line . map t
     circle r = G.circleSolid (realToFrac r)
 
     index i = position $ balls !! i
 
-    arrow p d = line p (p + d)
+    arrow p d = line [p, q] <> line [a, b, c, a]
+      where
+        q = p + d
+        l = mag d
+        s = l * 0.10
+
+        d'  = s .* normalize d
+        d'' = orthogonal d'
+
+        a = q + d'
+        b = q + d''
+        c = q - d''
 
     ball b = uncurry G.translate (t $ position b)
            $ f <> a <> body
