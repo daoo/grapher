@@ -18,8 +18,8 @@ showWorld :: World -> String
 showWorld = unlines . map show . worldBalls
 
 iteration :: Double -> World -> World
-iteration t w = mapBalls (map $ (\b -> setForce (forces w b) b))
-              $ mapBalls (map $ integrate t) w
+iteration t w = mapBalls (map (\b -> setForce (forces w b) b))
+              $ mapBalls (map (integrate t)) w
 
 forces :: World -> Ball -> Force
 forces w b =
