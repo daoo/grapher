@@ -6,6 +6,9 @@ import Test.QuickCheck.Arbitrary
 data Vector2 a = Vector2 a a
   deriving (Eq, Show)
 
+vmap :: (a -> b) -> Vector2 a -> Vector2 b
+vmap f (Vector2 x y) = Vector2 (f x) (f y)
+
 showVector2 :: Show a => Vector2 a -> String
 showVector2 (Vector2 x y) = "(" ++ show x ++ ", " ++ show y ++ ")"
 

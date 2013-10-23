@@ -32,8 +32,7 @@ repell bs b = sum $ map (\y -> force 1000 (f y) (f b)) bs
     f x = (position x, charge x)
 
 maxForce :: Force -> Force
-maxForce (Vector2 x y) = Vector2 (f x) (f y)
-  where f = clamp (-200) 200
+maxForce = vmap (clamp (-200) 200)
 
 airDrag :: Ball -> Force
 airDrag b = m .* d

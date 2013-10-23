@@ -10,6 +10,6 @@ data Particle = Particle
   } deriving Show
 
 integrate :: Double -> Particle -> Particle
-integrate t p = Particle next (x1 p) (accel p)
+integrate t p = p { x1 = next, x2 = x1 p }
   where
     next = x1 p + (x1 p - x2 p) + (t * t) .* accel p
