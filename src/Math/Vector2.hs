@@ -57,7 +57,8 @@ dist :: Floating a => Vector2 a -> Vector2 a -> a
 dist u v = sqrt $ distSquared u v
 
 distSquared :: Num a => Vector2 a -> Vector2 a -> a
-distSquared (Vector2 x1 y1) (Vector2 x2 y2) = square (x2 - x1) + square (y2 - y1)
+distSquared (Vector2 x1 y1) (Vector2 x2 y2) =
+  square (x2 - x1) + square (y2 - y1)
 
 invert :: Num a => Vector2 a -> Vector2 a
 invert (Vector2 x y) = Vector2 (negate x) (negate y)
