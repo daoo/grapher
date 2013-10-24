@@ -5,6 +5,9 @@ import Math.Algebra
 data Vector2 a = Vector2 a a
   deriving (Eq, Show)
 
+(.+) :: a -> a -> Vector2 a
+(.+) = Vector2
+
 vmap :: (a -> b) -> Vector2 a -> Vector2 b
 vmap f (Vector2 x y) = Vector2 (f x) (f y)
 

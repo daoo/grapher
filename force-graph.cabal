@@ -30,4 +30,5 @@ executable force-graph
 test-suite force-graph-tests
   type: exitcode-stdio-1.0
   build-depends: base, force-graph, QuickCheck, test-framework, test-framework-quickcheck2
-  main-is: tests/Tests.hs
+  main-is: Main.hs
+  hs-source-dirs: tests
