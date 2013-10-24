@@ -21,8 +21,8 @@ main = G.simulate
 
 render :: World -> G.Picture
 render world =
-  mconcat (map ball balls) <>
-  mconcat (map (\(i, j) -> line [index i, index j]) links)
+  mconcat (map (\(i, j) -> line [index i, index j]) links) <>
+  mconcat (map ball balls)
 
   where
     balls = worldBalls world
