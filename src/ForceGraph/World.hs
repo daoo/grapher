@@ -18,12 +18,20 @@ showWorld :: World -> String
 showWorld = unlines . map show . worldBalls
 
 iteration :: Double -> World -> World
-iteration delta world = mapBalls (map (\ball -> setForce (forces world ball) ball))
-                      $ mapBalls (map (integrate delta)) world
+iteration delta world = id
+                      $ mapBalls (map (integrate delta))
+                      $ mapBalls (map (\ball -> setForce (forces world ball) ball))
+                      $ world
 
 forces :: World -> Ball -> Force
 forces world ball = maxForce $
-  repell (worldBalls world) ball
+  repell (worldBalls world) ball +
+  center ball
+
+center :: Ball -> Force
+center ball = negate p ./ 10
+  where
+    p = position ball
 
 repell :: [Ball] -> Ball -> Force
 repell balls ball = sum $ map (\y -> force 1000 (f y) (f ball)) balls
@@ -32,6 +40,3 @@ repell balls ball = sum $ map (\y -> force 1000 (f y) (f ball)) balls
 
 maxForce :: Force -> Force
 maxForce =  vmap (clamp (-200) 200)
-
-airDrag :: Ball -> Force
-airDrag _ = zero
