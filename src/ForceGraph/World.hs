@@ -1,9 +1,9 @@
 module ForceGraph.World where
 
 import ForceGraph.Ball
-import ForceGraph.Extensions
 import ForceGraph.Physics
 import ForceGraph.Types
+import ForceGraph.Utility
 import Math.Vector2
 
 data World = World

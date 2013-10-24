@@ -3,7 +3,6 @@ module Main (main) where
 import Control.Applicative
 import ForceGraph.Ball
 import ForceGraph.Defaults
-import ForceGraph.Extensions
 import ForceGraph.Particle
 import ForceGraph.Physics
 import ForceGraph.Utility
