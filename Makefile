@@ -9,8 +9,8 @@ release:
 
 init:
 	@cabal sandbox init
-	@cabal install --only-dependencies
-	@cabal configure
+	@cabal install --enable-tests --only-dependencies
+	@cabal configure --enable-tests
 
 test:
 	@cabal test

@@ -1,7 +1,6 @@
 module Math.Vector2 where
 
 import Math.Algebra
-import Test.QuickCheck.Arbitrary
 
 data Vector2 a = Vector2 a a
   deriving (Eq, Show)
@@ -17,16 +16,6 @@ type Vector2D = Vector2 Double
 
 zero :: Num a => Vector2 a
 zero = Vector2 0 0
-
-instance Arbitrary a => Arbitrary (Vector2 a) where
-  arbitrary = do
-    x <- arbitrary
-    y <- arbitrary
-    return $ Vector2 x y
-
-  shrink (Vector2 x y) = [Vector2 x' y' | x' <- shrink x, y' <- shrink y]
-                      ++ [Vector2 x y' | y' <- shrink y]
-                      ++ [Vector2 x' y | x' <- shrink x]
 
 instance Num a => Num (Vector2 a) where
   Vector2 x1 y1 + Vector2 x2 y2 = Vector2 (x1 + x2) (y1 + y2)

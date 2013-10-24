@@ -7,8 +7,27 @@ author:        daoo
 build-type:    Simple
 cabal-version: >=1.8
 
-executable force-graph
+library
+  exposed-modules:
+    ForceGraph.Ball
+    ForceGraph.Defaults
+    ForceGraph.Extensions
+    ForceGraph.Particle
+    ForceGraph.Physics
+    ForceGraph.Types
+    ForceGraph.Utility
+    ForceGraph.World
+    Math.Algebra
+    Math.Vector2
   hs-source-dirs: src
-  main-is: Main.hs
-  build-depends: base, gloss, QuickCheck, transformers
+  build-depends: base
+
+executable force-graph
+  main-is: src/Main.hs
+  build-depends: base, force-graph, gloss
   ghc-options: -Wall -fno-warn-orphans
+
+test-suite force-graph-tests
+  type: exitcode-stdio-1.0
+  build-depends: base, force-graph, QuickCheck, test-framework, test-framework-quickcheck2
+  main-is: tests/Tests.hs
