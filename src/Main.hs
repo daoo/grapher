@@ -47,11 +47,11 @@ render world =
         c = q - d''
 
     ball b = uncurry G.translate (t $ position b)
-           $ f <> a <> body
+           $ body <> f <> a
       where
-        body = G.color G.red  $ circle (radius b)
+        body = G.color G.red $ circle (radius b)
 
-        a = G.color G.blue $ arrow zero (accel (particle b))
+        a = G.color G.blue  $ arrow zero (accel (particle b))
         f = G.color G.green $ arrow zero (forces world b)
 
 simul :: Float -> World -> World
