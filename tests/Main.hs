@@ -4,7 +4,6 @@ import Control.Applicative
 import ForceGraph.Ball
 import ForceGraph.Defaults
 import ForceGraph.Particle
-import ForceGraph.Physics
 import ForceGraph.Utility
 import ForceGraph.World
 import Math.Vector2

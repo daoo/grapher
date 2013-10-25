@@ -12,7 +12,6 @@ library
     ForceGraph.Ball
     ForceGraph.Defaults
     ForceGraph.Particle
-    ForceGraph.Physics
     ForceGraph.Types
     ForceGraph.Utility
     ForceGraph.World
