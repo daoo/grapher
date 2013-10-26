@@ -24,8 +24,12 @@ iteration delta world =
 
 forces :: World -> Ball -> Force
 forces world ball =
-  maxForce 200 (repell (worldBalls world) ball) +
-  maxForce 100 (center ball)
+  airDrag ball +
+  repell (worldBalls world) ball +
+  maxForce 1000 (center ball)
+
+airDrag :: Ball -> Force
+airDrag ball = negate (radius ball .* velocity ball ./ 10)
 
 center :: Ball -> Force
 center ball = negate p
@@ -33,7 +37,7 @@ center ball = negate p
     p = position ball
 
 repell :: [Ball] -> Ball -> Force
-repell balls ball = sum $ map (\y -> force 100 (f y) (f ball)) balls
+repell balls ball = sum $ map (\y -> force (-1000) (f y) (f ball)) balls
   where
     f x = (position x, charge x)
 

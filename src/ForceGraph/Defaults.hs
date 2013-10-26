@@ -20,9 +20,9 @@ defaultBall p v r = Ball
 defaultWorld :: World
 defaultWorld = World
   { worldBalls =
-    [ Ball (Particle zero zero zero) 15 10000000 (-100)
-    , defaultBall (Vector2 150 200) (Vector2 1 0) 10
-    , defaultBall (Vector2 200 250) (Vector2 0 1) 10
+    [ Ball (Particle zero zero zero) 15 10000000 10
+    , defaultBall (Vector2 150 200) zero 10
+    , defaultBall (Vector2 200 250) zero 10
     , defaultBall (Vector2 100 540) zero 10
     , defaultBall (Vector2 500 540) zero 10
     , defaultBall (Vector2 510 570) zero 10
