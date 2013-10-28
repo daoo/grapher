@@ -43,7 +43,7 @@ floatEq :: (Fractional f, Ord f) => f -> f -> Bool
 floatEq a b = abs (a - b) < 0.0001
 
 internalForces :: [Ball] -> [Vector2 Double]
-internalForces balls = map (repell balls) balls
+internalForces balls = concatMap (\ball -> map (repell ball) balls) balls
 
 propInternalForces :: NonEmptyList Ball -> Bool
 propInternalForces (NonEmpty xs) =

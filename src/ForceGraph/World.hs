@@ -26,14 +26,14 @@ showWorld = unlines . map show . worldBalls
 iteration :: Double -> World -> World
 iteration delta world =
   mapBalls (map $ integrate delta) $
-  mapBalls (map $ \ball -> setForce (sum $ forces world ball) ball) world
+  mapBalls (map $ \ball -> setForce (sum $ forces (worldBalls world) [] ball) ball) world
 
-forces :: World -> Ball -> [Force]
-forces world ball =
+forces :: [Ball] -> [Ball] -> Ball -> [Force]
+forces br bs ball =
   [ airDrag ball
-  , repell (worldBalls world) ball
   , center ball
   ]
+  ++ map (repell ball) br
 
 airDrag :: Ball -> Force
 airDrag ball = negate (2 * radius ball .* velocity ball)
@@ -43,8 +43,8 @@ center ball = negate p
   where
     p = position ball
 
-repell :: [Ball] -> Ball -> Force
-repell balls ball = sum $ map (\y -> interaction repellConstant (f y) (f ball)) balls
+repell :: Ball -> Ball -> Force
+repell this other = interaction repellConstant (f other) (f this)
   where
     f x = (position x, charge x)
 
@@ -63,8 +63,14 @@ hookes k p1 p2 = (k * d) .* n
     d = dist p1 p2
 
 -- |Calculate the force a particle exerts on another particle.
+-- The force (for a positive constant) will be directed from point 2 towards
+-- point 1.
+--
 -- Based on Coulombs and Newtons laws.
-interaction :: Double -> (Point, Double) -> (Point, Double) -> Force
+interaction :: Double          -- ^ Constant factor
+            -> (Point, Double) -- ^ Point 1
+            -> (Point, Double) -- ^ Point 2
+            -> Force
 interaction c (p1, v1) (p2, v2) = f .* n
   where
     f = (c * v1 * v2) `divZero` dist p1 p2
