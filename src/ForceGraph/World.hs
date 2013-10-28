@@ -54,6 +54,14 @@ maxForce c f | m > c     = c .* normalize f
   where
     m = mag f
 
+-- |Calculate the spring attraction force from one point to another.
+-- Based on Hooke's law
+hookes :: Double -> Point -> Point -> Force
+hookes k p1 p2 = (k * d) .* n
+  where
+    n = normalize (p1 - p2)
+    d = dist p1 p2
+
 -- |Calculate the force a particle exerts on another particle.
 -- Based on Coulombs and Newtons laws.
 interaction :: Double -> (Point, Double) -> (Point, Double) -> Force
