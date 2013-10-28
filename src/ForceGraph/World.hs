@@ -6,6 +6,12 @@ import ForceGraph.Utility
 import Math.Algebra
 import Math.Vector2
 
+repellConstant :: Double
+repellConstant = -10000
+
+hooksConstant :: Double
+hooksConstant = 100
+
 data World = World
   { worldBalls :: [Ball]
   , worldLinks :: [Link]
@@ -38,7 +44,7 @@ center ball = negate p
     p = position ball
 
 repell :: [Ball] -> Ball -> Force
-repell balls ball = sum $ map (\y -> force (-10000) (f y) (f ball)) balls
+repell balls ball = sum $ map (\y -> interaction repellConstant (f y) (f ball)) balls
   where
     f x = (position x, charge x)
 
@@ -48,8 +54,10 @@ maxForce c f | m > c     = c .* normalize f
   where
     m = mag f
 
-force :: Double -> (Point, Double) -> (Point, Double) -> Force
-force c (p1, v1) (p2, v2) = f .* n
+-- |Calculate the force a particle exerts on another particle.
+-- Based on Coulombs and Newtons laws.
+interaction :: Double -> (Point, Double) -> (Point, Double) -> Force
+interaction c (p1, v1) (p2, v2) = f .* n
   where
     f = (c * v1 * v2) `divZero` dist p1 p2
     n = normalize (p1 - p2)
