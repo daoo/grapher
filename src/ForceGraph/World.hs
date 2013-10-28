@@ -7,7 +7,7 @@ import Math.Algebra
 import Math.Vector2
 
 repellConstant, springConstant, airDragConstant :: Double
-repellConstant  = -10000
+repellConstant  = -1000
 springConstant  = 1
 airDragConstant = 3
 
