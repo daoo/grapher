@@ -29,6 +29,8 @@ defaultWorld = World
     , defaultBall (Vector2 520 540) zero 10
     , defaultBall (Vector2 530 530) zero 10
     , defaultBall (Vector2 540 520) zero 10
+    , defaultBall (Vector2 300 300) zero 10
+    , defaultBall (Vector2 600 520) zero 10
     ]
   , worldLinks =
     [ (0, 1)
@@ -38,6 +40,8 @@ defaultWorld = World
     , (1, 3)
     , (3, 4)
     , (4, 5)
+    , (4, 9)
+    , (4, 10)
     , (5, 6)
     ]
   }
