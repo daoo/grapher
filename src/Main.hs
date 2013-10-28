@@ -45,9 +45,12 @@ render world =
         b = q + d''
         c = q - d''
 
-    ball b = uncurry G.translate (t $ position b) $ body <> f <> a
+    ball b = uncurry G.translate (t $ position b) $ body
+          <> mconcat (zipWith f colors (forces world b))
+          <> f G.magenta (accel (particle b))
       where
         body = G.color G.red $ circle (radius b)
 
-        a = G.color G.blue  $ arrow zero (accel (particle b))
-        f = G.color G.green $ arrow zero (forces world b)
+        f c v = G.color c $ arrow zero v
+
+        colors = [G.yellow, G.green, G.blue]

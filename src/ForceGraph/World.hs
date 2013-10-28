@@ -20,13 +20,14 @@ showWorld = unlines . map show . worldBalls
 iteration :: Double -> World -> World
 iteration delta world =
   mapBalls (map $ integrate delta) $
-  mapBalls (map $ \ball -> setForce (forces world ball) ball) world
+  mapBalls (map $ \ball -> setForce (sum $ forces world ball) ball) world
 
-forces :: World -> Ball -> Force
+forces :: World -> Ball -> [Force]
 forces world ball =
-  airDrag ball +
-  repell (worldBalls world) ball +
-  maxForce 1000 (center ball)
+  [ airDrag ball
+  , repell (worldBalls world) ball
+  , center ball
+  ]
 
 airDrag :: Ball -> Force
 airDrag ball = negate (radius ball .* velocity ball ./ 10)
