@@ -24,7 +24,7 @@ position :: Ball -> Point
 position = P.x1 . particle
 
 velocity :: Ball -> Velocity
-velocity b = P.x2 p - P.x1 p where p = particle b
+velocity b = P.x1 p - P.x2 p where p = particle b
 
 integrate :: Double -> Ball -> Ball
 integrate = mapParticle . P.integrate
