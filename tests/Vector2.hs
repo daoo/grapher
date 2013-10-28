@@ -14,7 +14,7 @@ floatEq :: (Fractional f, Ord f) => f -> f -> Bool
 floatEq a b = abs (a - b) < 0.0001
 
 vector2Eq :: (Fractional f, Ord f) => Vector2 f -> Vector2 f -> Bool
-vector2Eq a b = magSquared (a - b) < 0.0001
+vector2Eq a b = mag2 (a - b) < 0.0001
 
 instance Arbitrary a => Arbitrary (Vector2 a) where
   arbitrary = Vector2 <$> arbitrary <*> arbitrary

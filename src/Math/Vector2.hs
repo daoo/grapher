@@ -43,16 +43,16 @@ dot :: Num a => Vector2 a -> Vector2 a -> a
 dot (Vector2 x1 y1) (Vector2 x2 y2) = (x1 * x2) + (y1 * y2)
 
 mag :: Floating a => Vector2 a -> a
-mag = sqrt . magSquared
+mag = sqrt . mag2
 
-magSquared :: Num a => Vector2 a -> a
-magSquared (Vector2 x y) = x * x + y * y
+mag2 :: Num a => Vector2 a -> a
+mag2 (Vector2 x y) = x * x + y * y
 
 dist :: Floating a => Vector2 a -> Vector2 a -> a
-dist u v = sqrt $ distSquared u v
+dist u v = sqrt $ dist2 u v
 
-distSquared :: Num a => Vector2 a -> Vector2 a -> a
-distSquared (Vector2 x1 y1) (Vector2 x2 y2) =
+dist2 :: Num a => Vector2 a -> Vector2 a -> a
+dist2 (Vector2 x1 y1) (Vector2 x2 y2) =
   square (x2 - x1) + square (y2 - y1)
 
 invert :: Num a => Vector2 a -> Vector2 a
@@ -63,7 +63,7 @@ orthogonal (Vector2 x y) = Vector2 (negate y) x
 
 normalize :: (Ord a, Floating a) => Vector2 a -> Vector2 a
 normalize v =
-  let m = magSquared v
+  let m = mag2 v
     in if m > 0
       then v ./ sqrt m
       else v
