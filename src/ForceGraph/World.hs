@@ -30,7 +30,7 @@ forces world ball =
   ]
 
 airDrag :: Ball -> Force
-airDrag ball = negate (radius ball .* velocity ball ./ 10)
+airDrag ball = negate (2 * radius ball .* velocity ball)
 
 center :: Ball -> Force
 center ball = negate p
@@ -38,7 +38,7 @@ center ball = negate p
     p = position ball
 
 repell :: [Ball] -> Ball -> Force
-repell balls ball = sum $ map (\y -> force (-1000) (f y) (f ball)) balls
+repell balls ball = sum $ map (\y -> force (-10000) (f y) (f ball)) balls
   where
     f x = (position x, charge x)
 
