@@ -42,10 +42,7 @@ update world !i ball = setForce (sum $ forces balls linked ball) ball
                        | otherwise = help xs
 
 forces :: [Ball] -> [Ball] -> Ball -> [Force]
-forces br bs ball =
-  [ airDrag ball
-  , center ball
-  ]
+forces br bs ball = [ airDrag ball, center ball ]
   ++ map (repell ball) br
   ++ map (attract ball) bs
 
