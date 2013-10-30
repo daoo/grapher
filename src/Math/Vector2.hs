@@ -2,7 +2,7 @@ module Math.Vector2 where
 
 import Math.Algebra
 
-data Vector2 a = Vector2 a a
+data Vector2 a = Vector2 !a !a
   deriving (Eq, Show)
 
 (.+) :: a -> a -> Vector2 a

@@ -1,12 +1,15 @@
-module ForceGraph.Particle where
+module ForceGraph.Particle
+  ( Particle(..)
+  , integrate
+  ) where
 
 import ForceGraph.Types
 import Math.Vector2
 
 data Particle = Particle
-  { x1 :: Point
-  , x2  :: Point
-  , accel :: Vector2D
+  { x1    :: !Point
+  , x2    :: !Point
+  , accel :: !Vector2D
   } deriving Show
 
 integrate :: Double -> Particle -> Particle

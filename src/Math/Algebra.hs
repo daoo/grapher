@@ -1,4 +1,7 @@
-module Math.Algebra where
+module Math.Algebra
+  ( square
+  , divZero
+  ) where
 
 square :: Num a => a -> a
 square x = x * x

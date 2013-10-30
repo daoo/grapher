@@ -1,4 +1,4 @@
-module Main where
+module Main (main) where
 
 import Data.Array
 import Data.Monoid
@@ -46,7 +46,7 @@ render world =
         b = q + d''
         c = q - d''
 
-    ball b = uncurry G.translate (t $ position b) $ body
+    ball b = uncurry G.translate (t $ position b) body
       where
         body = G.color G.red $ circle (radius b)
 

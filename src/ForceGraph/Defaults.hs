@@ -1,7 +1,5 @@
 module ForceGraph.Defaults
-  ( defaultBall
-  , defaultWorld
-  ) where
+  ( defaultWorld ) where
 
 import ForceGraph.Ball
 import ForceGraph.Particle

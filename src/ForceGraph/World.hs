@@ -1,4 +1,9 @@
-module ForceGraph.World where
+{-# LANGUAGE BangPatterns #-}
+module ForceGraph.World
+  ( World(..)
+  , iteration
+  , forces
+  ) where
 
 import Data.Array
 import ForceGraph.Ball
@@ -13,15 +18,12 @@ springConstant  = 1
 airDragConstant = 3
 
 data World = World
-  { worldBalls :: [Ball]
+  { worldBalls :: ![Ball]
   , worldLinks :: Array Int Link
   } deriving Show
 
 mapBalls :: ([Ball] -> [Ball]) -> World -> World
 mapBalls f w = w { worldBalls = f (worldBalls w) }
-
-showWorld :: World -> String
-showWorld = unlines . map show . worldBalls
 
 iteration :: Double -> World -> World
 iteration delta world =
@@ -29,16 +31,16 @@ iteration delta world =
   mapBalls (mapIndex $ update world) world
 
 update :: World -> Int -> Ball -> Ball
-update world i ball = setForce (sum $ forces balls linked ball) ball
+update world !i ball = setForce (sum $ forces balls linked ball) ball
   where
     balls  = worldBalls world
     links  = worldLinks world
-    linked = help i (elems links)
+    linked = help (elems links)
 
-    help i []                        = []
-    help i ((j, k) : xs) | i == j    = balls !! k : help i xs
-                         | i == k    = balls !! j : help i xs
-                         | otherwise = help i xs
+    help []                        = []
+    help ((j, k) : xs) | i == j    = balls !! k : help xs
+                       | i == k    = balls !! j : help xs
+                       | otherwise = help xs
 
 forces :: [Ball] -> [Ball] -> Ball -> [Force]
 forces br bs ball =

@@ -1,4 +1,13 @@
-module ForceGraph.Types where
+module ForceGraph.Types
+  ( Charge
+  , Force
+  , Mass
+  , Velocity
+  , Accel
+  , Point
+  , Radius
+  , Link
+  ) where
 
 import Math.Vector2
 
