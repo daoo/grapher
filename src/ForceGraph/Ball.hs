@@ -11,10 +11,10 @@ import Math.Vector2
 import qualified ForceGraph.Particle as P
 
 data Ball = Ball
-  { particle :: !P.Particle
-  , radius   :: !Radius
-  , mass     :: !Mass
-  , charge   :: !Charge
+  { particle :: {-# UNPACK #-} !P.Particle
+  , radius   :: {-# UNPACK #-} !Radius
+  , mass     :: {-# UNPACK #-} !Mass
+  , charge   :: {-# UNPACK #-} !Charge
   } deriving Show
 
 mapParticle :: (P.Particle -> P.Particle) -> Ball -> Ball

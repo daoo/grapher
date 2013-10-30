@@ -27,8 +27,8 @@ render world =
     balls = worldBalls world
     links = worldLinks world
 
-    at i            = position $ balls !! i
-    t (Vector2 x y) = (realToFrac x, realToFrac y)
+    at i             = position $ balls !! i
+    t (Vector2D x y) = (realToFrac x, realToFrac y)
 
     line     = G.line . map t
     circle r = G.circleSolid (realToFrac r)

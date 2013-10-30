@@ -2,66 +2,63 @@ module Math.Vector2 where
 
 import Math.Algebra
 
-data Vector2 a = Vector2 !a !a
+data Vector2D = Vector2D {-# UNPACK #-} !Double {-# UNPACK #-} !Double
   deriving (Eq, Show)
 
-(.+) :: a -> a -> Vector2 a
-(.+) = Vector2
+(.+) :: Double -> Double -> Vector2D
+(.+) = Vector2D
 
-vmap :: (a -> b) -> Vector2 a -> Vector2 b
-vmap f (Vector2 x y) = Vector2 (f x) (f y)
+vmap :: (Double -> Double) -> Vector2D -> Vector2D
+vmap f (Vector2D x y) = Vector2D (f x) (f y)
 
-showVector2 :: Show a => Vector2 a -> String
-showVector2 (Vector2 x y) = "(" ++ show x ++ ", " ++ show y ++ ")"
+showVector2D :: Vector2D -> String
+showVector2D (Vector2D x y) = "(" ++ show x ++ ", " ++ show y ++ ")"
 
-type Vector2F = Vector2 Float
-type Vector2D = Vector2 Double
+zero :: Vector2D
+zero = Vector2D 0 0
 
-zero :: Num a => Vector2 a
-zero = Vector2 0 0
-
-instance Num a => Num (Vector2 a) where
-  Vector2 x1 y1 + Vector2 x2 y2 = Vector2 (x1 + x2) (y1 + y2)
-  Vector2 x1 y1 - Vector2 x2 y2 = Vector2 (x1 - x2) (y1 - y2)
-  Vector2 x1 y1 * Vector2 x2 y2 = Vector2 (x1 * x2) (y1 * y2)
+instance Num Vector2D where
+  Vector2D x1 y1 + Vector2D x2 y2 = Vector2D (x1 + x2) (y1 + y2)
+  Vector2D x1 y1 - Vector2D x2 y2 = Vector2D (x1 - x2) (y1 - y2)
+  Vector2D x1 y1 * Vector2D x2 y2 = Vector2D (x1 * x2) (y1 * y2)
 
   -- Definition that plays nicely with functions that uses Num a, e.g. sum
-  fromInteger i = Vector2 (fromInteger i) (fromInteger i)
+  fromInteger i = Vector2D (fromInteger i) (fromInteger i)
 
-  negate (Vector2 x y) = Vector2 (-x) (-y)
+  negate (Vector2D x y) = Vector2D (-x) (-y)
 
   signum = undefined
   abs    = undefined
 
-(.*) :: Num a => a -> Vector2 a -> Vector2 a
-(.*) a (Vector2 x y) = Vector2 (a * x) (a * y)
+(.*) :: Double -> Vector2D -> Vector2D
+(.*) a (Vector2D x y) = Vector2D (a * x) (a * y)
 
-(./) :: Fractional a => Vector2 a -> a -> Vector2 a
-(./) (Vector2 x y) a = Vector2 (x / a) (y / a)
+(./) :: Vector2D -> Double -> Vector2D
+(./) (Vector2D x y) a = Vector2D (x / a) (y / a)
 
-dot :: Num a => Vector2 a -> Vector2 a -> a
-dot (Vector2 x1 y1) (Vector2 x2 y2) = (x1 * x2) + (y1 * y2)
+dot :: Vector2D -> Vector2D -> Double
+dot (Vector2D x1 y1) (Vector2D x2 y2) = (x1 * x2) + (y1 * y2)
 
-mag :: Floating a => Vector2 a -> a
+mag :: Vector2D -> Double
 mag = sqrt . mag2
 
-mag2 :: Num a => Vector2 a -> a
-mag2 (Vector2 x y) = x * x + y * y
+mag2 :: Vector2D -> Double
+mag2 (Vector2D x y) = x * x + y * y
 
-dist :: Floating a => Vector2 a -> Vector2 a -> a
+dist :: Vector2D -> Vector2D -> Double
 dist u v = sqrt $ dist2 u v
 
-dist2 :: Num a => Vector2 a -> Vector2 a -> a
-dist2 (Vector2 x1 y1) (Vector2 x2 y2) =
+dist2 :: Vector2D -> Vector2D -> Double
+dist2 (Vector2D x1 y1) (Vector2D x2 y2) =
   square (x2 - x1) + square (y2 - y1)
 
-invert :: Num a => Vector2 a -> Vector2 a
-invert (Vector2 x y) = Vector2 (negate x) (negate y)
+invert :: Vector2D -> Vector2D
+invert (Vector2D x y) = Vector2D (negate x) (negate y)
 
-orthogonal :: Num a => Vector2 a -> Vector2 a
-orthogonal (Vector2 x y) = Vector2 (negate y) x
+orthogonal :: Vector2D -> Vector2D
+orthogonal (Vector2D x y) = Vector2D (negate y) x
 
-normalize :: (Ord a, Floating a) => Vector2 a -> Vector2 a
+normalize :: Vector2D -> Vector2D
 normalize v =
   let m = mag2 v
     in if m > 0
@@ -69,5 +66,5 @@ normalize v =
       else v
 
 -- |Project u onto v where v is a normalized
-project :: (Ord a, Floating a) => Vector2 a -> Vector2 a -> Vector2 a
+project :: Vector2D -> Vector2D -> Vector2D
 project u v = let v' = normalize v in (u `dot` v') .* v'

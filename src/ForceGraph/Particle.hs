@@ -7,9 +7,9 @@ import ForceGraph.Types
 import Math.Vector2
 
 data Particle = Particle
-  { x1    :: !Point
-  , x2    :: !Point
-  , accel :: !Vector2D
+  { x1    :: {-# UNPACK #-} !Point
+  , x2    :: {-# UNPACK #-} !Point
+  , accel :: {-# UNPACK #-} !Vector2D
   } deriving Show
 
 integrate :: Double -> Particle -> Particle
