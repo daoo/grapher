@@ -1,5 +1,6 @@
 module Main where
 
+import Data.Array
 import Data.Monoid
 import ForceGraph.Ball
 import ForceGraph.Defaults
@@ -19,7 +20,7 @@ main = G.simulate
 
 render :: World -> G.Picture
 render world =
-  mconcat (map (\(i, j) -> line [at i, at j]) links) <>
+  mconcat (map (\(i, j) -> line [at i, at j]) (elems links)) <>
   mconcat (map ball balls)
 
   where

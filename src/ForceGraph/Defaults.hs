@@ -6,6 +6,7 @@ module ForceGraph.Defaults
 import ForceGraph.Ball
 import ForceGraph.Particle
 import ForceGraph.Types
+import ForceGraph.Utility
 import ForceGraph.World
 import Math.Vector2
 
@@ -32,7 +33,7 @@ defaultWorld = World
     , defaultBall (Vector2 300 300) zero 10
     , defaultBall (Vector2 600 520) zero 10
     ]
-  , worldLinks =
+  , worldLinks = arrayList
     [ (0, 1)
     , (0, 2)
     , (0, 7)

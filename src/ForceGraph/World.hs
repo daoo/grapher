@@ -1,5 +1,6 @@
 module ForceGraph.World where
 
+import Data.Array
 import ForceGraph.Ball
 import ForceGraph.Types
 import ForceGraph.Utility
@@ -13,7 +14,7 @@ airDragConstant = 3
 
 data World = World
   { worldBalls :: [Ball]
-  , worldLinks :: [Link]
+  , worldLinks :: Array Int Link
   } deriving Show
 
 mapBalls :: ([Ball] -> [Ball]) -> World -> World
@@ -31,7 +32,8 @@ update :: World -> Int -> Ball -> Ball
 update world i ball = setForce (sum $ forces balls linked ball) ball
   where
     balls  = worldBalls world
-    linked = help i (worldLinks world)
+    links  = worldLinks world
+    linked = help i (elems links)
 
     help i []                        = []
     help i ((j, k) : xs) | i == j    = balls !! k : help i xs

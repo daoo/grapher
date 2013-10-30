@@ -18,11 +18,11 @@ library
     Math.Algebra
     Math.Vector2
   hs-source-dirs: src
-  build-depends: base
+  build-depends: base, array
 
 executable force-graph
   main-is: src/Main.hs
-  build-depends: base, force-graph, gloss
+  build-depends: base, array, force-graph, gloss
   ghc-options: -Wall -fno-warn-orphans
 
 test-suite force-graph-tests
