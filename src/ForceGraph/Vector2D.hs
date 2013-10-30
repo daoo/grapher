@@ -1,6 +1,6 @@
-module Math.Vector2 where
+module ForceGraph.Vector2D where
 
-import Math.Algebra
+import ForceGraph.Utility
 
 data Vector2D = Vector2D {-# UNPACK #-} !Double {-# UNPACK #-} !Double
   deriving (Eq, Show)

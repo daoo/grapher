@@ -5,8 +5,8 @@ import ForceGraph.Ball
 import ForceGraph.Particle
 import ForceGraph.Types
 import ForceGraph.Utility
+import ForceGraph.Vector2D
 import ForceGraph.World
-import Math.Vector2
 
 defaultBall :: Point -> Velocity -> Radius -> Ball
 defaultBall p v r = Ball

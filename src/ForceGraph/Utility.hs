@@ -4,6 +4,8 @@ module ForceGraph.Utility
   , clamp
   , mapIndex
   , arrayList
+  , square
+  , divZero
   ) where
 
 import Data.Array.IArray
@@ -25,3 +27,11 @@ mapIndex f = go 0
 
 arrayList :: IArray a e => [e] -> a Int e
 arrayList lst = listArray (0, length lst - 1) lst
+
+square :: Num a => a -> a
+square x = x * x
+
+-- |Special division that returns zero when dividing by zero
+divZero :: (Num a, Eq a, Fractional a) => a -> a -> a
+divZero _ 0 = 0
+divZero a b = a / b

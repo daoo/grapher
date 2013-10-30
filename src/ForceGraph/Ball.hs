@@ -7,7 +7,7 @@ module ForceGraph.Ball
   ) where
 
 import ForceGraph.Types
-import Math.Vector2
+import ForceGraph.Vector2D
 import qualified ForceGraph.Particle as P
 
 data Ball = Ball

@@ -9,7 +9,7 @@ module ForceGraph.Types
   , Link
   ) where
 
-import Math.Vector2
+import ForceGraph.Vector2D
 
 type Charge   = Double
 type Force    = Vector2D

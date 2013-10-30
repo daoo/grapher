@@ -9,8 +9,7 @@ import Data.Array
 import ForceGraph.Ball
 import ForceGraph.Types
 import ForceGraph.Utility
-import Math.Algebra
-import Math.Vector2
+import ForceGraph.Vector2D
 
 repellConstant, springConstant, airDragConstant :: Double
 repellConstant  = -1000

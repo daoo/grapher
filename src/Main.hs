@@ -5,8 +5,8 @@ import Data.Monoid
 import ForceGraph.Ball
 import ForceGraph.Defaults
 import ForceGraph.Particle
+import ForceGraph.Vector2D
 import ForceGraph.World
-import Math.Vector2
 import qualified Graphics.Gloss as G
 
 main :: IO ()

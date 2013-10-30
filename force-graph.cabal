@@ -14,9 +14,8 @@ library
     ForceGraph.Particle
     ForceGraph.Types
     ForceGraph.Utility
+    ForceGraph.Vector2D
     ForceGraph.World
-    Math.Algebra
-    Math.Vector2
   hs-source-dirs: src
   build-depends: base, array
 

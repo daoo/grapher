@@ -4,7 +4,7 @@ module ForceGraph.Particle
   ) where
 
 import ForceGraph.Types
-import Math.Vector2
+import ForceGraph.Vector2D
 
 data Particle = Particle
   { x1    :: {-# UNPACK #-} !Point
