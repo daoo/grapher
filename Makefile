@@ -10,7 +10,7 @@ release:
 init:
 	@cabal sandbox init
 	@cabal install --enable-tests --only-dependencies
-	@cabal configure --enable-tests
+	@cabal configure --enable-tests --ghc-options="-Wall"
 
 test:
 	@cabal test
