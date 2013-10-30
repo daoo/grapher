@@ -20,16 +20,16 @@ defaultWorld :: World
 defaultWorld = World
   { worldBalls =
     [ Ball (Particle zero zero zero) 15 10000000 10
-    , defaultBall (Vector2D 150 200) zero 10
-    , defaultBall (Vector2D 200 250) zero 10
-    , defaultBall (Vector2D 100 540) zero 10
-    , defaultBall (Vector2D 500 540) zero 10
-    , defaultBall (Vector2D 510 570) zero 10
-    , defaultBall (Vector2D 520 540) zero 10
-    , defaultBall (Vector2D 530 530) zero 10
-    , defaultBall (Vector2D 540 520) zero 10
-    , defaultBall (Vector2D 300 300) zero 10
-    , defaultBall (Vector2D 600 520) zero 10
+    , defaultBall (150 .+ 200) zero 10
+    , defaultBall (200 .+ 250) zero 10
+    , defaultBall (100 .+ 540) zero 10
+    , defaultBall (500 .+ 540) zero 10
+    , defaultBall (510 .+ 570) zero 10
+    , defaultBall (520 .+ 540) zero 10
+    , defaultBall (530 .+ 530) zero 10
+    , defaultBall (540 .+ 520) zero 10
+    , defaultBall (300 .+ 300) zero 10
+    , defaultBall (600 .+ 520) zero 10
     ]
   , worldLinks = arrayList
     [ (0, 1)
