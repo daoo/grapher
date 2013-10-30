@@ -17,11 +17,11 @@ library
     ForceGraph.Vector2D
     ForceGraph.World
   hs-source-dirs: src
-  build-depends: base, array
+  build-depends: base, vector
 
 executable force-graph
   main-is: src/Main.hs
-  build-depends: base, array, force-graph, gloss
+  build-depends: base, vector, force-graph, gloss
   ghc-options: -Wall -fno-warn-orphans
 
 test-suite force-graph-tests

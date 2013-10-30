@@ -2,14 +2,13 @@
 module ForceGraph.World
   ( World(..)
   , iteration
-  , forces
   ) where
 
-import Data.Array
 import ForceGraph.Ball
 import ForceGraph.Types
 import ForceGraph.Utility
 import ForceGraph.Vector2D
+import qualified Data.Vector.Unboxed as V
 
 repellConstant, springConstant, airDragConstant :: Double
 repellConstant  = -1000
@@ -18,7 +17,7 @@ airDragConstant = 3
 
 data World = World
   { worldBalls :: ![Ball]
-  , worldLinks :: Array Int Link
+  , worldLinks :: V.Vector Link
   } deriving Show
 
 mapBalls :: ([Ball] -> [Ball]) -> World -> World
@@ -34,15 +33,18 @@ update world !i ball = setForce (sum $ forces balls linked ball) ball
   where
     balls  = worldBalls world
     links  = worldLinks world
-    linked = help (elems links)
+    linked = help (V.toList links)
 
     help []                        = []
     help ((j, k) : xs) | i == j    = balls !! k : help xs
                        | i == k    = balls !! j : help xs
                        | otherwise = help xs
 
+{-# RULES "sum/map" forall f xs. sum (map f xs) = foldl (\acc x -> acc + f x) 0 xs #-}
+{-# RULES "sum/cons" forall x xs. sum (x : xs) = x + sum xs #-}
+
 forces :: [Ball] -> [Ball] -> Ball -> [Force]
-forces br bs ball = [ airDrag ball, center ball ]
+forces br bs ball = [airDrag ball, center ball]
   ++ map (repell ball) br
   ++ map (attract ball) bs
 

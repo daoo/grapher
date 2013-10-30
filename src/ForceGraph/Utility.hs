@@ -3,12 +3,9 @@ module ForceGraph.Utility
   ( times
   , clamp
   , mapIndex
-  , arrayList
   , square
   , divZero
   ) where
-
-import Data.Array.IArray
 
 times :: (a -> a) -> Int -> a -> a
 times _  0 x = x
@@ -24,9 +21,6 @@ mapIndex f = go 0
   where
     go !_ []     = []
     go !i (x:xs) = f i x : go (i+1) xs
-
-arrayList :: IArray a e => [e] -> a Int e
-arrayList lst = listArray (0, length lst - 1) lst
 
 square :: Num a => a -> a
 square x = x * x

@@ -1,10 +1,10 @@
 module ForceGraph.Defaults
   ( defaultWorld ) where
 
+import Data.Vector.Unboxed (fromList)
 import ForceGraph.Ball
 import ForceGraph.Particle
 import ForceGraph.Types
-import ForceGraph.Utility
 import ForceGraph.Vector2D
 import ForceGraph.World
 
@@ -31,7 +31,7 @@ defaultWorld = World
     , defaultBall (300 .+ 300) zero 10
     , defaultBall (600 .+ 520) zero 10
     ]
-  , worldLinks = arrayList
+  , worldLinks = fromList
     [ (0, 1)
     , (0, 2)
     , (0, 7)

@@ -1,7 +1,7 @@
 module Main (main) where
 
-import Data.Array
 import Data.Monoid
+import Data.Vector.Unboxed (toList)
 import ForceGraph.Ball
 import ForceGraph.Defaults
 import ForceGraph.Particle
@@ -20,7 +20,7 @@ main = G.simulate
 
 render :: World -> G.Picture
 render world =
-  mconcat (map (\(i, j) -> line [at i, at j]) (elems links)) <>
+  mconcat (map (\(i, j) -> line [at i, at j]) (toList links)) <>
   mconcat (map ball balls)
 
   where
@@ -46,23 +46,5 @@ render world =
         b = q + d''
         c = q - d''
 
-    ball b = uncurry G.translate (t $ position b) body
-      where
-        body = G.color G.red $ circle (radius b)
-
-        debug = mconcat (zipWith f colors (forces (worldBalls world) [] b))
-             <> f G.magenta (accel (particle b))
-
-        f c v = G.color c $ arrow zero v
-
-        colors = [ G.aquamarine
-                 , G.azure
-                 , G.blue
-                 , G.chartreuse
-                 , G.cyan
-                 , G.green
-                 , G.orange
-                 , G.rose
-                 , G.violet
-                 , G.yellow
-                 ]
+    ball b = uncurry G.translate (t $ position b) $
+      G.color G.red $ circle (radius b)
