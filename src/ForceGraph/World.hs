@@ -5,6 +5,7 @@ module ForceGraph.World
   ) where
 
 import ForceGraph.Ball
+import ForceGraph.EdgeMatrix
 import ForceGraph.Types
 import ForceGraph.Utility
 import ForceGraph.Vector2D
@@ -17,36 +18,27 @@ airDragConstant = 3
 
 data World = World
   { worldBalls :: ![Ball]
-  , worldLinks :: V.Vector Link
-  } deriving Show
+  , worldLinks :: Matrix
+  }
 
 mapBalls :: ([Ball] -> [Ball]) -> World -> World
 mapBalls f w = w { worldBalls = f (worldBalls w) }
 
 iteration :: Double -> World -> World
-iteration delta world =
-  mapBalls (map $ integrate delta) $
-  mapBalls (mapIndex $ update world) world
-
-update :: World -> Int -> Ball -> Ball
-update world !i ball = setForce (sum $ forces balls linked ball) ball
+iteration delta w@(World balls links) = w { worldBalls = map (integrate delta) $ mapIndex upd balls }
   where
-    balls  = worldBalls world
-    links  = worldLinks world
-    linked = help (V.toList links)
+    bc = length balls
 
-    help []                        = []
-    help ((j, k) : xs) | i == j    = balls !! k : help xs
-                       | i == k    = balls !! j : help xs
-                       | otherwise = help xs
+    upd i b  = setForce (calc i b) b
+    calc i b = sum $ forces balls links b i
 
 {-# RULES "sum/map" forall f xs. sum (map f xs) = foldl (\acc x -> acc + f x) 0 xs #-}
 {-# RULES "sum/cons" forall x xs. sum (x : xs) = x + sum xs #-}
 
-forces :: [Ball] -> [Ball] -> Ball -> [Force]
-forces br bs ball = [airDrag ball, center ball]
-  ++ map (repell ball) br
+forces :: [Ball] -> Matrix -> Int -> Ball -> [Force]
+forces bs m b = [airDrag b, center b]
   ++ map (attract ball) bs
+  ++ map (repell ball) br
 
 airDrag :: Ball -> Force
 airDrag ball = negate ((airDragConstant * radius ball) .* velocity ball)
