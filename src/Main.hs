@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 module Main (main) where
 
 import Data.Monoid
@@ -9,7 +10,7 @@ import qualified Graphics.Gloss as G
 
 main :: IO ()
 main = do
-  world <- randomWorld
+  !world <- randomWorld
   G.simulate
     (G.InWindow "Force Graph" (800, 600) (0, 0))
     G.white
@@ -18,29 +19,22 @@ main = do
     render
     (const (iteration . realToFrac))
 
-render :: World -> G.Picture
-render world =
-  mconcat (linkBalls (\a b -> line [position a, position b]) world) <>
-  mconcat (ballMap ball world)
-
+{-arrow :: Vector2F -> Vector2F -> G.Picture
+arrow p d = G.line [vtup p, vtup q] <> G.line [vtup a, vtup b, vtup c, vtup a]
   where
-    t (Vector2F x y) = (x, y)
+    q = p + d
+    l = mag d
+    s = l * 0.03
 
-    line     = G.line . map t
-    circle r = G.circleSolid (realToFrac r)
+    d'  = s .* normalize d
+    d'' = orthogonal d'
 
-    arrow p d = line [p, q] <> line [a, b, c, a]
-      where
-        q = p + d
-        l = mag d
-        s = l * 0.03
+    a = q + d'
+    b = q + d''
+    c = q - d''-}
 
-        d'  = s .* normalize d
-        d'' = orthogonal d'
-
-        a = q + d'
-        b = q + d''
-        c = q - d''
-
-    ball b = uncurry G.translate (t $ position b) $
-      G.color G.red $ circle (radius b)
+render :: World -> G.Picture
+render world = mconcat (linkBalls link world) <> mconcat (ballMap ball world)
+  where
+    link a b = G.line [vtup $ position a, vtup $ position b]
+    ball b   = let Vector2F x y = position b in G.translate x y $ G.circleSolid (radius b)

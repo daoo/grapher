@@ -11,6 +11,9 @@ data Vector2F = Vector2F {-# UNPACK #-} !Float {-# UNPACK #-} !Float
 vmap :: (Float -> Float) -> Vector2F -> Vector2F
 vmap f (Vector2F x y) = Vector2F (f x) (f y)
 
+vtup :: Vector2F -> (Float, Float)
+vtup (Vector2F x y) = (x, y)
+
 showVector2F :: Vector2F -> String
 showVector2F (Vector2F x y) = "(" ++ show x ++ ", " ++ show y ++ ")"
 
