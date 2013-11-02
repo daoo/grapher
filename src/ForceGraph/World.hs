@@ -17,9 +17,6 @@ import ForceGraph.Utility
 import ForceGraph.Vector2D
 import qualified Data.Array as A
 
-alen :: (Num i, A.Ix i) => Array i e -> i
-alen = (\(a, b) -> b - a) . A.bounds
-
 repellConstant, springConstant, airDragConstant :: Double
 repellConstant  = -1000
 springConstant  = 1
@@ -31,7 +28,7 @@ data World = World
   }
 
 ballCount :: World -> Int
-ballCount = alen . vector
+ballCount = (\(a, b) -> b - a) . A.bounds . vector
 
 ballAt :: World -> Int -> Ball
 ballAt w i = assert (i < ballCount w) $
@@ -55,8 +52,8 @@ linkBalls w = go 0 0
 newWorld :: [Ball] -> [Link] -> World
 newWorld balls links = World v (newMatrix n links)
   where
-    v = A.listArray (0, length balls - 1) balls
-    n = alen v
+    v = A.listArray (0, n - 1) balls
+    n = length balls
 
 iteration :: Double -> World -> World
 iteration delta w = w { vector = A.listArray (A.bounds $ vector w) $ map (integrate delta . upd) $ A.assocs $ vector w }
