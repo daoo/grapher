@@ -11,7 +11,7 @@ import System.Random
 import Test.QuickCheck.Gen
 
 arbitraryPoint :: Gen Point
-arbitraryPoint = Vector2D <$> choose (-100, 100) <*> choose (-100, 100)
+arbitraryPoint = Vector2D <$> choose (-1000, 1000) <*> choose (-1000, 1000)
 
 arbitraryParticle :: Gen Particle
 arbitraryParticle = Particle <$> arbitraryPoint <*> arbitraryPoint <*> pure zero
