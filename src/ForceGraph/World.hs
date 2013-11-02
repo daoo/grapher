@@ -40,14 +40,8 @@ linked w i j = isLinked (matrix w) i j
 ballMap :: (Ball -> a) -> World -> [a]
 ballMap f = map f . A.elems . vector
 
-linkBalls :: World -> [(Ball, Ball)]
-linkBalls w = go 0 0
-  where
-    n = ballCount w
-
-    go !i !j | j < n     = if linked w i j then (w `ballAt` i, w `ballAt` j) : go i (j+1) else go i (j+1)
-             | i < n     = go (i+1) i
-             | otherwise = []
+linkBalls :: (Ball -> Ball -> a) -> World -> [a]
+linkBalls f w = withLinked (ballAt w) f (matrix w)
 
 newWorld :: [Ball] -> [Link] -> World
 newWorld balls links = World (alist balls) (newMatrix (length balls) links)

@@ -18,7 +18,7 @@ main = G.simulate
 
 render :: World -> G.Picture
 render world =
-  mconcat (map (\(a, b) -> line [position a, position b]) (linkBalls world)) <>
+  mconcat (linkBalls (\a b -> line [position a, position b]) world) <>
   mconcat (ballMap ball world)
 
   where
