@@ -1,7 +1,6 @@
 module ForceGraph.Defaults
   ( defaultWorld ) where
 
-import Data.Vector.Unboxed (fromList)
 import ForceGraph.Ball
 import ForceGraph.Particle
 import ForceGraph.Types
@@ -17,30 +16,27 @@ defaultBall p v r = Ball
   }
 
 defaultWorld :: World
-defaultWorld = World
-  { worldBalls =
-    [ Ball (Particle zero zero zero) 15 10000000 10
-    , defaultBall (150 .+ 200) zero 10
-    , defaultBall (200 .+ 250) zero 10
-    , defaultBall (100 .+ 540) zero 10
-    , defaultBall (500 .+ 540) zero 10
-    , defaultBall (510 .+ 570) zero 10
-    , defaultBall (520 .+ 540) zero 10
-    , defaultBall (530 .+ 530) zero 10
-    , defaultBall (540 .+ 520) zero 10
-    , defaultBall (300 .+ 300) zero 10
-    , defaultBall (600 .+ 520) zero 10
-    ]
-  , worldLinks = fromList
-    [ (0, 1)
-    , (0, 2)
-    , (0, 7)
-    , (0, 8)
-    , (1, 3)
-    , (3, 4)
-    , (4, 5)
-    , (4, 9)
-    , (4, 10)
-    , (5, 6)
-    ]
-  }
+defaultWorld = newWorld
+  [ Ball (Particle zero zero zero) 15 10000000 10
+  , defaultBall (150 .+ 200) zero 10
+  , defaultBall (200 .+ 250) zero 10
+  , defaultBall (100 .+ 540) zero 10
+  , defaultBall (500 .+ 540) zero 10
+  , defaultBall (510 .+ 570) zero 10
+  , defaultBall (520 .+ 540) zero 10
+  , defaultBall (530 .+ 530) zero 10
+  , defaultBall (540 .+ 520) zero 10
+  , defaultBall (300 .+ 300) zero 10
+  , defaultBall (600 .+ 520) zero 10
+  ]
+  [ (0, 1)
+  , (0, 2)
+  , (0, 7)
+  , (0, 8)
+  , (1, 3)
+  , (3, 4)
+  , (4, 5)
+  , (4, 9)
+  , (4, 10)
+  , (5, 6)
+  ]

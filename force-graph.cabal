@@ -17,7 +17,7 @@ library
     ForceGraph.Vector2D
     ForceGraph.World
   hs-source-dirs: src
-  build-depends: base, bitwise, vector
+  build-depends: base, array, vector
 
 executable force-graph
   main-is: src/Main.hs

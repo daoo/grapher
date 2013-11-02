@@ -1,10 +1,8 @@
 module Main (main) where
 
 import Data.Monoid
-import Data.Vector.Unboxed (toList)
 import ForceGraph.Ball
 import ForceGraph.Defaults
-import ForceGraph.Particle
 import ForceGraph.Vector2D
 import ForceGraph.World
 import qualified Graphics.Gloss as G
@@ -20,14 +18,10 @@ main = G.simulate
 
 render :: World -> G.Picture
 render world =
-  mconcat (map (\(i, j) -> line [at i, at j]) (toList links)) <>
-  mconcat (map ball balls)
+  mconcat (map (\(a, b) -> line [position a, position b]) (linkBalls world)) <>
+  mconcat (ballMap ball world)
 
   where
-    balls = worldBalls world
-    links = worldLinks world
-
-    at i             = position $ balls !! i
     t (Vector2D x y) = (realToFrac x, realToFrac y)
 
     line     = G.line . map t
