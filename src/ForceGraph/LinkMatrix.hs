@@ -8,19 +8,19 @@ module ForceGraph.LinkMatrix
 import Data.Array.Base (unsafeAt)
 import Data.Array.Unboxed
 
-newtype Matrix = Matrix (Int, UArray (Int, Int) Bool)
+newtype Matrix = Matrix (Int, UArray Int Bool)
+  deriving Show
 
 {-# INLINE isLinked #-}
 isLinked :: Matrix -> Int -> Int -> Bool
 isLinked (Matrix m) i j = snd m `unsafeAt` ((i * fst m) + j)
 
-newMatrix :: Int -> [(Int, Int)] -> Matrix
-newMatrix n links = Matrix (n, listArray ((0, 0), (n-1,n-1)) (go 0 0))
-  where
-    go !i !j | j < n     = elem' i j links : go i (j+1)
-             | i < n     = go (i+1) 0
-             | otherwise = []
+buildSquare :: (Int -> Int -> a) -> Int -> Int -> [[a]]
+buildSquare f a b = [[f i j | i <- [a..b]] | j <- [a..b]]
 
-    elem' _ _ []                                                       = False
-    elem' i j ((i', j'):xs) | i == i' && j == j' || i == j' && j == i' = True
-                            | otherwise                                = elem' i j xs
+newMatrix :: Int -> [(Int, Int)] -> Matrix
+newMatrix n links = Matrix (n, a)
+  where
+    a = listArray (0, (n*n-1)) (concat $ buildSquare elem' 0 (n-1))
+
+    elem' i j = elem (i, j) links || elem (j, i) links

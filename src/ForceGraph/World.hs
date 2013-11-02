@@ -25,7 +25,7 @@ airDragConstant = 3
 data World = World
   { vector :: Array Int Ball
   , matrix :: Matrix
-  }
+  } deriving Show
 
 ballCount :: World -> Int
 ballCount = (\(a, b) -> b - a) . A.bounds . vector
@@ -50,25 +50,18 @@ linkBalls w = go 0 0
              | otherwise = []
 
 newWorld :: [Ball] -> [Link] -> World
-newWorld balls links = World v (newMatrix n links)
-  where
-    v = A.listArray (0, n - 1) balls
-    n = length balls
+newWorld balls links = World (alist balls) (newMatrix (length balls) links)
 
 iteration :: Double -> World -> World
-iteration delta w = w { vector = A.listArray (A.bounds $ vector w) $ map (integrate delta . upd) $ A.assocs $ vector w }
+iteration delta w = w { vector = amap (integrate delta .$. upd) $ vector w }
   where
-    upd (i, b) = setForce (forces w i b) b
+    upd i b = setForce (forces w i b) b
 
 forces :: World -> Int -> Ball -> Force
-forces w i bi = airDrag bi + center bi + go zero 0
+forces w i bi = airDrag bi + center bi + aixfold f zero (vector w)
   where
-    go !acc !j | j < ballCount w = go (acc+f1+f2) (j+1)
-               | otherwise       = acc
-
+    f acc j bj = acc+f1+f2
       where
-        bj = w `ballAt` j
-
         f1 = if linked w i j then attract bi bj else zero
         f2 = repell bi bj
 
