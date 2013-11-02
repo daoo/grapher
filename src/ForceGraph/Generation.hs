@@ -24,7 +24,7 @@ arbitraryBall = Ball
   <*> pure 10
 
 arbitraryLinks :: Int -> Gen [(Int, Int)]
-arbitraryLinks n = mapM (\m -> (\a -> (m, a)) <$> choose (0,n-1)) [0..n-1]
+arbitraryLinks n = mapM (\m -> (\a -> (m, a)) <$> choose (m+1,n-1)) [0..n-1]
 
 arbitraryWorld :: Gen World
 arbitraryWorld = do
