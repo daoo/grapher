@@ -5,13 +5,13 @@ import Control.Applicative
 import ForceGraph.Ball
 import ForceGraph.Particle
 import ForceGraph.Types
-import ForceGraph.Vector2D
+import ForceGraph.Vector2F
 import ForceGraph.World
 import System.Random
 import Test.QuickCheck.Gen
 
 arbitraryPoint :: Gen Point
-arbitraryPoint = Vector2D <$> choose (-1000, 1000) <*> choose (-1000, 1000)
+arbitraryPoint = Vector2F <$> choose (-1000, 1000) <*> choose (-1000, 1000)
 
 arbitraryParticle :: Gen Particle
 arbitraryParticle = Particle <$> arbitraryPoint <*> arbitraryPoint <*> pure zero

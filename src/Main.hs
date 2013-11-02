@@ -3,7 +3,7 @@ module Main (main) where
 import Data.Monoid
 import ForceGraph.Ball
 import ForceGraph.Generation
-import ForceGraph.Vector2D
+import ForceGraph.Vector2F
 import ForceGraph.World
 import qualified Graphics.Gloss as G
 
@@ -24,7 +24,7 @@ render world =
   mconcat (ballMap ball world)
 
   where
-    t (Vector2D x y) = (realToFrac x, realToFrac y)
+    t (Vector2F x y) = (x, y)
 
     line     = G.line . map t
     circle r = G.circleSolid (realToFrac r)

@@ -7,7 +7,7 @@ module ForceGraph.Ball
   ) where
 
 import ForceGraph.Types
-import ForceGraph.Vector2D
+import ForceGraph.Vector2F
 import qualified ForceGraph.Particle as P
 
 data Ball = Ball
@@ -26,7 +26,7 @@ position = P.x1 . particle
 velocity :: Ball -> Velocity
 velocity b = P.x1 p - P.x2 p where p = particle b
 
-integrate :: Double -> Ball -> Ball
+integrate :: Float -> Ball -> Ball
 integrate = mapParticle . P.integrate
 
 setForce :: Force -> Ball -> Ball

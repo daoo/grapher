@@ -16,7 +16,7 @@ library
   exposed-modules:
     ForceGraph.Ball
     ForceGraph.Generation
-    ForceGraph.Vector2D
+    ForceGraph.Vector2F
     ForceGraph.World
   hs-source-dirs: src
   build-depends: base, array, random, QuickCheck

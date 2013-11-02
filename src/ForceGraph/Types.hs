@@ -9,15 +9,15 @@ module ForceGraph.Types
   , Link
   ) where
 
-import ForceGraph.Vector2D
+import ForceGraph.Vector2F
 
-type Charge   = Double
-type Force    = Vector2D
-type Mass     = Double
-type Velocity = Vector2D
-type Accel    = Vector2D
+type Charge   = Float
+type Force    = Vector2F
+type Mass     = Float
+type Velocity = Vector2F
+type Accel    = Vector2F
 
-type Point  = Vector2D
-type Radius = Double
+type Point  = Vector2F
+type Radius = Float
 
 type Link = (Int, Int)

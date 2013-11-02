@@ -13,10 +13,10 @@ import ForceGraph.Ball
 import ForceGraph.LinkMatrix
 import ForceGraph.Types
 import ForceGraph.Utility
-import ForceGraph.Vector2D
+import ForceGraph.Vector2F
 import qualified Data.Array as A
 
-repellConstant, springConstant, airDragConstant :: Double
+repellConstant, springConstant, airDragConstant :: Float
 repellConstant  = -100
 springConstant  = 10
 airDragConstant = 30
@@ -45,7 +45,7 @@ linkBalls f w = withLinked (ballAt w) f (matrix w)
 newWorld :: [Ball] -> [Link] -> World
 newWorld balls links = World (alist balls) (newMatrix (length balls) links)
 
-iteration :: Double -> World -> World
+iteration :: Float -> World -> World
 iteration delta w = w { vector = amap (integrate delta .$. upd) $ vector w }
   where
     upd i b = setForce (forces w i b) b
@@ -76,7 +76,7 @@ attract this other = hookes springConstant (position other) (position this)
 
 -- |Calculate the spring attraction force from one point to another.
 -- Based on Hooke's law
-hookes :: Double -> Point -> Point -> Force
+hookes :: Float -> Point -> Point -> Force
 hookes k p1 p2 = (k * d) .* n
   where
     n = normalize (p1 - p2)
@@ -87,9 +87,9 @@ hookes k p1 p2 = (k * d) .* n
 -- point 1.
 --
 -- Based on Coulombs and Newtons laws.
-interaction :: Double          -- ^ Constant factor
-            -> (Point, Double) -- ^ Point 1
-            -> (Point, Double) -- ^ Point 2
+interaction :: Float          -- ^ Constant factor
+            -> (Point, Float) -- ^ Point 1
+            -> (Point, Float) -- ^ Point 2
             -> Force
 interaction c (p1, v1) (p2, v2) = f .* n
   where
