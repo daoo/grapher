@@ -33,4 +33,4 @@ arbitraryWorld = do
   return $ newWorld balls links
 
 randomWorld :: IO World
-randomWorld = (\stdgen -> unGen arbitraryWorld stdgen 100) `fmap` getStdGen
+randomWorld = (\stdgen -> unGen arbitraryWorld stdgen 500) `fmap` getStdGen
