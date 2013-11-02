@@ -17,9 +17,9 @@ import ForceGraph.Vector2D
 import qualified Data.Array as A
 
 repellConstant, springConstant, airDragConstant :: Double
-repellConstant  = -1000
-springConstant  = 1
-airDragConstant = 3
+repellConstant  = -100
+springConstant  = 10
+airDragConstant = 30
 
 data World = World
   { vector :: Array Int Ball
