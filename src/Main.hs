@@ -2,19 +2,21 @@ module Main (main) where
 
 import Data.Monoid
 import ForceGraph.Ball
-import ForceGraph.Defaults
+import ForceGraph.Generation
 import ForceGraph.Vector2D
 import ForceGraph.World
 import qualified Graphics.Gloss as G
 
 main :: IO ()
-main = G.simulate
-  (G.InWindow "Force Graph" (800, 600) (0, 0))
-  G.white
-  100
-  defaultWorld
-  render
-  (const (iteration . realToFrac))
+main = do
+  world <- randomWorld
+  G.simulate
+    (G.InWindow "Force Graph" (800, 600) (0, 0))
+    G.white
+    100
+    world
+    render
+    (const (iteration . realToFrac))
 
 render :: World -> G.Picture
 render world =

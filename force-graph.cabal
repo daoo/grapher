@@ -15,16 +15,15 @@ library
     ForceGraph.Utility
   exposed-modules:
     ForceGraph.Ball
-    ForceGraph.Defaults
+    ForceGraph.Generation
     ForceGraph.Vector2D
     ForceGraph.World
   hs-source-dirs: src
-  build-depends: base, array, vector
+  build-depends: base, array, random, QuickCheck
 
 executable force-graph
   main-is: src/Main.hs
-  build-depends: base, vector, bitwise, force-graph, gloss
-  ghc-options: -Wall -fno-warn-orphans
+  build-depends: base, force-graph, gloss
 
 test-suite force-graph-tests
   type: exitcode-stdio-1.0

@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 module ForceGraph.World
   ( World()
   , ballMap
@@ -35,7 +34,7 @@ ballAt w i = assert (i < ballCount w) $
   vector w `unsafeAt` i
 
 linked :: World -> Int -> Int -> Bool
-linked w i j = isLinked (matrix w) i j
+linked = isLinked . matrix
 
 ballMap :: (Ball -> a) -> World -> [a]
 ballMap f = map f . A.elems . vector

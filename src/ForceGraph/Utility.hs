@@ -12,8 +12,8 @@ module ForceGraph.Utility
 import Data.Array.Base (unsafeAt)
 import Data.Array.IArray (Ix, IArray, listArray, bounds)
 
-(.$.) :: (c -> d) -> (a -> b -> c) -> (a -> b -> d)
-f .$. g = (\a b -> f (g a b))
+(.$.) :: (c -> d) -> (a -> b -> c) -> a -> b -> d
+f .$. g = \a b -> f (g a b)
 
 {-# INLINE alist #-}
 alist :: (IArray a e) => [e] -> a Int e
@@ -25,8 +25,8 @@ amap f arr = listArray bnds $ go a
   where
     bnds@(a, b) = bounds arr
 
-    go !i | i <= b = f i (arr `unsafeAt` i) : go (i+1)
-          | True   = []
+    go !i | i <= b    = f i (arr `unsafeAt` i) : go (i+1)
+          | otherwise = []
 
 {-# INLINE alength #-}
 alength :: (Ix i, Num i, IArray a e) => a i e -> i
@@ -38,8 +38,8 @@ aixfold f ini arr = go ini a
   where
     (a, b) = bounds arr
 
-    go !acc !i | i < b = go (f acc i (arr `unsafeAt` i)) (i+1)
-               | True  = acc
+    go !acc !i | i < b     = go (f acc i (arr `unsafeAt` i)) (i+1)
+               | otherwise = acc
 
 {-# INLINE square #-}
 square :: Num a => a -> a
