@@ -8,12 +8,14 @@ build-type:    Simple
 cabal-version: >=1.8
 
 library
-  exposed-modules:
-    ForceGraph.Ball
-    ForceGraph.Defaults
+  other-modules:
+    ForceGraph.LinkMatrix
     ForceGraph.Particle
     ForceGraph.Types
     ForceGraph.Utility
+  exposed-modules:
+    ForceGraph.Ball
+    ForceGraph.Defaults
     ForceGraph.Vector2D
     ForceGraph.World
   hs-source-dirs: src
