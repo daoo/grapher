@@ -9,8 +9,8 @@ release:
 
 init:
 	@cabal sandbox init
-	@cabal install --enable-tests --only-dependencies
-	@cabal configure --enable-tests --ghc-options="-Wall"
+	@cabal install --enable-library-profiling --enable-tests --only-dependencies
+	@cabal configure --enable-executable-profiling --enable-library-profiling --enable-tests --ghc-options="-Wall"
 
 test:
 	@cabal test
