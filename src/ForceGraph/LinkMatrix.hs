@@ -6,25 +6,35 @@ module ForceGraph.LinkMatrix
   , withLinked
   ) where
 
-import Data.Array.Base (unsafeAt)
-import Data.Array.Unboxed
+import Control.Exception
+import Control.Monad.ST
+import Data.Array.Base (unsafeAt, unsafeWrite)
+import Data.Array.MArray
+import Data.Array.ST
+import Data.Array.Unboxed (UArray)
 
 newtype Matrix = Matrix (Int, UArray Int Bool)
   deriving Show
 
+calcIx :: Int -> Int -> Int -> Int
+calcIx n i j = (i * n) + j
+
 {-# INLINE isLinked #-}
 isLinked :: Matrix -> Int -> Int -> Bool
-isLinked (Matrix (n, m)) i j = m `unsafeAt` ((i * n) + j)
-
-buildSquare :: (Int -> Int -> a) -> Int -> Int -> [[a]]
-buildSquare f a b = [[f i j | i <- [a..b]] | j <- [a..b]]
+isLinked (Matrix (n, m)) i j = m `unsafeAt` calcIx n i j
 
 newMatrix :: Int -> [(Int, Int)] -> Matrix
-newMatrix n links = Matrix (n, a)
+newMatrix n links = Matrix (n, runSTUArray (new >>= go links))
   where
-    a = listArray (0, n*n-1) (concat $ buildSquare elem' 0 (n-1))
+    new :: ST s (STUArray s Int Bool)
+    new = newArray (0, n*n-1) False
 
-    elem' i j = elem (i, j) links || elem (j, i) links
+    go []          arr = return arr
+    go ((i, j):xs) arr = do
+      assert (i < n && j < n) (return ())
+      unsafeWrite arr (calcIx n i j) True
+      unsafeWrite arr (calcIx n j i) True
+      go xs arr
 
 withLinked :: (Int -> a) -> (a -> a -> b) -> Matrix -> [b]
 withLinked lu f m@(Matrix (n, _)) = go 0 0
