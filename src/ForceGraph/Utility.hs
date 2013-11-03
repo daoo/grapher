@@ -12,6 +12,7 @@ module ForceGraph.Utility
 import Data.Array.Base (unsafeAt)
 import Data.Array.IArray (Ix, IArray, listArray, bounds)
 
+{-# INLINE (.$.) #-}
 (.$.) :: (c -> d) -> (a -> b -> c) -> a -> b -> d
 f .$. g = \a b -> f (g a b)
 
