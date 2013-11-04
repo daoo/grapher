@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 module ForceGraph.World
   ( World()
   , ballMap
@@ -46,14 +47,14 @@ newWorld :: [Ball] -> [Link] -> World
 newWorld balls links = World (alist balls) (newMatrix (length balls) links)
 
 iteration :: Float -> World -> World
-iteration delta w = w { vector = amap (integrate delta .$. upd) $ vector w }
+iteration !delta !w = w { vector = amap (integrate delta .$. upd) $ vector w }
   where
-    upd i b = setForce (forces w i b) b
+    upd !i !b = setForce (forces w i b) b
 
 forces :: World -> Int -> Ball -> Force
-forces w i bi = airDrag bi + center bi + aixfold f zero (vector w)
+forces !w !i !bi = airDrag bi + center bi + aixfold f zero (vector w)
   where
-    f acc j bj = acc+f1+f2
+    f !acc !j !bj = acc+f1+f2
       where
         f1 = if linked w i j then attract bi bj else zero
         f2 = repell bi bj

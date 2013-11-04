@@ -24,13 +24,13 @@ isLinked :: Matrix -> Int -> Int -> Bool
 isLinked (Matrix (n, m)) i j = m `unsafeAt` calcIx n i j
 
 newMatrix :: Int -> [(Int, Int)] -> Matrix
-newMatrix n links = Matrix (n, runSTUArray (new >>= go links))
+newMatrix !n !links = Matrix (n, runSTUArray (new >>= go links))
   where
     new :: ST s (STUArray s Int Bool)
     new = newArray (0, n*n-1) False
 
-    go []          arr = return arr
-    go ((i, j):xs) arr = do
+    go []          !arr = return arr
+    go ((i, j):xs) !arr = do
       assert (i < n && j < n) (return ())
       unsafeWrite arr (calcIx n i j) True
       unsafeWrite arr (calcIx n j i) True
