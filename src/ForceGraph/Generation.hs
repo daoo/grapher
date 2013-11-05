@@ -11,7 +11,8 @@ import System.Random
 import Test.QuickCheck.Gen
 
 arbitraryPoint :: Gen Point
-arbitraryPoint = Vector2F <$> choose (-1000, 1000) <*> choose (-1000, 1000)
+arbitraryPoint = Vector2F <$> choose s <*> choose s
+  where s = (-2000, 2000)
 
 arbitraryParticle :: Gen Particle
 arbitraryParticle = Particle <$> arbitraryPoint <*> arbitraryPoint <*> pure zero
@@ -23,14 +24,14 @@ arbitraryBall = Ball
   <*> pure 1
   <*> pure 10
 
-arbitraryLinks :: Int -> Gen [(Int, Int)]
-arbitraryLinks n = mapM (\m -> (\a -> (m, a)) <$> choose (m+1,n-1)) [0..n-1]
+arbitraryLinks :: Gen [(Int, Int)]
+arbitraryLinks = sized $ \n -> mapM (\m -> ((,) m) <$> choose (m+1,n-1)) [0..n-1]
 
 arbitraryWorld :: Gen World
-arbitraryWorld = do
-  balls <- listOf arbitraryBall
-  links <- arbitraryLinks (length balls)
+arbitraryWorld = sized $ \n -> do
+  balls <- vectorOf n arbitraryBall
+  links <- arbitraryLinks
   return $ newWorld balls links
 
-randomWorld :: IO World
-randomWorld = (\stdgen -> unGen arbitraryWorld stdgen 500) `fmap` getStdGen
+randomWorld :: Int -> IO World
+randomWorld n = (\stdgen -> unGen arbitraryWorld stdgen n) `fmap` getStdGen
