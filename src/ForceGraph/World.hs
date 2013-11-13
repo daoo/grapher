@@ -49,7 +49,7 @@ newWorld balls links = World (alist balls) (newMatrix (length balls) links)
 iteration :: Float -> World -> World
 iteration !delta !w = w { vector = amap (integrate delta .$. upd) $ vector w }
   where
-    upd !i !b = setForce (forces w i b) b
+    upd !i !b = force (forces w i b) b
 
 forces :: World -> Int -> Ball -> Force
 forces !w !i !bi = airDrag bi + center bi + aixfold f zero (vector w)
@@ -60,20 +60,18 @@ forces !w !i !bi = airDrag bi + center bi + aixfold f zero (vector w)
         f2 = repell bi bj
 
 airDrag :: Ball -> Force
-airDrag ball = negate ((airDragConstant * radius ball) .* velocity ball)
+airDrag ball = negate ((airDragConstant * radius ball) .* vel ball)
 
 center :: Ball -> Force
-center ball = negate p
-  where
-    p = position ball
+center = negate . pos
 
 repell :: Ball -> Ball -> Force
 repell this other = interaction repellConstant (f other) (f this)
   where
-    f x = (position x, charge x)
+    f x = (pos x, charge x)
 
 attract :: Ball -> Ball -> Force
-attract this other = hookes springConstant (position other) (position this)
+attract this other = hookes springConstant (pos other) (pos this)
 
 -- |Calculate the spring attraction force from one point to another.
 -- Based on Hooke's law

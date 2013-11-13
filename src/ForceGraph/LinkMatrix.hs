@@ -1,6 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 module ForceGraph.LinkMatrix
-  ( Matrix()
+  ( Matrix
   , newMatrix
   , isLinked
   , withLinked

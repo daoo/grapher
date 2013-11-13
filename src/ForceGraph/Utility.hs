@@ -5,7 +5,6 @@ module ForceGraph.Utility
   , amap
   , alength
   , aixfold
-  , square
   , divZero
   ) where
 
@@ -41,10 +40,6 @@ aixfold f ini arr = go ini a
 
     go !acc !i | i < b     = go (f acc i (arr `unsafeAt` i)) (i+1)
                | otherwise = acc
-
-{-# INLINE square #-}
-square :: Num a => a -> a
-square x = x * x
 
 {-# INLINE divZero #-}
 -- |Special division that returns zero when dividing by zero

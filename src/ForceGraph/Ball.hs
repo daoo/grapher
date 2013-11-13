@@ -1,33 +1,30 @@
 module ForceGraph.Ball
   ( Ball(..)
-  , position
-  , velocity
+  , pos
+  , vel
+  , force
   , integrate
-  , setForce
   ) where
 
 import ForceGraph.Types
-import ForceGraph.Vector2F
 import qualified ForceGraph.Particle as P
 
 data Ball = Ball
   { particle :: {-# UNPACK #-} !P.Particle
   , radius   :: {-# UNPACK #-} !Radius
-  , mass     :: {-# UNPACK #-} !Mass
   , charge   :: {-# UNPACK #-} !Charge
   } deriving Show
 
-mapParticle :: (P.Particle -> P.Particle) -> Ball -> Ball
-mapParticle f b = b { particle = f (particle b) }
+{-# INLINE pos #-}
+pos :: Ball -> Point
+pos = P.pos . particle
 
-position :: Ball -> Point
-position = P.x1 . particle
+{-# INLINE vel #-}
+vel :: Ball -> Velocity
+vel = P.vel . particle
 
-velocity :: Ball -> Velocity
-velocity b = P.x1 p - P.x2 p where p = particle b
+force :: Force -> Ball -> Ball
+force f b = b { particle = P.force f (particle b) }
 
 integrate :: Float -> Ball -> Ball
-integrate = mapParticle . P.integrate
-
-setForce :: Force -> Ball -> Ball
-setForce f b = mapParticle (\p -> p { P.accel = f ./ mass b }) b
+integrate t b = b { particle = P.integrate t (particle b) }

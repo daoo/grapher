@@ -36,5 +36,5 @@ arrow p d = G.line [vtup p, vtup q] <> G.line [vtup a, vtup b, vtup c, vtup a]
 render :: World -> G.Picture
 render world = mconcat (linkBalls link world) <> mconcat (ballMap ball world)
   where
-    link a b = G.line [vtup $ position a, vtup $ position b]
-    ball b   = let Vector2F x y = position b in G.translate x y $ G.circleSolid (radius b)
+    link a b = G.line [vtup $ pos a, vtup $ pos b]
+    ball b   = let x :+ y = pos b in G.translate x y $ G.circleSolid (radius b)
