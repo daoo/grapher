@@ -1,4 +1,4 @@
-module ForceGraph.Ball
+module Grapher.Ball
   ( Ball(..)
   , pos
   , vel
@@ -6,8 +6,8 @@ module ForceGraph.Ball
   , integrate
   ) where
 
-import ForceGraph.Types
-import qualified ForceGraph.Particle as P
+import Grapher.Types
+import qualified Grapher.Particle as P
 
 data Ball = Ball
   { particle :: {-# UNPACK #-} !P.Particle

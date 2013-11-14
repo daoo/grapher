@@ -1,4 +1,4 @@
-module ForceGraph.Types
+module Grapher.Types
   ( Charge
   , Force
   , Mass
@@ -9,7 +9,7 @@ module ForceGraph.Types
   , Link
   ) where
 
-import ForceGraph.Vector2F
+import Grapher.Vector2F
 
 type Charge   = Float
 type Force    = Vector2F

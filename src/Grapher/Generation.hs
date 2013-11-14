@@ -1,12 +1,12 @@
-module ForceGraph.Generation
+module Grapher.Generation
   ( randomWorld ) where
 
 import Control.Applicative
-import ForceGraph.Ball
-import ForceGraph.Particle
-import ForceGraph.Types
-import ForceGraph.Vector2F
-import ForceGraph.World
+import Grapher.Ball
+import Grapher.Particle
+import Grapher.Types
+import Grapher.Vector2F
+import Grapher.World
 import System.Random
 import Test.QuickCheck.Gen
 

@@ -1,4 +1,4 @@
-module ForceGraph.Particle
+module Grapher.Particle
   ( Particle
   , mkParticle
   , pos
@@ -7,8 +7,8 @@ module ForceGraph.Particle
   , force
   ) where
 
-import ForceGraph.Types
-import ForceGraph.Vector2F
+import Grapher.Types
+import Grapher.Vector2F
 
 data Particle = Particle
   { x1    :: {-# UNPACK #-} !Point

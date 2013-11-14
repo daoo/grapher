@@ -1,0 +1,32 @@
+name:          grapher
+version:       0.1.0.0
+synopsis:      Render graphs using verlet integration
+homepage:      github.com/daoo/grapher
+license:       PublicDomain
+author:        daoo
+build-type:    Simple
+cabal-version: >=1.8
+
+library
+  other-modules:
+    Grapher.LinkMatrix
+    Grapher.Particle
+    Grapher.Types
+    Grapher.Utility
+  exposed-modules:
+    Grapher.Ball
+    Grapher.Generation
+    Grapher.Vector2F
+    Grapher.World
+  hs-source-dirs: src
+  build-depends: base, array, random, QuickCheck
+
+executable grapher
+  main-is: src/Main.hs
+  build-depends: base, grapher, gloss
+
+test-suite grapher-tests
+  type: exitcode-stdio-1.0
+  build-depends: base, grapher, QuickCheck, test-framework, test-framework-quickcheck2
+  main-is: Main.hs
+  hs-source-dirs: tests

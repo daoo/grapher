@@ -2,10 +2,10 @@
 module Main (main) where
 
 import Data.Monoid
-import ForceGraph.Ball
-import ForceGraph.Generation
-import ForceGraph.Vector2F
-import ForceGraph.World
+import Grapher.Ball
+import Grapher.Generation
+import Grapher.Vector2F
+import Grapher.World
 import qualified Graphics.Gloss as G
 
 main :: IO ()

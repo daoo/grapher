@@ -1,5 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
-module ForceGraph.World
+module Grapher.World
   ( World()
   , ballMap
   , linkBalls
@@ -10,11 +10,11 @@ module ForceGraph.World
 import Control.Exception
 import Data.Array (Array)
 import Data.Array.Base (unsafeAt)
-import ForceGraph.Ball
-import ForceGraph.LinkMatrix
-import ForceGraph.Types
-import ForceGraph.Utility
-import ForceGraph.Vector2F
+import Grapher.Ball
+import Grapher.LinkMatrix
+import Grapher.Types
+import Grapher.Utility
+import Grapher.Vector2F
 import qualified Data.Array as A
 
 repellConstant, springConstant, airDragConstant :: Float

@@ -1,5 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
-module ForceGraph.LinkMatrix
+module Grapher.LinkMatrix
   ( Matrix
   , newMatrix
   , isLinked

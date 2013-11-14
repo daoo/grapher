@@ -1,5 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
-module ForceGraph.Utility
+module Grapher.Utility
   ( (.$.)
   , alist
   , amap

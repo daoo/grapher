@@ -1,4 +1,4 @@
-module ForceGraph.Vector2F
+module Grapher.Vector2F
   ( Vector2F((:+))
   , vmap
   , vtup
