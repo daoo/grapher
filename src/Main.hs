@@ -17,7 +17,7 @@ main = do
     100
     world
     render
-    (const (iteration . realToFrac))
+    (const iteration)
 
 {-arrow :: Vector2F -> Vector2F -> G.Picture
 arrow p d = G.line [vtup p, vtup q] <> G.line [vtup a, vtup b, vtup c, vtup a]
