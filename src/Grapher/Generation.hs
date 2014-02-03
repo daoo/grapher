@@ -15,12 +15,11 @@ arbitraryPoint = (:+) <$> choose s <*> choose s
   where s = (-2000, 2000)
 
 arbitraryParticle :: Gen Particle
-arbitraryParticle = mkParticle <$> arbitraryPoint <*> pure 1
+arbitraryParticle = mkParticle <$> arbitraryPoint <*> pure 1 <*> pure 10
 
 arbitraryBall :: Gen Ball
 arbitraryBall = Ball
   <$> arbitraryParticle
-  <*> pure 10
   <*> pure 10
 
 arbitraryLinks :: Gen [(Int, Int)]

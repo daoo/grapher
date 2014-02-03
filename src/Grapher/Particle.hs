@@ -3,6 +3,7 @@ module Grapher.Particle
   , mkParticle
   , pos
   , vel
+  , charge
   , integrate
   , force
   ) where
@@ -11,15 +12,16 @@ import Grapher.Types
 import Grapher.Vector2F
 
 data Particle = Particle
-  { x1    :: {-# UNPACK #-} !Point
-  , x2    :: {-# UNPACK #-} !Point
-  , mass  :: {-# UNPACK #-} !Mass
-  , accel :: {-# UNPACK #-} !Vector2F
+  { x1     :: {-# UNPACK #-} !Point
+  , x2     :: {-# UNPACK #-} !Point
+  , accel  :: {-# UNPACK #-} !Vector2F
+  , mass   :: {-# UNPACK #-} !Mass
+  , charge :: {-# UNPACK #-} !Charge
   } deriving Show
 
 {-# INLINE mkParticle #-}
-mkParticle :: Vector2F -> Float -> Particle
-mkParticle p m = Particle p p m zero
+mkParticle :: Vector2F -> Mass -> Charge -> Particle
+mkParticle p m c = Particle p p zero m c
 
 {-# INLINE pos #-}
 pos :: Particle -> Vector2F

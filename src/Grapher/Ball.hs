@@ -3,6 +3,7 @@ module Grapher.Ball
   , pos
   , vel
   , force
+  , charge
   , integrate
   ) where
 
@@ -12,7 +13,6 @@ import qualified Grapher.Particle as P
 data Ball = Ball
   { particle :: {-# UNPACK #-} !P.Particle
   , radius   :: {-# UNPACK #-} !Radius
-  , charge   :: {-# UNPACK #-} !Charge
   } deriving Show
 
 {-# INLINE pos #-}
@@ -22,6 +22,10 @@ pos = P.pos . particle
 {-# INLINE vel #-}
 vel :: Ball -> Velocity
 vel = P.vel . particle
+
+{-# INLINE charge #-}
+charge :: Ball -> Charge
+charge = P.charge . particle
 
 force :: Force -> Ball -> Ball
 force f b = b { particle = P.force f (particle b) }
