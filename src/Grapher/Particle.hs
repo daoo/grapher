@@ -21,7 +21,7 @@ data Particle = Particle
 
 {-# INLINE mkParticle #-}
 mkParticle :: Vector2F -> Mass -> Charge -> Particle
-mkParticle p m c = Particle p p zero m c
+mkParticle p = Particle p p zero
 
 {-# INLINE pos #-}
 pos :: Particle -> Vector2F
