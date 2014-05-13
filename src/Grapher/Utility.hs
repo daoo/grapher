@@ -30,7 +30,7 @@ amap f arr = listArray bnds $ go a
 
 {-# INLINE alength #-}
 alength :: (Ix i, Num i, IArray a e) => a i e -> i
-alength = (\(a, b) -> b - a) . bounds
+alength arr = let (a, b) = bounds arr in b - a
 
 {-# INLINE aixfold #-}
 aixfold :: (IArray a e) => (acc -> Int -> e -> acc) -> acc -> a Int e -> acc

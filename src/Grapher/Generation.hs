@@ -7,8 +7,8 @@ import Grapher.Particle
 import Grapher.Types
 import Grapher.Vector2F
 import Grapher.World
-import System.Random
 import Test.QuickCheck.Gen
+import Test.QuickCheck.Random
 
 arbitraryPoint :: Gen Point
 arbitraryPoint = (:+) <$> choose s <*> choose s
@@ -32,4 +32,4 @@ arbitraryWorld = sized $ \n -> do
   return $ newWorld balls links
 
 randomWorld :: Int -> IO World
-randomWorld n = (\stdgen -> unGen arbitraryWorld stdgen n) `fmap` getStdGen
+randomWorld n = (\stdgen -> unGen arbitraryWorld stdgen n) `fmap` newQCGen

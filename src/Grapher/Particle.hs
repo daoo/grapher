@@ -12,11 +12,11 @@ import Grapher.Types
 import Grapher.Vector2F
 
 data Particle = Particle
-  { x1     :: {-# UNPACK #-} !Point
-  , x2     :: {-# UNPACK #-} !Point
-  , accel  :: {-# UNPACK #-} !Vector2F
-  , mass   :: {-# UNPACK #-} !Mass
-  , charge :: {-# UNPACK #-} !Charge
+  { x1     :: !Point
+  , x2     :: !Point
+  , accel  :: !Vector2F
+  , mass   :: !Mass
+  , charge :: !Charge
   } deriving Show
 
 {-# INLINE mkParticle #-}

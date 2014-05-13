@@ -20,7 +20,7 @@ module Grapher.Vector2F
 square :: Float -> Float
 square x = x * x
 
-data Vector2F = {-# UNPACK #-} !Float :+ {-# UNPACK #-} !Float
+data Vector2F = !Float :+ !Float
 
 instance Show Vector2F where
   show = show . vtup

@@ -11,8 +11,8 @@ import Grapher.Types
 import qualified Grapher.Particle as P
 
 data Ball = Ball
-  { particle :: {-# UNPACK #-} !P.Particle
-  , radius   :: {-# UNPACK #-} !Radius
+  { particle :: !P.Particle
+  , radius   :: !Radius
   } deriving Show
 
 {-# INLINE pos #-}
