@@ -22,14 +22,17 @@ arbitraryBall = Ball
   <$> arbitraryParticle
   <*> pure 10
 
-arbitraryLinks :: Gen [(Int, Int)]
-arbitraryLinks = sized $ \n -> mapM (\m -> (,) m <$> choose (m+1,n-1)) [0..n-1]
+arbitraryLink :: Int -> Gen (Int, Int)
+arbitraryLink n = (,) <$> choose (0, n-1) <*> choose (0, n-1)
 
-arbitraryWorld :: Gen World
-arbitraryWorld = sized $ \n -> do
-  balls <- vectorOf n arbitraryBall
-  links <- arbitraryLinks
-  return $ newWorld balls links
+arbitraryWorld :: Int -> Int -> Gen World
+arbitraryWorld balls links =
+  newWorld <$> vectorOf balls arbitraryBall <*> vectorOf links (arbitraryLink balls)
+
+arbitraryWorld1 :: Gen World
+arbitraryWorld1 = sized $ \n -> do
+  m <- choose (n, 2*n)
+  arbitraryWorld n m
 
 randomWorld :: Int -> IO World
-randomWorld n = (\stdgen -> unGen arbitraryWorld stdgen n) `fmap` newQCGen
+randomWorld n = (\stdgen -> unGen arbitraryWorld1 stdgen n) `fmap` newQCGen

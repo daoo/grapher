@@ -32,8 +32,7 @@ ballCount :: World -> Int
 ballCount = (\(a, b) -> b - a) . A.bounds . vector
 
 ballAt :: World -> Int -> Ball
-ballAt w i = assert (i < ballCount w) $
-  vector w `unsafeAt` i
+ballAt w i = vector w `unsafeAt` i
 
 linked :: World -> Int -> Int -> Bool
 linked = isLinked . matrix
