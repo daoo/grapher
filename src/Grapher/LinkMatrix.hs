@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE BangPatterns, TupleSections #-}
 module Grapher.LinkMatrix
   ( Matrix
   , newMatrix
@@ -18,29 +18,36 @@ data Matrix = Matrix !Int !(UArray Int Bool)
 calcIx :: Int -> Int -> Int -> Int
 calcIx n i j = (i * n) + j
 
-newMatrix :: Int -> [(Int, Int)] -> Matrix
-newMatrix !n !links = Matrix n (runSTUArray (new >>= go links))
-  where
-    new :: ST s (STUArray s Int Bool)
-    new = newArray (0, n*n-1) False
+setLink :: Int -> (Int, Int) -> STUArray s Int Bool -> ST s ()
+setLink n (i, j) arr = do
+  unsafeWrite arr (calcIx n i j) True
+  unsafeWrite arr (calcIx n j i) True
 
-    go [] !arr = return arr
-    go ((i, j):xs) !arr
-      | i >= n = error "index to large"
-      | j >= n = error "index to large"
-      | otherwise = do
-      unsafeWrite arr (calcIx n i j) True
-      unsafeWrite arr (calcIx n j i) True
-      go xs arr
+newMatrix :: Int -> [(Int, Int)] -> Matrix
+newMatrix !n !links = Matrix n (runSTUArray (new >>= fill))
+  where
+    maxindex = n*n-1
+
+    new :: ST s (STUArray s Int Bool)
+    new = newArray (0, maxindex) False
+
+    fill arr = go links
+      where
+        go [] = return arr
+
+        go ((i, j):xs)
+          | i >= n    = error "index too large"
+          | j >= n    = error "index too large"
+          | otherwise = setLink n (i, j) arr >> go xs
 
 {-# INLINE isLinked #-}
 isLinked :: Matrix -> Int -> Int -> Bool
 isLinked (Matrix n m) i j = m `unsafeAt` calcIx n i j
 
-withLinked :: (Int -> a) -> (a -> a -> b) -> Matrix -> [b]
-withLinked lu f m@(Matrix n _) = go 0 0
+withLinked :: (Int -> Int -> b) -> Matrix -> [b]
+withLinked f m@(Matrix n _) = go 0 0
   where
     go !i !j
-      | j < n     = if isLinked m i j then f (lu i) (lu j) : go i (j+1) else go i (j+1)
-      | i < n     = go (i+1) i
-      | otherwise = []
+      | i < n && j < n = if isLinked m i j then f i j : go i (j+1) else go i (j+1)
+      | i < n          = go (i+1) 0
+      | otherwise      = []

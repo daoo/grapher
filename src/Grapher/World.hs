@@ -42,7 +42,7 @@ ballMap :: (Ball -> a) -> World -> [a]
 ballMap f = map f . A.elems . vector
 
 linkBalls :: (Ball -> Ball -> a) -> World -> [a]
-linkBalls f w = withLinked (ballAt w) f (matrix w)
+linkBalls f w = withLinked (\i j -> f (ballAt w i) (ballAt w j)) (matrix w)
 
 newWorld :: [Ball] -> [Link] -> World
 newWorld balls links = World (alist balls) (newMatrix (length balls) links)
