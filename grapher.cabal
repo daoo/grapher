@@ -27,6 +27,11 @@ executable grapher
 
 test-suite grapher-tests
   type: exitcode-stdio-1.0
-  build-depends: base, grapher, QuickCheck, test-framework, test-framework-quickcheck2
+  build-depends:
+    base,
+    grapher,
+    tasty,
+    tasty-quickcheck,
+    QuickCheck
   main-is: Main.hs
   hs-source-dirs: tests
