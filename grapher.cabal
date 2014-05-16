@@ -19,7 +19,10 @@ library
     Grapher.Vector2F
     Grapher.World
   hs-source-dirs: src
-  build-depends: base, array, random, QuickCheck
+  build-depends:
+    base,
+    array,
+    QuickCheck
 
 executable grapher
   main-is: src/Main.hs

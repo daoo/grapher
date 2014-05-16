@@ -7,7 +7,7 @@ module Grapher.World
   , iteration
   ) where
 
-import Data.Array (Array)
+import Data.Array (Array, elems, listArray)
 import Data.Array.Base (unsafeAt)
 import Grapher.AdjacencyMatrix
 import Grapher.Ball
@@ -15,7 +15,6 @@ import Grapher.Physics
 import Grapher.Types
 import Grapher.Utility
 import Grapher.Vector2F
-import qualified Data.Array as A
 
 repellConstant, springConstant, airDragConstant :: Float
 repellConstant  = -100
@@ -27,9 +26,6 @@ data World = World
   , matrix :: Matrix
   } deriving Show
 
-ballCount :: World -> Int
-ballCount = (\(a, b) -> b - a) . A.bounds . vector
-
 ballAt :: World -> Int -> Ball
 ballAt w i = vector w `unsafeAt` i
 
@@ -37,13 +33,15 @@ linked :: World -> Int -> Int -> Bool
 linked = isAdjacent . matrix
 
 ballMap :: (Ball -> a) -> World -> [a]
-ballMap f = map f . A.elems . vector
+ballMap f = map f . elems . vector
 
 linkBalls :: (Ball -> Ball -> a) -> World -> [a]
 linkBalls f w = withAdjacent (\i j -> f (ballAt w i) (ballAt w j)) (matrix w)
 
 newWorld :: [Ball] -> [Link] -> World
-newWorld balls links = World (alist balls) (newMatrix (length balls) links)
+newWorld balls links = World (listArray (0, n-1) balls) (newMatrix n links)
+  where
+    n = length balls
 
 iteration :: Float -> World -> World
 iteration !delta !w = w { vector = amap (integrate delta .$. upd) $ vector w }
