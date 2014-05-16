@@ -1,14 +1,16 @@
 {-# LANGUAGE BangPatterns #-}
 module Grapher.World
   ( World()
-  , ballMap
-  , linkBalls
   , newWorld
+  , ballList
+  , linkList
+
   , iteration
   ) where
 
 import Data.Array (Array, elems, listArray)
 import Data.Array.Base (unsafeAt)
+import Data.Function
 import Grapher.AdjacencyMatrix
 import Grapher.Ball
 import Grapher.Physics
@@ -32,11 +34,11 @@ ballAt w i = vector w `unsafeAt` i
 linked :: World -> Int -> Int -> Bool
 linked = isAdjacent . matrix
 
-ballMap :: (Ball -> a) -> World -> [a]
-ballMap f = map f . elems . vector
+ballList :: World -> [Ball]
+ballList = elems . vector
 
-linkBalls :: (Ball -> Ball -> a) -> World -> [a]
-linkBalls f w = withAdjacent (\i j -> f (ballAt w i) (ballAt w j)) (matrix w)
+linkList :: (Ball -> Ball -> a) -> World -> [a]
+linkList f w = withAdjacent (f `on` ballAt w) (matrix w)
 
 newWorld :: [Ball] -> [Link] -> World
 newWorld balls links = World (listArray (0, n-1) balls) (newMatrix n links)

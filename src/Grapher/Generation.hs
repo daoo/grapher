@@ -1,5 +1,4 @@
-module Grapher.Generation
-  ( randomWorld ) where
+module Grapher.Generation ( randomWorld ) where
 
 import Control.Applicative
 import Grapher.Ball
@@ -11,7 +10,7 @@ import Test.QuickCheck.Gen
 import Test.QuickCheck.Random
 
 arbitraryPoint :: Gen Point
-arbitraryPoint = (:+) <$> choose s <*> choose s
+arbitraryPoint = newVector2F <$> choose s <*> choose s
   where s = (-2000, 2000)
 
 arbitraryParticle :: Gen Particle

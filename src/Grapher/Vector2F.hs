@@ -1,6 +1,7 @@
 module Grapher.Vector2F
-  ( Vector2F((:+))
-  , vmap
+  ( Vector2F
+  , newVector2F
+
   , vtup
   , zero
   , (.*)
@@ -14,24 +15,22 @@ module Grapher.Vector2F
   , orthogonal
   , normalize
   , project
-  )
-  where
+  ) where
 
 square :: Float -> Float
 square x = x * x
 
 data Vector2F = !Float :+ !Float
+  deriving Show
 
-instance Show Vector2F where
-  show = show . vtup
+newVector2F :: Float -> Float -> Vector2F
+newVector2F = (:+)
+
+{-# INLINE vtup #-}
+vtup :: Vector2F -> (Float, Float)
+vtup (x:+y) = (x,y)
 
 infixr 7 :+
-
-vmap :: (Float -> Float) -> Vector2F -> Vector2F
-vmap f (x :+ y) = f x :+ f y
-
-vtup :: Vector2F -> (Float, Float)
-vtup (x :+ y) = (x, y)
 
 zero :: Vector2F
 zero = 0 :+ 0
