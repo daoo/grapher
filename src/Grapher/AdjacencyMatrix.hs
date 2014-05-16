@@ -1,5 +1,5 @@
 {-# LANGUAGE BangPatterns, TupleSections #-}
-module Grapher.LinkMatrix
+module Grapher.AdjacencyMatrix
   ( Matrix
   , newMatrix
   , isLinked

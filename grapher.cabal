@@ -15,7 +15,7 @@ library
   exposed-modules:
     Grapher.Ball
     Grapher.Generation
-    Grapher.LinkMatrix
+    Grapher.AdjacencyMatrix
     Grapher.Vector2F
     Grapher.World
   hs-source-dirs: src

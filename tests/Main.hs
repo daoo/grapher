@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Grapher.LinkMatrix
+import Grapher.AdjacencyMatrix
 import Test.Tasty
 import Test.Tasty.QuickCheck as QC
 
