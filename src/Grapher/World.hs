@@ -7,11 +7,10 @@ module Grapher.World
   , iteration
   ) where
 
-import Control.Exception
 import Data.Array (Array)
 import Data.Array.Base (unsafeAt)
-import Grapher.Ball
 import Grapher.AdjacencyMatrix
+import Grapher.Ball
 import Grapher.Physics
 import Grapher.Types
 import Grapher.Utility
