@@ -2,8 +2,8 @@
 module Grapher.AdjacencyMatrix
   ( Matrix
   , newMatrix
-  , isLinked
-  , withLinked
+  , isAdjacent
+  , withAdjacent
   ) where
 
 import Control.Monad.ST
@@ -18,8 +18,8 @@ data Matrix = Matrix !Int !(UArray Int Bool)
 calcIx :: Int -> Int -> Int -> Int
 calcIx n i j = (i * n) + j
 
-setLink :: Int -> (Int, Int) -> STUArray s Int Bool -> ST s ()
-setLink n (i, j) arr = do
+setAdjacent :: Int -> (Int, Int) -> STUArray s Int Bool -> ST s ()
+setAdjacent n (i, j) arr = do
   unsafeWrite arr (calcIx n i j) True
   unsafeWrite arr (calcIx n j i) True
 
@@ -38,16 +38,16 @@ newMatrix !n !links = Matrix n (runSTUArray (new >>= fill))
         go ((i, j):xs)
           | i >= n    = error "index too large"
           | j >= n    = error "index too large"
-          | otherwise = setLink n (i, j) arr >> go xs
+          | otherwise = setAdjacent n (i, j) arr >> go xs
 
-{-# INLINE isLinked #-}
-isLinked :: Matrix -> Int -> Int -> Bool
-isLinked (Matrix n m) i j = m `unsafeAt` calcIx n i j
+{-# INLINE isAdjacent #-}
+isAdjacent :: Matrix -> Int -> Int -> Bool
+isAdjacent (Matrix n m) i j = m `unsafeAt` calcIx n i j
 
-withLinked :: (Int -> Int -> b) -> Matrix -> [b]
-withLinked f m@(Matrix n _) = go 0 0
+withAdjacent :: (Int -> Int -> b) -> Matrix -> [b]
+withAdjacent f m@(Matrix n _) = go 0 0
   where
     go !i !j
-      | i < n && j < n = if isLinked m i j then f i j : go i (j+1) else go i (j+1)
+      | i < n && j < n = if isAdjacent m i j then f i j : go i (j+1) else go i (j+1)
       | i < n          = go (i+1) 0
       | otherwise      = []

@@ -35,13 +35,13 @@ ballAt :: World -> Int -> Ball
 ballAt w i = vector w `unsafeAt` i
 
 linked :: World -> Int -> Int -> Bool
-linked = isLinked . matrix
+linked = isAdjacent . matrix
 
 ballMap :: (Ball -> a) -> World -> [a]
 ballMap f = map f . A.elems . vector
 
 linkBalls :: (Ball -> Ball -> a) -> World -> [a]
-linkBalls f w = withLinked (\i j -> f (ballAt w i) (ballAt w j)) (matrix w)
+linkBalls f w = withAdjacent (\i j -> f (ballAt w i) (ballAt w j)) (matrix w)
 
 newWorld :: [Ball] -> [Link] -> World
 newWorld balls links = World (alist balls) (newMatrix (length balls) links)
