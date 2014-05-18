@@ -1,4 +1,6 @@
 {-# LANGUAGE BangPatterns, TupleSections #-}
+-- |A data structure for an adjacency matrix. There is no direction for the
+-- relation, that is the 'isAdjacent' function is commutative.
 module Grapher.AdjacencyMatrix
   ( Matrix
   , newMatrix
@@ -41,10 +43,15 @@ newMatrix !n !links = Matrix n (runSTUArray (new >>= fill))
           | otherwise = setAdjacent n (i, j) arr >> go xs
 
 {-# INLINE isAdjacent #-}
+-- |Check if two indices are adjacent.
 isAdjacent :: Matrix -> Int -> Int -> Bool
 isAdjacent (Matrix n m) i j = m `unsafeAt` calcIx n i j
 
-withAdjacent :: (Int -> Int -> b) -> Matrix -> [b]
+-- |Map a function over all adjacent indices and collect the result in a list.
+--
+-- This function will result in duplicates, that is for all i, j both (i, j)
+-- and (j, i) will be in the result.
+withAdjacent :: (Int -> Int -> a) -> Matrix -> [a]
 withAdjacent f m@(Matrix n _) = go 0 0
   where
     go !i !j
