@@ -1,4 +1,7 @@
-module Grapher.Generation ( randomWorld ) where
+module Grapher.Generation
+  ( randomWorld
+  , randomWorldIO
+  ) where
 
 import Control.Applicative
 import Grapher.Ball
@@ -33,5 +36,8 @@ arbitraryWorld1 = sized $ \n -> do
   m <- choose (n, 2*n)
   arbitraryWorld n m
 
-randomWorld :: Int -> IO World
-randomWorld n = (\stdgen -> unGen arbitraryWorld1 stdgen n) `fmap` newQCGen
+randomWorld :: Int -> Int -> World
+randomWorld gen n = unGen arbitraryWorld1 (mkQCGen gen) n
+
+randomWorldIO :: IO World
+randomWorldIO = generate arbitraryWorld1

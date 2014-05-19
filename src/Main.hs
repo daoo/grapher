@@ -10,7 +10,7 @@ import qualified Graphics.Gloss as G
 
 main :: IO ()
 main = do
-  !world <- randomWorld 500
+  !world <- randomWorldIO
   G.simulate
     (G.InWindow "Force Graph" (800, 600) (0, 0))
     G.white

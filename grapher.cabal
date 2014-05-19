@@ -38,3 +38,12 @@ test-suite grapher-tests
     QuickCheck
   main-is: Main.hs
   hs-source-dirs: tests
+
+benchmark grapher-bench
+  type: exitcode-stdio-1.0
+  build-depends:
+    base,
+    grapher,
+    criterion
+  main-is: Main.hs
+  hs-source-dirs: bench
