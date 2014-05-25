@@ -47,6 +47,7 @@ newMatrix !n !links = Matrix n (runSTUArray (new >>= fill))
 isAdjacent :: Matrix -> Int -> Int -> Bool
 isAdjacent (Matrix n m) i j = m `unsafeAt` calcIx n i j
 
+{-# INLINE withAdjacent #-}
 -- |Map a function over all adjacent indices and collect the result in a list.
 --
 -- This function will result in duplicates, that is for all i, j both (i, j)
