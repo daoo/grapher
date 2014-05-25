@@ -3,7 +3,6 @@ module Main (main) where
 
 import Codec.Picture.Png
 import Codec.Picture.Types
-import Grapher.Ball
 import Grapher.Generation
 import Grapher.Vector2F
 import Grapher.World
@@ -17,7 +16,7 @@ times i f x = times (i-1) f (f x)
 
 main :: IO ()
 main = do
-  !world <- randomWorld 100
+  let world  = randomWorld 523054 100
   let world' = times 10000 (iteration 0.01) world
       img    = renderDrawing width height white $
         withTexture (uniformTexture black) $ do
@@ -38,11 +37,11 @@ strokeLine = stroke w j (c, c)
     j = JoinMiter 0
     c = CapStraight 0
 
-ball :: Ball -> [Primitive]
-ball a = circle (toV2 (pos a)) (radius a)
+ball :: Vector2F -> [Primitive]
+ball a = circle (toV2 a) radius
 
-link :: Ball -> Ball -> [Primitive]
-link a b = line (toV2 (pos a)) (toV2 (pos b))
+link :: Vector2F -> Vector2F -> [Primitive]
+link a b = line (toV2 a) (toV2 b)
 
 toV2 :: Vector2F -> V2 Float
 toV2 a = case vtup a of { (x,y) -> applyTransformation centering $ V2 x y }
@@ -50,6 +49,9 @@ toV2 a = case vtup a of { (x,y) -> applyTransformation centering $ V2 x y }
 width, height :: Int
 width  = 2000
 height = 2000
+
+radius :: Float
+radius = 10
 
 centering :: Transformation
 centering = translate (V2 (fromIntegral width/2) (fromIntegral height/2))

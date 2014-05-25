@@ -14,7 +14,6 @@ library
     Grapher.Types
     Grapher.Utility
   exposed-modules:
-    Grapher.Ball
     Grapher.Generation
     Grapher.Vector2F
     Grapher.World

@@ -4,7 +4,6 @@ module Grapher.Generation
   ) where
 
 import Control.Applicative
-import Grapher.Ball
 import Grapher.Particle
 import Grapher.Types
 import Grapher.Vector2F
@@ -19,17 +18,12 @@ arbitraryPoint = newVector2F <$> choose s <*> choose s
 arbitraryParticle :: Gen Particle
 arbitraryParticle = mkParticle <$> arbitraryPoint <*> pure 1 <*> pure 10
 
-arbitraryBall :: Gen Ball
-arbitraryBall = Ball
-  <$> arbitraryParticle
-  <*> pure 10
-
 arbitraryLink :: Int -> Gen (Int, Int)
 arbitraryLink n = (,) <$> choose (0, n-1) <*> choose (0, n-1)
 
 arbitraryWorld :: Int -> Int -> Gen World
-arbitraryWorld balls links =
-  newWorld <$> vectorOf balls arbitraryBall <*> vectorOf links (arbitraryLink balls)
+arbitraryWorld parts links =
+  newWorld <$> vectorOf parts arbitraryParticle <*> vectorOf links (arbitraryLink parts)
 
 arbitraryWorld1 :: Gen World
 arbitraryWorld1 = sized $ \n -> do
