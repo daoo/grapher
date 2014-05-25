@@ -31,7 +31,7 @@ arbitraryWorld1 = sized $ \n -> do
   arbitraryWorld n m
 
 randomWorld :: Int -> Int -> World
-randomWorld gen n = unGen arbitraryWorld1 (mkQCGen gen) n
+randomWorld = unGen arbitraryWorld1 . mkQCGen
 
 randomWorldIO :: IO World
 randomWorldIO = generate arbitraryWorld1

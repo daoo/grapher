@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 module Grapher.World
   ( World()
   , newWorld
@@ -46,14 +45,14 @@ newWorld balls links = World (listArray (0, n-1) balls) (newMatrix n links)
     n = length balls
 
 iteration :: Float -> World -> World
-iteration !delta !w = w { vector = amap (integrate delta .$. upd) $ vector w }
+iteration delta w = w { vector = amap (integrate delta .$. upd) $ vector w }
   where
-    upd !i !b = force (forces w i b) b
+    upd i b = force (forces w i b) b
 
 forces :: World -> Int -> Particle -> Force
-forces !w !i !bi = airDrag bi + center bi + aixfold f zero (vector w)
+forces w i bi = airDrag bi + center bi + aixfold f zero (vector w)
   where
-    f !acc !j !bj = acc+f1+f2
+    f acc j bj = acc+f1+f2
       where
         f1 = if linked w i j then attract bi bj else zero
         f2 = repell bi bj
