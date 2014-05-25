@@ -21,7 +21,7 @@ import Grapher.Vector2F
 repellConstant, springConstant, airDragConstant :: Float
 repellConstant  = -100
 springConstant  = 10
-airDragConstant = 30
+airDragConstant = 500
 
 data World = World
   { vector :: Array Int Particle
