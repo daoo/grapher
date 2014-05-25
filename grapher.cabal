@@ -9,13 +9,13 @@ cabal-version: >=1.8
 
 library
   other-modules:
+    Grapher.AdjacencyMatrix
     Grapher.Particle
     Grapher.Types
     Grapher.Utility
   exposed-modules:
     Grapher.Ball
     Grapher.Generation
-    Grapher.AdjacencyMatrix
     Grapher.Vector2F
     Grapher.World
   hs-source-dirs: src
