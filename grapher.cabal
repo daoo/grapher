@@ -25,7 +25,7 @@ library
     QuickCheck
 
 executable grapher
-  main-is: src/Main.hs
+  main-is: progs/Gloss.hs
   build-depends: base, grapher, gloss
 
 test-suite grapher-tests
