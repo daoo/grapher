@@ -5,7 +5,7 @@ import Test.Tasty
 import Test.Tasty.QuickCheck as QC
 
 toList :: Matrix -> [(Int, Int)]
-toList = withLinked (,)
+toList = withAdjacent (,)
 
 allLinks :: Int -> [(Int, Int)]
 allLinks n = [ (i, j) | i <- [0..n-1], j <- [0..n-1] ]

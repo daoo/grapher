@@ -9,10 +9,10 @@ cabal-version: >=1.8
 
 library
   other-modules:
-    Grapher.AdjacencyMatrix
     Grapher.Particle
     Grapher.Types
   exposed-modules:
+    Grapher.AdjacencyMatrix
     Grapher.Generation
     Grapher.Vector2F
     Grapher.World
