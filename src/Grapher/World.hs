@@ -50,23 +50,30 @@ iteration delta w = w { vector = V.imap (integrate delta .$. upd) $ vector w }
     upd i b = force (forces w i b) b
 
 forces :: World -> Int -> Particle -> Force
-forces w i bi = airDrag bi + center bi + V.ifoldl' f zero (vector w)
+forces w i bi = airDrag bi + centerPull bi + V.ifoldl' (\acc -> (+acc) .$. intrct) zero (vector w)
   where
-    f acc j bj = acc+f1+f2
-      where
-        f1 = if linked w i j then attract bi bj else zero
-        f2 = repell bi bj
+    intrct j bj
+      | linked w i j = attract bi bj + repell bi bj
+      | otherwise    = repell bi bj
 
+-- |Calculate the air drag force exerted on a particle.
+--
+-- The force is linearly proportional to the speed of the particle.
 airDrag :: Particle -> Force
 airDrag p = negate (airDragConstant .* vel p)
 
-center :: Particle -> Force
-center = negate . pos
+-- |Calculates the pulling force towards the center.
+--
+-- The force is linearly proportional to the distance from the center.
+centerPull :: Particle -> Force
+centerPull = negate . pos
 
+-- |Calcualte the repell force exerted by the first particle on the second.
 repell :: Particle -> Particle -> Force
 repell this other = interaction repellConstant (f other) (f this)
   where
     f x = (pos x, charge x)
 
+-- |Calculate the attraction force between two connected particles.
 attract :: Particle -> Particle -> Force
 attract this other = hookes springConstant (pos other) (pos this)
