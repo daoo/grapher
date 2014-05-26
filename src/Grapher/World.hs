@@ -22,8 +22,8 @@ springConstant  = 10
 airDragConstant = 500
 
 data World = World
-  { vector :: Vector Particle
-  , matrix :: Matrix
+  { vector :: !(Vector Particle)
+  , matrix :: !Matrix
   } deriving Show
 
 particle :: World -> Int -> Particle
