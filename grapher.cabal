@@ -12,7 +12,6 @@ library
     Grapher.AdjacencyMatrix
     Grapher.Particle
     Grapher.Types
-    Grapher.Utility
   exposed-modules:
     Grapher.Generation
     Grapher.Vector2F

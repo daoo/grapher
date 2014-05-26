@@ -52,8 +52,12 @@ forces :: World -> Int -> Particle -> Force
 forces w i bi = airDrag bi + centerPull bi + V.sum (V.imap intrct (vector w))
   where
     intrct j bj
-      | linked w i j = attract bi bj + repell bi bj
-      | otherwise    = repell bi bj
+      | i == j       = zero
+      | linked w i j = attract bi bj + frepell
+      | otherwise    = frepell
+
+      where
+        frepell = repell bi bj
 
 -- |Calculate the air drag force exerted on a particle.
 --
