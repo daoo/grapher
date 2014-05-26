@@ -20,7 +20,7 @@ library
   hs-source-dirs: src
   build-depends:
     base,
-    array,
+    vector,
     QuickCheck
 
 executable grapher-interactive

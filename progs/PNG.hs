@@ -21,7 +21,7 @@ main = do
       img    = renderDrawing width height white $
         withTexture (uniformTexture black) $ do
           mapM_ strokeLine $ linkList link world'
-          mapM_ (fill . ball) $ ballList world'
+          mapM_ (fill . ball) $ particleList world'
   writePng "test.png" img
 
 white :: PixelRGB8

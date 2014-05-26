@@ -1,15 +1,15 @@
 module Grapher.World
   ( World()
   , newWorld
-  , ballList
+  , particleList
   , linkList
 
   , iteration
   ) where
 
-import Data.Array (Array, elems, listArray)
-import Data.Array.Base (unsafeAt)
 import Data.Function
+import Data.Vector (Vector)
+import qualified Data.Vector as V
 import Grapher.AdjacencyMatrix
 import Grapher.Particle
 import Grapher.Physics
@@ -23,34 +23,34 @@ springConstant  = 10
 airDragConstant = 500
 
 data World = World
-  { vector :: Array Int Particle
+  { vector :: Vector Particle
   , matrix :: Matrix
   } deriving Show
 
-ballAt :: World -> Int -> Particle
-ballAt w i = vector w `unsafeAt` i
+particle :: World -> Int -> Particle
+particle w i = vector w `V.unsafeIndex` i
 
 linked :: World -> Int -> Int -> Bool
 linked = isAdjacent . matrix
 
-ballList :: World -> [Vector2F]
-ballList = map pos . elems . vector
+particleList :: World -> [Vector2F]
+particleList = map pos . V.toList . vector
 
 linkList :: (Vector2F -> Vector2F -> a) -> World -> [a]
-linkList f w = withAdjacent (f `on` (pos . ballAt w)) (matrix w)
+linkList f w = withAdjacent (f `on` (pos . particle w)) (matrix w)
 
 newWorld :: [Particle] -> [Link] -> World
-newWorld balls links = World (listArray (0, n-1) balls) (newMatrix n links)
+newWorld parts links = World (V.fromListN n parts) (newMatrix n links)
   where
-    n = length balls
+    n = length parts
 
 iteration :: Float -> World -> World
-iteration delta w = w { vector = amap (integrate delta .$. upd) $ vector w }
+iteration delta w = w { vector = V.imap (integrate delta .$. upd) $ vector w }
   where
     upd i b = force (forces w i b) b
 
 forces :: World -> Int -> Particle -> Force
-forces w i bi = airDrag bi + center bi + aixfold f zero (vector w)
+forces w i bi = airDrag bi + center bi + V.ifoldl' f zero (vector w)
   where
     f acc j bj = acc+f1+f2
       where
@@ -58,7 +58,7 @@ forces w i bi = airDrag bi + center bi + aixfold f zero (vector w)
         f2 = repell bi bj
 
 airDrag :: Particle -> Force
-airDrag ball = negate (airDragConstant .* vel ball)
+airDrag p = negate (airDragConstant .* vel p)
 
 center :: Particle -> Force
 center = negate . pos

@@ -9,29 +9,27 @@ module Grapher.AdjacencyMatrix
   ) where
 
 import Control.Monad.ST
-import Data.Array.Base (unsafeAt, unsafeWrite)
-import Data.Array.MArray
-import Data.Array.ST
-import Data.Array.Unboxed (UArray)
+import Data.Vector.Unboxed as V
+import Data.Vector.Unboxed.Mutable as M
 
-data Matrix = Matrix !Int !(UArray Int Bool)
+data Matrix = Matrix !Int !(Vector Bool)
   deriving Show
 
 calcIx :: Int -> Int -> Int -> Int
 calcIx n i j = (i * n) + j
 
-setAdjacent :: Int -> (Int, Int) -> STUArray s Int Bool -> ST s ()
+setAdjacent :: Int -> (Int, Int) -> MVector s Bool -> ST s ()
 setAdjacent n (i, j) arr = do
   unsafeWrite arr (calcIx n i j) True
   unsafeWrite arr (calcIx n j i) True
 
 newMatrix :: Int -> [(Int, Int)] -> Matrix
-newMatrix !n !links = Matrix n (runSTUArray (new >>= fill))
+newMatrix !n !links = Matrix n (create (mkvector >>= fill))
   where
-    maxindex = n*n-1
+    count = n*n-1
 
-    new :: ST s (STUArray s Int Bool)
-    new = newArray (0, maxindex) False
+    mkvector :: ST s (MVector s Bool)
+    mkvector = M.replicate count False
 
     fill arr = go links
       where
@@ -45,7 +43,7 @@ newMatrix !n !links = Matrix n (runSTUArray (new >>= fill))
 {-# INLINE isAdjacent #-}
 -- |Check if two indices are adjacent.
 isAdjacent :: Matrix -> Int -> Int -> Bool
-isAdjacent (Matrix n m) i j = m `unsafeAt` calcIx n i j
+isAdjacent (Matrix n m) i j = m `unsafeIndex` calcIx n i j
 
 {-# INLINE withAdjacent #-}
 -- |Map a function over all adjacent indices and collect the result in a list.

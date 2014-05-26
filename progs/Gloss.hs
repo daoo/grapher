@@ -33,7 +33,7 @@ arrow p d = G.line [vtup p, vtup q] <> G.line [vtup a, vtup b, vtup c, vtup a]
     c = q - d''-}
 
 render :: World -> G.Picture
-render world = mconcat (linkList link world) <> mconcat (map ball $ ballList world)
+render world = mconcat (linkList link world) <> mconcat (map ball $ particleList world)
   where
     link a b = G.line [vtup a, vtup b]
     ball b   = uncurry G.translate (vtup b) $ G.circleSolid radius
