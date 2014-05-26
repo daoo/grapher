@@ -14,7 +14,6 @@ import Grapher.AdjacencyMatrix
 import Grapher.Particle
 import Grapher.Physics
 import Grapher.Types
-import Grapher.Utility
 import Grapher.Vector2F
 
 repellConstant, springConstant, airDragConstant :: Float
@@ -45,12 +44,12 @@ newWorld parts links = World (V.fromListN n parts) (newMatrix n links)
     n = length parts
 
 iteration :: Float -> World -> World
-iteration delta w = w { vector = V.imap (integrate delta .$. upd) $ vector w }
+iteration delta w = w { vector = V.imap f $ vector w }
   where
-    upd i b = force (forces w i b) b
+    f i b = integrate delta $ force (forces w i b) b
 
 forces :: World -> Int -> Particle -> Force
-forces w i bi = airDrag bi + centerPull bi + V.ifoldl' (\acc -> (+acc) .$. intrct) zero (vector w)
+forces w i bi = airDrag bi + centerPull bi + V.sum (V.imap intrct (vector w))
   where
     intrct j bj
       | linked w i j = attract bi bj + repell bi bj
