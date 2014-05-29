@@ -39,9 +39,9 @@ linkList :: (Vector2F -> Vector2F -> a) -> World -> [a]
 linkList f w = withAdjacent (f `on` (pos . particle w)) (matrix w)
 
 newWorld :: [Particle] -> [Link] -> World
-newWorld parts links = World (V.fromListN n parts) (newMatrix n links)
+newWorld parts links = World v (newMatrix (V.length v) links)
   where
-    n = length parts
+    v = V.fromList parts
 
 iteration :: Float -> World -> World
 iteration delta w = w { vector = V.imap f $ vector w }
