@@ -32,9 +32,11 @@ particle w i = vector w `V.unsafeIndex` i
 linked :: World -> Int -> Int -> Bool
 linked = isAdjacent . matrix
 
+{-# INLINE particleList #-}
 particleList :: World -> [Vector2F]
 particleList = map pos . V.toList . vector
 
+{-# INLINE linkList #-}
 linkList :: (Vector2F -> Vector2F -> a) -> World -> [a]
 linkList f w = withAdjacent (f `on` (pos . particle w)) (matrix w)
 
