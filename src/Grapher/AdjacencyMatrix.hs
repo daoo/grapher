@@ -51,9 +51,9 @@ isAdjacent (Matrix n m) i j = m `unsafeIndex` calcIx n i j
 -- This function will result in duplicates, that is for all i, j both (i, j)
 -- and (j, i) will be in the result.
 withAdjacent :: (Int -> Int -> a) -> Matrix -> [a]
-withAdjacent f m@(Matrix n _) = go 0 0
+withAdjacent f (Matrix n m) = go 0 0 0
   where
-    go !i !j
-      | i < n && j < n = if isAdjacent m i j then f i j : go i (j+1) else go i (j+1)
-      | i < n          = go (i+1) 0
+    go !i !j !k
+      | i < n && j < n = if m `unsafeIndex` k then f i j : go i (j+1) (k+1) else go i (j+1) (k+1)
+      | i < n          = go (i+1) 0 k
       | otherwise      = []
