@@ -24,11 +24,11 @@ library
 
 executable grapher-interactive
   main-is: progs/Gloss.hs
-  build-depends: base, grapher, gloss
+  build-depends: base, grapher, QuickCheck, gloss
 
 executable grapher-png
   main-is: progs/PNG.hs
-  build-depends: base, grapher, JuicyPixels, Rasterific
+  build-depends: base, grapher, QuickCheck, JuicyPixels, Rasterific
 
 test-suite grapher-tests
   type: exitcode-stdio-1.0
