@@ -9,9 +9,11 @@ import Test.QuickCheck.Gen
 import Test.QuickCheck.Random
 import qualified Graphics.Gloss as G
 
+world :: World
+world = unGen (arbitraryGrid 10 10) (mkQCGen 532453742) 100
+
 main :: IO ()
 main = do
-  let world = unGen (arbitraryGrid 10 10) (mkQCGen 532453742) 100
   G.simulate
     (G.InWindow "Force Graph" (800, 600) (0, 0))
     G.white
@@ -35,7 +37,7 @@ arrow p d = G.line [vtup p, vtup q] <> G.line [vtup a, vtup b, vtup c, vtup a]
     c = q - d''-}
 
 render :: World -> G.Picture
-render world = mconcat (linkList link world) <> mconcat (map ball $ particleList world)
+render w = mconcat (linkList link w) <> mconcat (map ball $ particleList w)
   where
     link a b = G.line [vtup a, vtup b]
     ball b   = uncurry G.translate (vtup b) $ G.circleSolid radius
