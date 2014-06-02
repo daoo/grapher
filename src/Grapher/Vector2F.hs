@@ -17,10 +17,6 @@ module Grapher.Vector2F
   , project
   ) where
 
-import Control.Applicative
-import Foreign.Ptr
-import Foreign.Storable
-
 square :: Float -> Float
 square x = x * x
 
@@ -90,20 +86,3 @@ normalize v =
 -- |Project u onto v where v is a normalized
 project :: Vector2F -> Vector2F -> Vector2F
 project u v = let v' = normalize v in (u `dot` v') .* v'
-
-instance Storable Vector2F where
-  {-# INLINE sizeOf #-}
-  sizeOf _ = 2 * sizeOf (undefined :: Float)
-
-  {-# INLINE alignment #-}
-  alignment _ = 2 * alignment (undefined :: Float)
-
-  {-# INLINE peek #-}
-  peek ptr = (:+)
-    <$> peek (castPtr ptr)
-    <*> peek (castPtr ptr `plusPtr` sizeOf (undefined :: Float))
-
-  {-# INLINE poke #-}
-  poke ptr (x :+ y) = do
-    poke (castPtr ptr) x
-    poke (castPtr ptr `plusPtr` sizeOf (undefined :: Float)) y
