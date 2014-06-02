@@ -9,12 +9,13 @@ module Grapher.World
 
 import Data.Function
 import Data.Vector (Vector)
-import qualified Data.Vector as V
 import Grapher.AdjacencyMatrix
 import Grapher.Particle
 import Grapher.Physics
 import Grapher.Types
 import Grapher.Vector2F
+import Numeric.FastMath ()
+import qualified Data.Vector as V
 
 repellConstant, springConstant, airDragConstant :: Float
 repellConstant  = -100
