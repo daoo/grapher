@@ -1,7 +1,6 @@
 module Grapher.Physics where
 
 import Grapher.Types
-import Grapher.Utility
 import Grapher.Vector2F
 
 -- |Calculate the spring attraction force from one point to another.
@@ -18,5 +17,5 @@ interaction :: Float          -- ^ Constant factor
             -> (Point, Float) -- ^ Point 1
             -> (Point, Float) -- ^ Point 2
             -> Force
-interaction c (p1, v1) (p2, v2) = (c * v1 * v2 `divZero` mag2 u) .* u
+interaction c (p1, v1) (p2, v2) = (c * v1 * v2 / mag2 u) .* u
   where u = p1 - p2

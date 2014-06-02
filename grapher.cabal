@@ -11,22 +11,24 @@ library
   other-modules:
     Grapher.Particle
     Grapher.Types
-    Grapher.Utility
   exposed-modules:
-    Grapher.Ball
-    Grapher.Generation
     Grapher.AdjacencyMatrix
+    Grapher.Generation
     Grapher.Vector2F
     Grapher.World
   hs-source-dirs: src
   build-depends:
     base,
-    array,
+    vector,
     QuickCheck
 
-executable grapher
-  main-is: src/Main.hs
-  build-depends: base, grapher, gloss
+executable grapher-interactive
+  main-is: progs/Gloss.hs
+  build-depends: base, grapher, QuickCheck, gloss
+
+executable grapher-png
+  main-is: progs/PNG.hs
+  build-depends: base, grapher, QuickCheck, JuicyPixels, Rasterific
 
 test-suite grapher-tests
   type: exitcode-stdio-1.0
@@ -38,3 +40,12 @@ test-suite grapher-tests
     QuickCheck
   main-is: Main.hs
   hs-source-dirs: tests
+
+benchmark grapher-bench
+  type: exitcode-stdio-1.0
+  build-depends:
+    base,
+    grapher,
+    criterion
+  main-is: Main.hs
+  hs-source-dirs: bench

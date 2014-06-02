@@ -1,9 +1,9 @@
 build:
-	@cabal build --ghc-options="-Wall -O -rtsopts -fno-ignore-asserts"
+	@cabal build --ghc-options="-Wall -O -fno-ignore-asserts"
 
 prof:
 	@cabal configure --enable-library-profiling --enable-executable-profiling
-	@cabal build --ghc-options="-Wall -rtsopts -prof -fprof-auto"
+	@cabal build --ghc-options="-Wall -prof -fprof-auto"
 
 release:
 	@cabal clean

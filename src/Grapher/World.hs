@@ -1,73 +1,84 @@
-{-# LANGUAGE BangPatterns #-}
 module Grapher.World
   ( World()
   , newWorld
-  , ballList
+  , particleList
   , linkList
 
   , iteration
   ) where
 
-import Data.Array (Array, elems, listArray)
-import Data.Array.Base (unsafeAt)
 import Data.Function
+import Data.Vector (Vector)
+import qualified Data.Vector as V
 import Grapher.AdjacencyMatrix
-import Grapher.Ball
+import Grapher.Particle
 import Grapher.Physics
 import Grapher.Types
-import Grapher.Utility
 import Grapher.Vector2F
 
 repellConstant, springConstant, airDragConstant :: Float
 repellConstant  = -100
 springConstant  = 10
-airDragConstant = 30
+airDragConstant = 500
 
 data World = World
-  { vector :: Array Int Ball
-  , matrix :: Matrix
+  { vector :: !(Vector Particle)
+  , matrix :: !Matrix
   } deriving Show
 
-ballAt :: World -> Int -> Ball
-ballAt w i = vector w `unsafeAt` i
+particle :: World -> Int -> Particle
+particle w i = vector w `V.unsafeIndex` i
 
 linked :: World -> Int -> Int -> Bool
 linked = isAdjacent . matrix
 
-ballList :: World -> [Ball]
-ballList = elems . vector
+{-# INLINE particleList #-}
+particleList :: World -> [Vector2F]
+particleList = map pos . V.toList . vector
 
-linkList :: (Ball -> Ball -> a) -> World -> [a]
-linkList f w = withAdjacent (f `on` ballAt w) (matrix w)
+{-# INLINE linkList #-}
+linkList :: (Vector2F -> Vector2F -> a) -> World -> [a]
+linkList f w = withAdjacent (f `on` (pos . particle w)) (matrix w)
 
-newWorld :: [Ball] -> [Link] -> World
-newWorld balls links = World (listArray (0, n-1) balls) (newMatrix n links)
+newWorld :: [Particle] -> [Link] -> World
+newWorld parts links = World v (newMatrix (V.length v) links)
   where
-    n = length balls
+    v = V.fromList parts
 
 iteration :: Float -> World -> World
-iteration !delta !w = w { vector = amap (integrate delta .$. upd) $ vector w }
+iteration delta w = w { vector = V.imap f $ vector w }
   where
-    upd !i !b = force (forces w i b) b
+    f i b = integrate delta $ force (forces w i b) b
 
-forces :: World -> Int -> Ball -> Force
-forces !w !i !bi = airDrag bi + center bi + aixfold f zero (vector w)
+forces :: World -> Int -> Particle -> Force
+forces w i bi = airDrag bi + centerPull bi + V.sum (V.imap intrct (vector w))
   where
-    f !acc !j !bj = acc+f1+f2
+    intrct j bj
+      | i == j       = zero
+      | linked w i j = attract bi bj + frepell
+      | otherwise    = frepell
+
       where
-        f1 = if linked w i j then attract bi bj else zero
-        f2 = repell bi bj
+        frepell = repell bi bj
 
-airDrag :: Ball -> Force
-airDrag ball = negate ((airDragConstant * radius ball) .* vel ball)
+-- |Calculate the air drag force exerted on a particle.
+--
+-- The force is linearly proportional to the speed of the particle.
+airDrag :: Particle -> Force
+airDrag p = negate (airDragConstant .* vel p)
 
-center :: Ball -> Force
-center = negate . pos
+-- |Calculates the pulling force towards the center.
+--
+-- The force is linearly proportional to the distance from the center.
+centerPull :: Particle -> Force
+centerPull = negate . pos
 
-repell :: Ball -> Ball -> Force
+-- |Calcualte the repell force exerted by the first particle on the second.
+repell :: Particle -> Particle -> Force
 repell this other = interaction repellConstant (f other) (f this)
   where
     f x = (pos x, charge x)
 
-attract :: Ball -> Ball -> Force
+-- |Calculate the attraction force between two connected particles.
+attract :: Particle -> Particle -> Force
 attract this other = hookes springConstant (pos other) (pos this)

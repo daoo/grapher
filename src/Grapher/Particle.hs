@@ -34,12 +34,15 @@ pos = x1
 vel :: Particle -> Vector2F
 vel n = x1 n - x2 n
 
+{-# INLINE move #-}
 move :: Particle -> Vector2F -> Particle
 move n p = n { x1 = p, x2 = x1 n }
 
+{-# INLINE force #-}
 force :: Force -> Particle -> Particle
 force f p = p { accel = f /. mass p }
 
+{-# INLINE integrate #-}
 integrate :: Float -> Particle -> Particle
 integrate t p = move p $ pos p + vel p + (t * t) .* accel p
 
