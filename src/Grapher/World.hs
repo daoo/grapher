@@ -3,11 +3,13 @@ module Grapher.World
   , newWorld
   , particleList
   , linkList
+  , particlesWithLinks
 
   , iteration
   ) where
 
 import Data.Function
+import Data.Monoid
 import Data.Vector (Vector)
 import Grapher.AdjacencyMatrix
 import Grapher.Particle
@@ -40,6 +42,12 @@ particleList = map pos . V.toList . vector
 {-# INLINE linkList #-}
 linkList :: (Vector2F -> Vector2F -> a) -> World -> [a]
 linkList f w = withAdjacent (f `on` (pos . particle w)) (matrix w)
+
+{-# INLINE particlesWithLinks #-}
+particlesWithLinks :: Monoid a => (Vector2F -> a) -> (Vector2F -> Vector2F -> a) -> World -> [a]
+particlesWithLinks f g (World v m) = V.toList $ V.imap h v
+  where
+    h i a = f (pos a) <> mconcat (adjacentTo (g (pos a) . pos . V.unsafeIndex v) m i)
 
 newWorld :: [Particle] -> [Link] -> World
 newWorld parts links = World v (newMatrix (V.length v) links)

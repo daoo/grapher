@@ -5,6 +5,7 @@ module Grapher.AdjacencyMatrix
   ( Matrix
   , newMatrix
   , isAdjacent
+  , adjacentTo
   , withAdjacent
   ) where
 
@@ -44,6 +45,15 @@ newMatrix !n !links = Matrix n (create (mkvector >>= fill))
 -- |Check if two indices are adjacent.
 isAdjacent :: Matrix -> Int -> Int -> Bool
 isAdjacent (Matrix n m) i j = m `unsafeIndex` calcIx n i j
+
+{-# INLINE adjacentTo #-}
+-- |Get the indices that are adjacent to a given index.
+adjacentTo :: (Int -> a) -> Matrix -> Int -> [a]
+adjacentTo f (Matrix n m) i = go 0 (i*n)
+  where
+    go k x
+      | k < n     = if m `unsafeIndex` x then f k : go (k+1) (x+1) else go (k+1) (x+1)
+      | otherwise = []
 
 {-# INLINE withAdjacent #-}
 -- |Map a function over all adjacent indices and collect the result in a list.
