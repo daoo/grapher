@@ -22,20 +22,6 @@ main = do
     render
     (const iteration)
 
-{-arrow :: Vector2F -> Vector2F -> G.Picture
-arrow p d = G.line [vtup p, vtup q] <> G.line [vtup a, vtup b, vtup c, vtup a]
-  where
-    q = p + d
-    l = mag d
-    s = l * 0.03
-
-    d'  = s .* normalize d
-    d'' = orthogonal d'
-
-    a = q + d'
-    b = q + d''
-    c = q - d''-}
-
 render :: World -> G.Picture
 render = mconcat . particlesWithLinks part link
   where
