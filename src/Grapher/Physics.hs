@@ -4,7 +4,8 @@ import Grapher.Types
 import Grapher.Vector2F
 
 -- |Calculate the spring attraction force from one point to another.
--- Based on Hooke's law
+--
+-- Based on Hooke's law.
 hookes :: Float -> Point -> Point -> Force
 hookes k p1 p2 = k .* (p1 - p2)
 
