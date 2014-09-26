@@ -16,15 +16,16 @@ times :: Int -> (a -> a) -> a -> a
 times 0 _ x = x
 times i f x = times (i-1) f (f x)
 
+world, world' :: World
+world  = unGen (arbitraryWorld 100 100) (mkQCGen 523054) 100
+world' = times 10000 (iteration 0.01) world
+
 main :: IO ()
-main = do
-  let world  = unGen (arbitraryWorld 100 100) (mkQCGen 523054) 100
-  let world' = times 10000 (iteration 0.01) world
-      img    = renderDrawing width height white $
-        withTexture (uniformTexture black) $ do
-          mapM_ strokeLine $ linkList link world'
-          mapM_ (fill . ball) $ particleList world'
-  writePng "test.png" img
+main = writePng "test.png" $
+  renderDrawing width height white $
+    withTexture (uniformTexture black) $ do
+      mapM_ strokeLine $ linkList link world'
+      mapM_ (fill . ball) $ particleList world'
 
 white :: PixelRGB8
 white = PixelRGB8 255 255 255

@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 module Grapher.Generation
   ( arbitraryWorld
   , arbitraryGrid
@@ -26,7 +27,7 @@ arbitraryGrid n m = do
   parts <- vectorOf (n*m) arbitraryParticle
   return $ newWorld parts (go 0 0)
   where
-    go i j
+    go !i !j
       | i == n-1 && j == m-1 = []
       | i == n-1             = edger i j : go i (j+1)
       | j == m-1             = edged i j : go (i+1) 0
