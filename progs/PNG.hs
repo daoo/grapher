@@ -27,11 +27,9 @@ main = writePng "test.png" $
       mapM_ strokeLine $ linkList link world'
       mapM_ (fill . ball) $ particleList world'
 
-white :: PixelRGB8
-white = PixelRGB8 255 255 255
-
-black :: PixelRGB8
-black = PixelRGB8 0 0 0
+  where
+    white = PixelRGBA8 255 255 255 255
+    black = PixelRGBA8 0 0 0 255
 
 strokeLine :: [Primitive] -> Drawing px ()
 strokeLine = stroke w j (c, c)
