@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 module Grapher.World
   ( World()
   , newWorld
@@ -8,6 +9,7 @@ module Grapher.World
   , iteration
   ) where
 
+import Prelude hiding (pi)
 import Data.Function
 import Data.Monoid
 import Data.Vector (Vector)
@@ -19,10 +21,10 @@ import Grapher.Vector2F
 import Numeric.FastMath ()
 import qualified Data.Vector as V
 
-repellConstant, springConstant, airDragConstant :: Float
-repellConstant  = -100
-springConstant  = 10
-airDragConstant = 500
+repelConstant, springConstant, airDragConstant :: Float
+repelConstant   = -100
+springConstant  = 100
+airDragConstant = 200
 
 data World = World
   { vector :: !(Vector Particle)
@@ -60,34 +62,39 @@ iteration delta w = w { vector = V.imap f $ vector w }
     f i b = integrate delta $ force (forces w i b) b
 
 forces :: World -> Int -> Particle -> Force
-forces w i bi = airDrag bi + centerPull bi + V.sum (V.imap intrct (vector w))
+forces !w !i !pi =
+  forceDrag pi +
+  forceCenter pi +
+  V.sum (V.imap (forceInteractive w i pi) (vector w))
   where
-    intrct j bj
-      | i == j       = zero
-      | linked w i j = attract bi bj + frepell
-      | otherwise    = frepell
 
-      where
-        frepell = repell bi bj
+forceInteractive :: World -> Int -> Particle -> Int -> Particle -> Force
+forceInteractive !w !i !pi !j !pj
+  | i == j       = zero
+  | linked w i j = forceAttract pi pj + frepel
+  | otherwise    = frepel
+
+  where
+    frepel = forceRepel pi pj
 
 -- |Calculate the air drag force exerted on a particle.
 --
 -- The force is linearly proportional to the speed of the particle.
-airDrag :: Particle -> Force
-airDrag p = negate (airDragConstant .* vel p)
+forceDrag :: Particle -> Force
+forceDrag p = negate (airDragConstant .* vel p)
 
 -- |Calculates the pulling force towards the center.
 --
 -- The force is linearly proportional to the distance from the center.
-centerPull :: Particle -> Force
-centerPull = negate . pos
+forceCenter :: Particle -> Force
+forceCenter = negate . pos
 
--- |Calcualte the repell force exerted by the first particle on the second.
-repell :: Particle -> Particle -> Force
-repell this other = interaction repellConstant (f other) (f this)
+-- |Calcualte the repel force exerted by the first particle on the second.
+forceRepel :: Particle -> Particle -> Force
+forceRepel this other = interaction repelConstant (f other) (f this)
   where
     f x = (pos x, charge x)
 
--- |Calculate the attraction force between two connected particles.
-attract :: Particle -> Particle -> Force
-attract this other = hookes springConstant (pos other) (pos this)
+-- |Calculate the attractive force between two connected particles.
+forceAttract :: Particle -> Particle -> Force
+forceAttract this other = hookes springConstant (pos other) (pos this)
