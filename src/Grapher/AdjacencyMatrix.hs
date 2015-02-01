@@ -1,6 +1,6 @@
 {-# LANGUAGE BangPatterns, TupleSections #-}
 -- |A data structure for an adjacency matrix. There is no direction for the
--- relation, that is the 'isAdjacent' function is commutative.
+-- relation, meaning the 'isAdjacent' function is commutative.
 module Grapher.AdjacencyMatrix
   ( Matrix
   , newMatrix
@@ -12,6 +12,8 @@ module Grapher.AdjacencyMatrix
 import Control.Monad.ST
 import Data.Vector.Unboxed as V
 import Data.Vector.Unboxed.Mutable as M
+
+-- TODO: Tight packing
 
 data Matrix = Matrix !Int !(Vector Bool)
   deriving Show
