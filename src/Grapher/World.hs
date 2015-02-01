@@ -9,22 +9,27 @@ module Grapher.World
   , iteration
   ) where
 
-import Prelude hiding (pi)
 import Data.Function
 import Data.Monoid
-import Data.Vector (Vector)
+import Data.Vector.Unboxed (Vector)
 import Grapher.AdjacencyMatrix
 import Grapher.Particle
 import Grapher.Physics
 import Grapher.Types
+import Grapher.Util
 import Grapher.Vector2F
 import Numeric.FastMath ()
-import qualified Data.Vector as V
+import Prelude hiding (pi)
+import qualified Data.Vector.Unboxed as V
 
 repelConstant, springConstant, airDragConstant :: Float
 repelConstant   = -100
 springConstant  = 100
 airDragConstant = 200
+
+particleMass, particleCharge :: Float
+particleMass   = 1.0
+particleCharge = 10.0
 
 data World = World
   { vector :: !(Vector Particle)
@@ -47,7 +52,7 @@ linkList f w = withAdjacent (f `on` (pos . particle w)) (matrix w)
 
 {-# INLINE particlesWithLinks #-}
 particlesWithLinks :: Monoid a => (Vector2F -> a) -> (Vector2F -> Vector2F -> a) -> World -> [a]
-particlesWithLinks f g (World v m) = V.toList $ V.imap h v
+particlesWithLinks f g (World v m) = imap h $ V.toList v
   where
     h i a = f (pos a) <> mconcat (adjacentTo (g (pos a) . pos . V.unsafeIndex v) m i)
 
@@ -59,7 +64,7 @@ newWorld parts links = World v (newMatrix (V.length v) links)
 iteration :: Float -> World -> World
 iteration delta w = w { vector = V.imap f $ vector w }
   where
-    f i b = integrate delta $ force (forces w i b) b
+    f i b = integrate delta $ force particleMass (forces w i b) b
 
 forces :: World -> Int -> Particle -> Force
 forces !w !i !pi =
@@ -93,7 +98,7 @@ forceCenter = negate . pos
 forceRepel :: Particle -> Particle -> Force
 forceRepel this other = interaction repelConstant (f other) (f this)
   where
-    f x = (pos x, charge x)
+    f x = (pos x, particleCharge)
 
 -- |Calculate the attractive force between two connected particles.
 forceAttract :: Particle -> Particle -> Force

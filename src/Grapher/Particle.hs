@@ -1,13 +1,14 @@
+{-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, TypeFamilies #-}
 module Grapher.Particle
   ( Particle
   , mkParticle
   , pos
   , vel
-  , charge
   , integrate
   , force
   ) where
 
+import Data.Vector.Unboxed.Deriving
 import Grapher.Types
 import Grapher.Vector2F
 
@@ -15,12 +16,15 @@ data Particle = Particle
   { x1     :: !Point
   , x2     :: !Point
   , accel  :: !Vector2F
-  , mass   :: !Mass
-  , charge :: !Charge
   } deriving Show
 
+derivingUnbox "Particle"
+  [t| Particle -> (Vector2F, Vector2F, Vector2F) |]
+  [| \p -> (x1 p, x2 p, accel p) |]
+  [| \(a, b, c) -> Particle a b c |]
+
 {-# INLINE mkParticle #-}
-mkParticle :: Vector2F -> Mass -> Charge -> Particle
+mkParticle :: Vector2F -> Particle
 mkParticle p = Particle p p zero
 
 {-# INLINE pos #-}
@@ -36,8 +40,8 @@ move :: Particle -> Vector2F -> Particle
 move n p = n { x1 = p, x2 = x1 n }
 
 {-# INLINE force #-}
-force :: Force -> Particle -> Particle
-force f p = p { accel = f /. mass p }
+force :: Mass -> Force -> Particle -> Particle
+force m f p = p { accel = f /. m }
 
 {-# INLINE integrate #-}
 integrate :: Float -> Particle -> Particle

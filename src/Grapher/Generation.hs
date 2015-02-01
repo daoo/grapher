@@ -16,7 +16,7 @@ arbitraryPoint = newVector2F <$> choose s <*> choose s
   where s = (-2000, 2000)
 
 arbitraryParticle :: Gen Particle
-arbitraryParticle = mkParticle <$> arbitraryPoint <*> pure 1 <*> pure 10
+arbitraryParticle = mkParticle <$> arbitraryPoint
 
 arbitraryLink :: Int -> Gen (Int, Int)
 arbitraryLink n = (,) <$> choose (0, n-1) <*> choose (0, n-1)

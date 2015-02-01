@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, TypeFamilies #-}
 module Grapher.Vector2F
   ( Vector2F
   , newVector2F
@@ -17,11 +18,15 @@ module Grapher.Vector2F
   , project
   ) where
 
+import Data.Vector.Unboxed.Deriving
+
 square :: Float -> Float
 square x = x * x
 
 data Vector2F = !Float :+ !Float
   deriving Show
+
+infixr 7 :+
 
 newVector2F :: Float -> Float -> Vector2F
 newVector2F = (:+)
@@ -30,7 +35,10 @@ newVector2F = (:+)
 vtup :: Vector2F -> (Float, Float)
 vtup (x:+y) = (x,y)
 
-infixr 7 :+
+derivingUnbox "Vector2F"
+  [t| Vector2F -> (Float, Float) |]
+  [| (\(x:+y) -> (x, y)) |]
+  [| (\(x, y) -> x :+ y) |]
 
 zero :: Vector2F
 zero = 0 :+ 0
