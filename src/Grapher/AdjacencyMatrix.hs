@@ -38,7 +38,7 @@ newMatrix !n !links = Matrix n (create (mkvector >>= fill))
       where
         go [] = return arr
 
-        go ((i, j):xs)
+        go ((!i, !j):xs)
           | i >= n    = error "index too large"
           | j >= n    = error "index too large"
           | otherwise = setAdjacent n (i, j) arr >> go xs
@@ -53,7 +53,7 @@ isAdjacent (Matrix n m) i j = m `unsafeIndex` calcIx n i j
 adjacentTo :: (Int -> a) -> Matrix -> Int -> [a]
 adjacentTo f (Matrix n m) i = go 0 (i*n)
   where
-    go k x
+    go !k !x
       | k < n     = if m `unsafeIndex` x then f k : go (k+1) (x+1) else go (k+1) (x+1)
       | otherwise = []
 
