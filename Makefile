@@ -8,7 +8,7 @@ prof:
 release:
 	@cabal clean
 	@cabal configure
-	@cabal build --ghc-options="-Wall -O2 -fllvm -fignore-asserts"
+	@cabal build --ghc-options="-Wall -O2 -fignore-asserts"
 
 test:
 	@cabal configure --enable-tests
