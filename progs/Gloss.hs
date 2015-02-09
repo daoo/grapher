@@ -8,7 +8,10 @@ import Grapher.World
 import qualified Graphics.Gloss as G
 
 world :: World
-world = uncurry newWorld (binaryTree 4 5)
+--world = uncurry newWorld (binaryTree 1 50)
+--world = uncurry newWorld (binaryTree 4 5)
+world = uncurry newWorld (grid 10 10)
+--world = uncurry newWorld (Grapher.Generation.circle 50)
 
 main :: IO ()
 main = do

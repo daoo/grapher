@@ -3,7 +3,7 @@ module Main (main) where
 
 import Codec.Picture.Png
 import Codec.Picture.Types
-import Grapher.Generation
+import Grapher.Generation (grid)
 import Grapher.Vector2F
 import Grapher.World
 import Graphics.Rasterific

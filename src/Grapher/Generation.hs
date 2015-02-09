@@ -2,13 +2,16 @@
 module Grapher.Generation
   ( grid
   , binaryTree
+  , circle
   ) where
 
 import Control.Exception
 import Control.Monad.State
 
+type Graph = (Int, [(Int, Int)])
+
 -- |Generate an n-by-m grid.
-grid :: Int -> Int -> (Int, [(Int, Int)])
+grid :: Int -> Int -> Graph
 grid n m = assert (n > 0 && m > 0) $ (n*m, go 0 0)
   where
     go !i !j
@@ -37,7 +40,7 @@ grid n m = assert (n > 0 && m > 0) $ (n*m, go 0 0)
     index (i, j) = i*m+j
 
 -- |Generate an n-ary tree with given height.
-binaryTree :: Int -> Int -> (Int, [(Int, Int)])
+binaryTree :: Int -> Int -> Graph
 binaryTree n height = assert (n > 0 && n > 0) $
   (count, evalState (go 1 0) 1)
   where
@@ -56,3 +59,8 @@ binaryTree n height = assert (n > 0 && n > 0) $
       return i
 
     count = sum $ map (n^) [0..(height-1)]
+
+circle :: Int -> Graph
+circle n = (n, concatMap f [0..(n-1)])
+  where
+    f i = let j = (i+1) `mod` n in [(i, j), (j, i)]
