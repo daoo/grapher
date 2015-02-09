@@ -57,7 +57,7 @@ particlesWithLinks f g (World v m) = imap h $ V.toList v
     h i a = f (pos a) <> mconcat (adjacentTo (g (pos a) . pos . V.unsafeIndex v) m i)
 
 newWorld :: [Particle] -> [(Int, Int)] -> World
-newWorld parts links = World v (newMatrix (V.length v) links)
+newWorld parts edges = World v (newMatrix (V.length v) edges)
   where
     v = V.fromList parts
 
