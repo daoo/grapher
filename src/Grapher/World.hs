@@ -32,23 +32,23 @@ particleMass   = 1.0
 particleCharge = 10.0
 
 data World = World
-  { vector :: !(Vector Particle)
-  , matrix :: !Matrix
+  { worldNodes :: !(Vector Particle)
+  , worldEdges :: !Matrix
   } deriving Show
 
 particle :: World -> Int -> Particle
-particle w i = vector w `V.unsafeIndex` i
+particle w i = worldNodes w `V.unsafeIndex` i
 
 linked :: World -> Int -> Int -> Bool
-linked = isAdjacent . matrix
+linked = isAdjacent . worldEdges
 
 {-# INLINE particleList #-}
 particleList :: World -> [Vector2F]
-particleList = map pos . V.toList . vector
+particleList = map pos . V.toList . worldNodes
 
 {-# INLINE linkList #-}
 linkList :: (Vector2F -> Vector2F -> a) -> World -> [a]
-linkList f w = withAdjacent (f `on` (pos . particle w)) (matrix w)
+linkList f w = withAdjacent (f `on` (pos . particle w)) (worldEdges w)
 
 {-# INLINE particlesWithLinks #-}
 particlesWithLinks :: Monoid a => (Vector2F -> a) -> (Vector2F -> Vector2F -> a) -> World -> [a]
@@ -62,7 +62,7 @@ newWorld parts links = World v (newMatrix (V.length v) links)
     v = V.fromList parts
 
 iteration :: Float -> World -> World
-iteration delta w = w { vector = V.imap f $ vector w }
+iteration delta w = w { worldNodes = V.imap f $ worldNodes w }
   where
     f i b = integrate delta $ force particleMass (forces w i b) b
 
@@ -70,7 +70,7 @@ forces :: World -> Int -> Particle -> Force
 forces !w !i !pi =
   forceDrag pi +
   forceCenter pi +
-  V.sum (V.imap (forceInteractive w i pi) (vector w))
+  V.sum (V.imap (forceInteractive w i pi) (worldNodes w))
   where
 
 forceInteractive :: World -> Int -> Particle -> Int -> Particle -> Force
