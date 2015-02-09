@@ -1,6 +1,5 @@
 {-# LANGUAGE BangPatterns, TupleSections #-}
--- |A data structure for an adjacency matrix. There is no direction for the
--- relation, meaning the 'isAdjacent' function is commutative.
+-- |A data structure for an adjacency matrix.
 module Grapher.AdjacencyMatrix
   ( Matrix
   , newMatrix
@@ -22,9 +21,7 @@ calcIx :: Int -> Int -> Int -> Int
 calcIx n i j = (i * n) + j
 
 setAdjacent :: Int -> (Int, Int) -> MVector s Bool -> ST s ()
-setAdjacent n (i, j) arr = do
-  unsafeWrite arr (calcIx n i j) True
-  unsafeWrite arr (calcIx n j i) True
+setAdjacent n (i, j) arr = unsafeWrite arr (calcIx n i j) True
 
 newMatrix :: Int -> [(Int, Int)] -> Matrix
 newMatrix !n !links = Matrix n (create (mkvector >>= fill))
