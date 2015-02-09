@@ -6,7 +6,6 @@ module Grapher.Types
   , Accel
   , Point
   , Radius
-  , Link
   ) where
 
 import Grapher.Vector2F
@@ -19,5 +18,3 @@ type Accel    = Vector2F
 
 type Point  = Vector2F
 type Radius = Float
-
-type Link = (Int, Int)
