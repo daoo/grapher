@@ -1,9 +1,11 @@
 {-# LANGUAGE BangPatterns #-}
 module Grapher.World
-  ( World(worldNodes, worldEdges)
+  ( World(nodes, edges)
   , newWorld
   , particle
   , hasEdge
+
+  , modify
 
   , iteration
   ) where
@@ -17,6 +19,7 @@ import Grapher.Types
 import Grapher.Vector2F
 import Prelude hiding (pi)
 import qualified Data.Vector.Unboxed as V
+import qualified Data.Vector.Unboxed.Mutable as V (read, write)
 
 repelConstant, springConstant, airDragConstant :: Float
 repelConstant   = -100
@@ -28,23 +31,27 @@ particleMass   = 1.0
 particleCharge = 10.0
 
 data World = World
-  { worldNodes      :: !(Vector Particle)
-  , worldEdges      :: !Matrix
-  --, worldNodeForces :: !(Vector Vector2F)
+  { nodes :: !(Vector Particle)
+  , edges :: !Matrix
   } deriving Show
 
 particle :: World -> Int -> Particle
-particle w i = worldNodes w `V.unsafeIndex` i
+particle w i = nodes w `V.unsafeIndex` i
+
+modify :: (Particle -> Particle) -> Int -> World -> World
+modify f i w = w { nodes = V.modify helper (nodes w) }
+  where
+    helper v = V.read v i >>= \p -> V.write v i (f p)
 
 hasEdge :: World -> Int -> Int -> Bool
-hasEdge = isAdjacent . worldEdges
+hasEdge = isAdjacent . edges
 
 -- |Create a new world from a number of nodes and a list of edges.
 newWorld :: Int -> [(Int, Int)] -> World
-newWorld count edges = World (V.generate count new) (newMatrix count edges)
+newWorld c es = World (V.generate c new) (newMatrix c es)
   where
     a :: Double
-    a = sqrt $ fromIntegral count
+    a = sqrt $ fromIntegral c
 
     b :: Int
     b = round a
@@ -55,14 +62,14 @@ newWorld count edges = World (V.generate count new) (newMatrix count edges)
         (x, y) = i `quotRem` b
 
 iteration :: Float -> World -> World
-iteration delta w = w { worldNodes = V.imap f $ worldNodes w }
+iteration delta w = w { nodes = V.imap f $ nodes w }
   where
     f i b = integrate delta $ force particleMass (forces w i b) b
 
 forces :: World -> Int -> Particle -> Force
 forces !w !i !pi =
   forceDrag pi +
-  V.sum (V.imap (forceInteractive w i pi) (worldNodes w))
+  V.sum (V.imap (forceInteractive w i pi) (nodes w))
   where
 
 forceInteractive :: World -> Int -> Particle -> Int -> Particle -> Force

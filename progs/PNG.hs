@@ -26,8 +26,8 @@ main :: IO ()
 main = writePng "test.png" $
   renderDrawing width height white $
     withTexture (uniformTexture black) $ do
-      mapM_ strokeLine $ withAdjacent (edge `on` (pos . particle world')) (worldEdges world')
-      V.mapM_ (fill . ball . pos) $ worldNodes world'
+      mapM_ strokeLine $ withAdjacent (edge `on` (pos . particle world')) (edges world')
+      V.mapM_ (fill . ball . pos) $ nodes world'
 
   where
     white = PixelRGBA8 255 255 255 255

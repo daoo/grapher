@@ -1,38 +1,79 @@
 {-# LANGUAGE BangPatterns #-}
 module Main (main) where
 
+import Data.Function
 import Data.Monoid
 import Grapher.AdjacencyMatrix
 import Grapher.Generation
 import Grapher.Particle
 import Grapher.Vector2F
 import Grapher.World
+import Graphics.Gloss.Interface.Pure.Game
 import qualified Data.Vector.Unboxed as V
-import qualified Graphics.Gloss as G
 
 world :: World
 --world = uncurry newWorld (binaryTree 1 50)
---world = uncurry newWorld (binaryTree 4 5)
-world = uncurry newWorld (grid 10 10)
+world = uncurry newWorld (binaryTree 4 5)
+--world = uncurry newWorld (grid 10 10)
 --world = uncurry newWorld (Grapher.Generation.circle 50)
+
+data UI = UI
+  { uiNode :: !(Maybe Int)
+  , uiWorld :: !World
+  }
 
 main :: IO ()
 main = do
-  G.simulate
-    (G.InWindow "Force Graph" (800, 600) (0, 0))
-    G.white
+  play
+    (InWindow "Force Graph" (800, 600) (0, 0))
+    white
     100
-    world
+    (UI Nothing world)
     render
-    (const iteration)
+    input
+    update
 
-render :: World -> G.Picture
-render w = mconcat $
-  map part (V.toList (worldNodes w)) ++
-  withAdjacent (\i j -> link (particle w i) (particle w j) ) (worldEdges w)
+input :: Event -> UI -> UI
+input event ui@(UI n w) = case event of
+
+  EventKey (MouseButton LeftButton) Down _ p ->
+    UI (V.findIndex (f (uncurry (:+) p)) (nodes w)) w
+
+  EventKey (MouseButton LeftButton) Up _ _ ->
+    UI Nothing w
+
+  EventMotion p -> case n of
+
+    Just i -> UI n (modify (const (mkParticle (uncurry (:+) p))) i w)
+
+    Nothing -> ui
+
+  _ -> ui
+
   where
-    link pa pb = G.line [vtup $ pos pa, vtup $ pos pb]
-    part p     = uncurry G.translate (vtup $ pos p) $ G.circleSolid radius
+    f x p = (x `dist2` pos p) < nodeRadiusSquared
 
-radius :: Float
-radius = 10
+update :: Float -> UI -> UI
+update t (UI n w) = UI n (iteration t w)
+
+render :: UI -> Picture
+render (UI n w) = mconcat $
+  [maybe mempty (renderHighlight . pos . particle w) n] ++
+  map (renderNode . pos) (V.toList $ nodes w) ++
+  withAdjacent (renderEdge `on` (pos . particle w)) (edges w)
+
+renderEdge :: Vector2F -> Vector2F -> Picture
+renderEdge pa pb = line [vtup pa, vtup pb]
+
+renderNode :: Vector2F -> Picture
+renderNode p = uncurry translate (vtup p) $
+  circleSolid nodeRadius
+
+renderHighlight :: Vector2F -> Picture
+renderHighlight p = color green $ uncurry translate (vtup p) $
+  circleSolid highlightRadius
+
+nodeRadius, nodeRadiusSquared, highlightRadius :: Float
+nodeRadius        = 10
+nodeRadiusSquared = nodeRadius * nodeRadius
+highlightRadius   = 20
