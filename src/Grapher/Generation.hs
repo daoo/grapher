@@ -12,7 +12,7 @@ type Graph = (Int, [(Int, Int)])
 
 -- |Generate an n-by-m grid.
 grid :: Int -> Int -> Graph
-grid n m = assert (n > 0 && m > 0) $ (n*m, go 0 0)
+grid n m = assert (n > 0 && m > 0) (n*m, go 0 0)
   where
     go !i !j
       | j >= m    = go (i+1) 0
@@ -41,7 +41,7 @@ grid n m = assert (n > 0 && m > 0) $ (n*m, go 0 0)
 
 -- |Generate an n-ary tree with given height.
 binaryTree :: Int -> Int -> Graph
-binaryTree n height = assert (n > 0 && n > 0) $
+binaryTree n height = assert (n > 0 && n > 0)
   (count, evalState (go 1 0) 1)
   where
     go :: Int -> Int -> State Int [(Int, Int)]

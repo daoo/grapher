@@ -87,11 +87,11 @@ forceInteractive !w !i !pi !j !pj
 forceDrag :: Particle -> Force
 forceDrag p = negate (airDragConstant .* vel p)
 
--- |Calculates the pulling force towards the center.
---
--- The force is linearly proportional to the distance from the center.
-forceCenter :: Particle -> Force
-forceCenter = negate . pos
+-- -- |Calculates the pulling force towards the center.
+-- --
+-- -- The force is linearly proportional to the distance from the center.
+-- forceCenter :: Particle -> Force
+-- forceCenter = negate . pos
 
 -- |Calcualte the repel force exerted by the first particle on the second.
 forceRepel :: Particle -> Particle -> Force
