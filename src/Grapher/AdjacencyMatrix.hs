@@ -23,6 +23,8 @@ calcIx n i j = (i * n) + j
 setAdjacent :: Int -> (Int, Int) -> MVector s Bool -> ST s ()
 setAdjacent n (i, j) arr = unsafeWrite arr (calcIx n i j) True
 
+-- |Create a new matrix from a list of adjacencies.
+-- prop> withAdjacent (,) (newMatrix n (allLinks n)) == allLinks n
 newMatrix :: Int -> [(Int, Int)] -> Matrix
 newMatrix !n !links = Matrix n (create (mkvector >>= fill))
   where
@@ -56,9 +58,6 @@ adjacentTo f (Matrix n m) i = go 0 (i*n)
 
 {-# INLINE withAdjacent #-}
 -- |Map a function over all adjacent indices and collect the result in a list.
---
--- This function will result in duplicates, that is for all i, j both (i, j)
--- and (j, i) will be in the result.
 withAdjacent :: (Int -> Int -> a) -> Matrix -> [a]
 withAdjacent f (Matrix n m) = go 0 0 0
   where

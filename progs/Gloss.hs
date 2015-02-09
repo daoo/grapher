@@ -2,9 +2,12 @@
 module Main (main) where
 
 import Data.Monoid
+import Grapher.AdjacencyMatrix
 import Grapher.Generation
+import Grapher.Particle
 import Grapher.Vector2F
 import Grapher.World
+import qualified Data.Vector.Unboxed as V
 import qualified Graphics.Gloss as G
 
 world :: World
@@ -24,10 +27,12 @@ main = do
     (const iteration)
 
 render :: World -> G.Picture
-render = mconcat . particlesWithLinks part link
+render w = mconcat $
+  map part (V.toList (worldNodes w)) ++
+  withAdjacent (\i j -> link (particle w i) (particle w j) ) (worldEdges w)
   where
-    link a b = G.line [vtup a, vtup b]
-    part p   = uncurry G.translate (vtup p) $ G.circleSolid radius
+    link pa pb = G.line [vtup $ pos pa, vtup $ pos pb]
+    part p     = uncurry G.translate (vtup $ pos p) $ G.circleSolid radius
 
 radius :: Float
 radius = 10

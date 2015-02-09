@@ -1,24 +1,20 @@
 {-# LANGUAGE BangPatterns #-}
 module Grapher.World
-  ( World()
+  ( World(worldNodes, worldEdges)
   , newWorld
-  , particleList
-  , linkList
-  , particlesWithLinks
+  , particle
+  , hasEdge
 
   , iteration
   ) where
 
 import Data.Function
-import Data.Monoid
 import Data.Vector.Unboxed (Vector)
 import Grapher.AdjacencyMatrix
 import Grapher.Particle
 import Grapher.Physics
 import Grapher.Types
-import Grapher.Util
 import Grapher.Vector2F
-import Numeric.FastMath ()
 import Prelude hiding (pi)
 import qualified Data.Vector.Unboxed as V
 
@@ -32,29 +28,16 @@ particleMass   = 1.0
 particleCharge = 10.0
 
 data World = World
-  { worldNodes :: !(Vector Particle)
-  , worldEdges :: !Matrix
+  { worldNodes      :: !(Vector Particle)
+  , worldEdges      :: !Matrix
+  --, worldNodeForces :: !(Vector Vector2F)
   } deriving Show
 
 particle :: World -> Int -> Particle
 particle w i = worldNodes w `V.unsafeIndex` i
 
-linked :: World -> Int -> Int -> Bool
-linked = isAdjacent . worldEdges
-
-{-# INLINE particleList #-}
-particleList :: World -> [Vector2F]
-particleList = map pos . V.toList . worldNodes
-
-{-# INLINE linkList #-}
-linkList :: (Vector2F -> Vector2F -> a) -> World -> [a]
-linkList f w = withAdjacent (f `on` (pos . particle w)) (worldEdges w)
-
-{-# INLINE particlesWithLinks #-}
-particlesWithLinks :: Monoid a => (Vector2F -> a) -> (Vector2F -> Vector2F -> a) -> World -> [a]
-particlesWithLinks f g (World v m) = imap h $ V.toList v
-  where
-    h i a = f (pos a) <> mconcat (adjacentTo (g (pos a) . pos . V.unsafeIndex v) m i)
+hasEdge :: World -> Int -> Int -> Bool
+hasEdge = isAdjacent . worldEdges
 
 -- |Create a new world from a number of nodes and a list of edges.
 newWorld :: Int -> [(Int, Int)] -> World
@@ -79,15 +62,14 @@ iteration delta w = w { worldNodes = V.imap f $ worldNodes w }
 forces :: World -> Int -> Particle -> Force
 forces !w !i !pi =
   forceDrag pi +
-  forceCenter pi +
   V.sum (V.imap (forceInteractive w i pi) (worldNodes w))
   where
 
 forceInteractive :: World -> Int -> Particle -> Int -> Particle -> Force
 forceInteractive !w !i !pi !j !pj
-  | i == j       = zero
-  | linked w i j = forceAttract pi pj + frepel
-  | otherwise    = frepel
+  | i == j        = zero
+  | hasEdge w i j = forceAttract pi pj + frepel
+  | otherwise     = frepel
 
   where
     frepel = forceRepel pi pj

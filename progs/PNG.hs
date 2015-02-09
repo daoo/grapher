@@ -3,12 +3,16 @@ module Main (main) where
 
 import Codec.Picture.Png
 import Codec.Picture.Types
+import Data.Function
+import Grapher.AdjacencyMatrix
 import Grapher.Generation (grid)
+import Grapher.Particle
 import Grapher.Vector2F
 import Grapher.World
 import Graphics.Rasterific
 import Graphics.Rasterific.Texture
 import Graphics.Rasterific.Transformations
+import qualified Data.Vector.Unboxed as V
 
 times :: Int -> (a -> a) -> a -> a
 times 0 _ x = x
@@ -22,8 +26,8 @@ main :: IO ()
 main = writePng "test.png" $
   renderDrawing width height white $
     withTexture (uniformTexture black) $ do
-      mapM_ strokeLine $ linkList link world'
-      mapM_ (fill . ball) $ particleList world'
+      mapM_ strokeLine $ withAdjacent (edge `on` (pos . particle world')) (worldEdges world')
+      V.mapM_ (fill . ball . pos) $ worldNodes world'
 
   where
     white = PixelRGBA8 255 255 255 255
@@ -39,8 +43,8 @@ strokeLine = stroke w j (c, c)
 ball :: Vector2F -> [Primitive]
 ball a = circle (toV2 a) radius
 
-link :: Vector2F -> Vector2F -> [Primitive]
-link a b = line (toV2 a) (toV2 b)
+edge :: Vector2F -> Vector2F -> [Primitive]
+edge a b = line (toV2 a) (toV2 b)
 
 toV2 :: Vector2F -> V2 Float
 toV2 a = case vtup a of { (x,y) -> applyTransformation centering $ V2 x y }

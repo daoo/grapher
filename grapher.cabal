@@ -8,42 +8,27 @@ build-type:    Simple
 cabal-version: >=1.8
 
 library
-  other-modules:
-    Grapher.Particle
-    Grapher.Types
-    Grapher.Util
   exposed-modules:
     Grapher.AdjacencyMatrix
     Grapher.Generation
+    Grapher.Particle
+    Grapher.Types
     Grapher.Vector2F
     Grapher.World
   hs-source-dirs: src
   build-depends:
     base,
-    fast-math,
     mtl,
     vector,
-    vector-th-unbox,
-    QuickCheck
+    vector-th-unbox
 
 executable grapher-interactive
   main-is: progs/Gloss.hs
-  build-depends: base, grapher, QuickCheck, gloss
+  build-depends: base, grapher, vector, gloss
 
 executable grapher-png
   main-is: progs/PNG.hs
-  build-depends: base, grapher, QuickCheck, JuicyPixels, Rasterific
-
-test-suite grapher-tests
-  type: exitcode-stdio-1.0
-  build-depends:
-    base,
-    grapher,
-    tasty,
-    tasty-quickcheck,
-    QuickCheck
-  main-is: Main.hs
-  hs-source-dirs: tests
+  build-depends: base, grapher, vector, JuicyPixels, Rasterific
 
 benchmark grapher-bench
   type: exitcode-stdio-1.0
