@@ -56,10 +56,20 @@ particlesWithLinks f g (World v m) = imap h $ V.toList v
   where
     h i a = f (pos a) <> mconcat (adjacentTo (g (pos a) . pos . V.unsafeIndex v) m i)
 
-newWorld :: [Particle] -> [(Int, Int)] -> World
-newWorld parts edges = World v (newMatrix (V.length v) edges)
+-- |Create a new world from a number of nodes and a list of edges.
+newWorld :: Int -> [(Int, Int)] -> World
+newWorld count edges = World (V.generate count new) (newMatrix count edges)
   where
-    v = V.fromList parts
+    a :: Double
+    a = sqrt $ fromIntegral count
+
+    b :: Int
+    b = round a
+
+    new :: Int -> Particle
+    new i = mkParticle (fromIntegral x :+ fromIntegral y)
+      where
+        (x, y) = i `quotRem` b
 
 iteration :: Float -> World -> World
 iteration delta w = w { worldNodes = V.imap f $ worldNodes w }

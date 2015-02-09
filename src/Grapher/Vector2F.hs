@@ -1,7 +1,6 @@
 {-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, TypeFamilies #-}
 module Grapher.Vector2F
-  ( Vector2F
-  , newVector2F
+  ( Vector2F((:+))
 
   , vtup
   , zero
@@ -27,9 +26,6 @@ data Vector2F = !Float :+ !Float
   deriving Show
 
 infixr 7 :+
-
-newVector2F :: Float -> Float -> Vector2F
-newVector2F = (:+)
 
 {-# INLINE vtup #-}
 vtup :: Vector2F -> (Float, Float)

@@ -1,45 +1,59 @@
 {-# LANGUAGE BangPatterns #-}
 module Grapher.Generation
-  ( arbitraryWorld
-  , arbitraryGrid
+  ( grid
+  , binaryTree
   ) where
 
-import Control.Applicative
-import Grapher.Particle
-import Grapher.Types
-import Grapher.Vector2F
-import Grapher.World
-import Test.QuickCheck.Gen
+import Control.Exception
+import Control.Monad.State
 
-arbitraryPoint :: Gen Point
-arbitraryPoint = newVector2F <$> choose s <*> choose s
-  where s = (-2000, 2000)
-
-arbitraryParticle :: Gen Particle
-arbitraryParticle = mkParticle <$> arbitraryPoint
-
-arbitraryLink :: Int -> Gen (Int, Int)
-arbitraryLink n = (,) <$> choose (0, n-1) <*> choose (0, n-1)
-
--- |Generate a n-by-m grid.
-arbitraryGrid :: Int -> Int -> Gen World
-arbitraryGrid n m = do
-  parts <- vectorOf (n*m) arbitraryParticle
-  return $ newWorld parts (go 0 0)
+-- |Generate an n-by-m grid.
+grid :: Int -> Int -> (Int, [(Int, Int)])
+grid n m = assert (n > 0 && m > 0) $ (n*m, go 0 0)
   where
     go !i !j
-      | i == n-1 && j == m-1 = []
-      | i == n-1             = edger i j : go i (j+1)
-      | j == m-1             = edged i j : go (i+1) 0
-      | otherwise            = edger i j : edged i j : go i (j+1)
+      | j >= m    = go (i+1) 0
+      | i >= n    = []
+      | otherwise = edges (i, j) $ go i (j+1)
 
-    edger i j = let a = ix i j in (a, a+1)
-    edged i j = let a = ix i j in (a, a+m)
+    edges ix = edge a (edgel ix)
+             . edge a (edger ix)
+             . edge a (edged ix)
+             . edge a (edgeu ix)
+      where
+        a = index ix
 
-    ix i j = i*m+j
+    edge a ix@(i, j) xs
+      | i >= 0 && i < n && j >= 0 && j < m = (a, b) : xs
+      | otherwise                          = xs
 
--- |Generate an completely arbitrary world with a specified number of particles
--- and links.
-arbitraryWorld :: Int -> Int -> Gen World
-arbitraryWorld parts links =
-  newWorld <$> vectorOf parts arbitraryParticle <*> vectorOf links (arbitraryLink parts)
+        where b = index ix
+
+    edgel (i, j) = (i, j+1)
+    edger (i, j) = (i, j-1)
+    edged (i, j) = (i+1, j)
+    edgeu (i, j) = (i-1, j)
+
+    index (i, j) = i*m+j
+
+-- |Generate an binary tree with pre-defined height.
+binaryTree :: Int -> (Int, [(Int, Int)])
+binaryTree height = assert (height > 0) $ (count, evalState (go 1 0) 1)
+  where
+    go :: Int -> Int -> State Int [(Int, Int)]
+    go !h !i
+      | h < height = do
+        j <- free
+        k <- free
+        ls <- go (h+1) j
+        rs <- go (h+1) k
+        return $ (i, j) : (j, i) : (i, k) : (k, i) : (ls ++ rs)
+
+      | otherwise = return []
+
+    free = do
+      n <- get
+      put (n+1)
+      return n
+
+    count = sum $ map (2^) [0..(height-1)]

@@ -5,12 +5,10 @@ import Data.Monoid
 import Grapher.Generation
 import Grapher.Vector2F
 import Grapher.World
-import Test.QuickCheck.Gen
-import Test.QuickCheck.Random
 import qualified Graphics.Gloss as G
 
 world :: World
-world = unGen (arbitraryGrid 10 10) (mkQCGen 532453742) 100
+world = uncurry newWorld (binaryTree 8)
 
 main :: IO ()
 main = do

@@ -9,15 +9,13 @@ import Grapher.World
 import Graphics.Rasterific
 import Graphics.Rasterific.Texture
 import Graphics.Rasterific.Transformations
-import Test.QuickCheck.Gen
-import Test.QuickCheck.Random
 
 times :: Int -> (a -> a) -> a -> a
 times 0 _ x = x
 times i f x = times (i-1) f (f x)
 
 world, world' :: World
-world  = unGen (arbitraryWorld 100 100) (mkQCGen 523054) 100
+world  = uncurry newWorld (grid 10 10)
 world' = times 10000 (iteration 0.01) world
 
 main :: IO ()
