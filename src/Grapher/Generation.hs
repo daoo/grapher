@@ -36,24 +36,23 @@ grid n m = assert (n > 0 && m > 0) $ (n*m, go 0 0)
 
     index (i, j) = i*m+j
 
--- |Generate an binary tree with pre-defined height.
-binaryTree :: Int -> (Int, [(Int, Int)])
-binaryTree height = assert (height > 0) $ (count, evalState (go 1 0) 1)
+-- |Generate an n-ary tree with given height.
+binaryTree :: Int -> Int -> (Int, [(Int, Int)])
+binaryTree n height = assert (n > 0 && n > 0) $
+  (count, evalState (go 1 0) 1)
   where
     go :: Int -> Int -> State Int [(Int, Int)]
     go !h !i
       | h < height = do
-        j <- free
-        k <- free
-        ls <- go (h+1) j
-        rs <- go (h+1) k
-        return $ (i, j) : (j, i) : (i, k) : (k, i) : (ls ++ rs)
+        frees <- replicateM n free
+        subtrees <- mapM (go (h+1)) frees
+        return $ concatMap (\j -> [(i, j), (j,i)]) frees ++ concat subtrees
 
       | otherwise = return []
 
     free = do
-      n <- get
-      put (n+1)
-      return n
+      i <- get
+      put (i+1)
+      return i
 
-    count = sum $ map (2^) [0..(height-1)]
+    count = sum $ map (n^) [0..(height-1)]

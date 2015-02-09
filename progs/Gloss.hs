@@ -8,7 +8,7 @@ import Grapher.World
 import qualified Graphics.Gloss as G
 
 world :: World
-world = uncurry newWorld (binaryTree 8)
+world = uncurry newWorld (binaryTree 4 5)
 
 main :: IO ()
 main = do
