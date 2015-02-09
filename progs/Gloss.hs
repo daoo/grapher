@@ -11,15 +11,19 @@ import Grapher.World
 import Graphics.Gloss.Interface.Pure.Game
 import qualified Data.Vector.Unboxed as V
 
-world :: World
---world = uncurry newWorld (binaryTree 1 50)
-world = uncurry newWorld (binaryTree 4 5)
---world = uncurry newWorld (grid 10 10)
---world = uncurry newWorld (Grapher.Generation.circle 50)
+tupv :: (Float, Float) -> Vector2F
+tupv = uncurry (:+)
+
+initialWorld :: World
+--initialWorld = uncurry newWorld (binaryTree 1 50)
+initialWorld = uncurry newWorld (binaryTree 4 5)
+--initialWorld = uncurry newWorld (grid 10 10)
+--initialWorld = uncurry newWorld (Grapher.Generation.circle 50)
 
 data UI = UI
-  { uiNode :: !(Maybe Int)
-  , uiWorld :: !World
+  { activeNode :: !(Maybe Int)
+  , mousePos   :: !Vector2F
+  , world      :: !World
   }
 
 main :: IO ()
@@ -28,39 +32,44 @@ main = do
     (InWindow "Force Graph" (800, 600) (0, 0))
     white
     100
-    (UI Nothing world)
+    (UI Nothing (0:+0) initialWorld)
     render
     input
     update
 
 input :: Event -> UI -> UI
-input event ui@(UI n w) = case event of
+input event ui = case event of
 
-  EventKey (MouseButton LeftButton) Down _ p ->
-    UI (V.findIndex (f (uncurry (:+) p)) (nodes w)) w
+  EventKey (MouseButton LeftButton) Down _ p -> ui
+    { activeNode = V.findIndex (f (tupv p)) (nodes $ world ui)
+    , mousePos   = tupv p
+    }
 
-  EventKey (MouseButton LeftButton) Up _ _ ->
-    UI Nothing w
+  EventKey (MouseButton LeftButton) Up _ _ -> ui
+    { activeNode = Nothing }
 
-  EventMotion p -> case n of
-
-    Just i -> UI n (modify (const (mkParticle (uncurry (:+) p))) i w)
-
-    Nothing -> ui
+  EventMotion p -> ui
+    { mousePos = tupv p }
 
   _ -> ui
 
   where
     f x p = (x `dist2` pos p) < nodeRadiusSquared
 
+updateDragging :: UI -> UI
+updateDragging ui = maybe
+  ui
+  (\i -> ui { world = modify (const (mkParticle (mousePos ui))) i (world ui) })
+  (activeNode ui)
+
 update :: Float -> UI -> UI
-update t (UI n w) = UI n (iteration t w)
+update t ui = updateDragging $ ui { world = iteration t (world ui) }
 
 render :: UI -> Picture
-render (UI n w) = mconcat $
-  [maybe mempty (renderHighlight . pos . particle w) n] ++
-  map (renderNode . pos) (V.toList $ nodes w) ++
-  withAdjacent (renderEdge `on` (pos . particle w)) (edges w)
+render ui = mconcat $
+  [maybe mempty (renderHighlight . pos . particle (world ui)) (activeNode ui)] ++
+  map (renderNode . pos) (V.toList $ nodes (world ui)) ++
+  withAdjacent (renderEdge `on` (pos . particle (world ui))) (edges (world ui))
 
 renderEdge :: Vector2F -> Vector2F -> Picture
 renderEdge pa pb = line [vtup pa, vtup pb]
