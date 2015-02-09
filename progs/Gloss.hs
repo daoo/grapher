@@ -2,29 +2,43 @@
 module Main (main) where
 
 import Data.Function
+import Data.Maybe
 import Data.Monoid
 import Grapher.AdjacencyMatrix
 import Grapher.Generation
 import Grapher.Particle
 import Grapher.Vector2F
 import Grapher.World
+import Graphics.Gloss.Data.ViewPort
+import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Interface.Pure.Game
 import qualified Data.Vector.Unboxed as V
 
 tupv :: (Float, Float) -> Vector2F
 tupv = uncurry (:+)
 
-initialWorld :: World
---initialWorld = uncurry newWorld (binaryTree 1 50)
-initialWorld = uncurry newWorld (binaryTree 4 5)
---initialWorld = uncurry newWorld (grid 10 10)
---initialWorld = uncurry newWorld (Grapher.Generation.circle 50)
+worldInit :: World
+--worldInit = uncurry newWorld (binaryTree 1 50)
+--worldInit = uncurry newWorld (binaryTree 2 9)
+worldInit = uncurry newWorld (grid 10 10)
+--worldInit = uncurry newWorld (Grapher.Generation.circle 50)
 
 data UI = UI
   { activeNode :: !(Maybe Int)
   , mousePos   :: !Vector2F
   , world      :: !World
+  , viewState  :: !ViewState
   }
+
+nodesUI :: UI -> V.Vector Particle
+nodesUI = nodes . world
+
+invertUI :: UI -> Point -> Vector2F
+invertUI ui p = tupv (invertViewPort (viewStateViewPort (viewState ui)) p)
+
+updateViewStateWithEventUI :: UI -> Event -> UI
+updateViewStateWithEventUI ui event = ui
+  { viewState = updateViewStateWithEvent event (viewState ui) }
 
 main :: IO ()
 main = do
@@ -32,7 +46,7 @@ main = do
     (InWindow "Force Graph" (800, 600) (0, 0))
     white
     100
-    (UI Nothing (0:+0) initialWorld)
+    (UI Nothing (0:+0) worldInit viewStateInit)
     render
     input
     update
@@ -40,18 +54,17 @@ main = do
 input :: Event -> UI -> UI
 input event ui = case event of
 
-  EventKey (MouseButton LeftButton) Down _ p -> ui
-    { activeNode = V.findIndex (f (tupv p)) (nodes $ world ui)
-    , mousePos   = tupv p
-    }
+  EventKey (MouseButton LeftButton) Down _ p
+    | isJust i -> ui { activeNode = i, mousePos = p' }
+    where
+      p' = invertUI ui p
+      i = V.findIndex (f p') (nodesUI ui)
 
-  EventKey (MouseButton LeftButton) Up _ _ -> ui
-    { activeNode = Nothing }
+  EventKey (MouseButton LeftButton) Up _ _ | isJust (activeNode ui) -> ui { activeNode = Nothing }
 
-  EventMotion p -> ui
-    { mousePos = tupv p }
+  EventMotion p | isJust (activeNode ui) -> ui { mousePos = invertUI ui p }
 
-  _ -> ui
+  _ -> updateViewStateWithEventUI ui event
 
   where
     f x p = (x `dist2` pos p) < nodeRadiusSquared
@@ -66,7 +79,7 @@ update :: Float -> UI -> UI
 update t ui = updateDragging $ ui { world = iteration t (world ui) }
 
 render :: UI -> Picture
-render ui = mconcat $
+render ui = applyViewPortToPicture (viewStateViewPort $ viewState ui) $ mconcat $
   [maybe mempty (renderHighlight . pos . particle (world ui)) (activeNode ui)] ++
   map (renderNode . pos) (V.toList $ nodes (world ui)) ++
   withAdjacent (renderEdge `on` (pos . particle (world ui))) (edges (world ui))
