@@ -25,10 +25,10 @@ world' = times 10000 (iteration 0.01) world
 main :: IO ()
 main = writePng "test.png" $
   renderDrawing width height white $
-    withTexture (uniformTexture black) $ do
-      mapM_ strokeLine $ withAdjacent (edge `on` (pos . particle world')) (edges world')
-      V.mapM_ (fill . ball . pos) $ nodes world'
-
+    withTexture (uniformTexture black) $
+      withTransformation centering $ do
+        mapM_ strokeLine $ withAdjacent (renderEdge `on` (pos . particle world')) (edges world')
+        mapM_ fill $ map (renderNode . pos) $ V.toList $ nodes world'
   where
     white = PixelRGBA8 255 255 255 255
     black = PixelRGBA8 0 0 0 255
@@ -40,21 +40,25 @@ strokeLine = stroke w j (c, c)
     j = JoinMiter 0
     c = CapStraight 0
 
-ball :: Vector2F -> [Primitive]
-ball a = circle (toV2 a) radius
+renderNode :: Vector2F -> [Primitive]
+renderNode p = circle (toV2 p) nodeRadius
 
-edge :: Vector2F -> Vector2F -> [Primitive]
-edge a b = line (toV2 a) (toV2 b)
+renderEdge :: Vector2F -> Vector2F -> [Primitive]
+renderEdge pa pb = line (toV2 pa) (toV2 pb)
 
 toV2 :: Vector2F -> V2 Float
-toV2 a = case vtup a of { (x,y) -> applyTransformation centering $ V2 x y }
+toV2 (x:+y) = V2 x y
 
 width, height :: Int
 width  = 2000
 height = 2000
 
-radius :: Float
-radius = 10
+halfWidth, halfHeight :: Float
+halfWidth  = fromIntegral width / 2.0
+halfHeight = fromIntegral height / 2.0
+
+nodeRadius :: Float
+nodeRadius = 10
 
 centering :: Transformation
-centering = translate (V2 (fromIntegral width/2) (fromIntegral height/2))
+centering = translate (V2 halfWidth halfHeight)
