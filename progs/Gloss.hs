@@ -4,23 +4,26 @@ module Main (main) where
 import Data.Function
 import Data.Maybe
 import Data.Monoid
+import Data.Text.IO as T
 import Grapher.AdjacencyMatrix
-import Grapher.Generation
+-- import Grapher.Generation
+import Grapher.Parser
 import Grapher.Particle
 import Grapher.Vector2F
 import Grapher.World
 import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Interface.Pure.Game
+import System.Environment
 import qualified Data.Vector.Unboxed as V
 
 tupv :: (Float, Float) -> Vector2F
 tupv = uncurry (:+)
 
-worldInit :: World
+--worldInit :: World
 --worldInit = uncurry newWorld (binaryTree 1 50)
 --worldInit = uncurry newWorld (binaryTree 2 9)
-worldInit = uncurry newWorld (grid 10 10)
+--worldInit = uncurry newWorld (grid 10 10)
 --worldInit = uncurry newWorld (Grapher.Generation.circle 50)
 
 data UI = UI
@@ -42,14 +45,19 @@ updateViewStateWithEventUI ui event = ui
 
 main :: IO ()
 main = do
-  play
-    (InWindow "Force Graph" (800, 600) (0, 0))
-    white
-    100
-    (UI Nothing (0:+0) worldInit viewStateInit)
-    render
-    input
-    update
+  [path] <- getArgs
+  txt <- T.readFile path
+  case parseGraph txt of
+    Left err -> error err
+    Right apa ->
+      play
+        (InWindow "Force Graph" (800, 600) (0, 0))
+        white
+        100
+        (UI Nothing (0:+0) (uncurry newWorld (toGraph apa)) viewStateInit)
+        render
+        input
+        update
 
 input :: Event -> UI -> UI
 input event ui = case event of

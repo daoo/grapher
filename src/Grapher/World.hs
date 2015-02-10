@@ -22,7 +22,7 @@ import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as V (read, write)
 
 repelConstant, springConstant, airDragConstant :: Float
-repelConstant   = -100
+repelConstant   = -300
 springConstant  = 100
 airDragConstant = 200
 
@@ -48,10 +48,10 @@ hasEdge = isAdjacent . edges
 
 -- |Create a new world from a number of nodes and a list of edges.
 newWorld :: Int -> [(Int, Int)] -> World
-newWorld c es = World (V.generate c new) (newMatrix c es)
+newWorld n es = World (V.generate n new) (newMatrix n es)
   where
     a :: Double
-    a = sqrt $ fromIntegral c
+    a = sqrt $ fromIntegral n
 
     b :: Int
     b = round a
@@ -69,6 +69,7 @@ iteration delta w = w { nodes = V.imap f $ nodes w }
 forces :: World -> Int -> Particle -> Force
 forces !w !i !pi =
   forceDrag pi +
+  forceCenter pi +
   V.sum (V.imap (forceInteractive w i pi) (nodes w))
   where
 
@@ -87,11 +88,11 @@ forceInteractive !w !i !pi !j !pj
 forceDrag :: Particle -> Force
 forceDrag p = negate (airDragConstant .* vel p)
 
--- -- |Calculates the pulling force towards the center.
--- --
--- -- The force is linearly proportional to the distance from the center.
--- forceCenter :: Particle -> Force
--- forceCenter = negate . pos
+-- |Calculates the pulling force towards the center.
+--
+-- The force is linearly proportional to the distance from the center.
+forceCenter :: Particle -> Force
+forceCenter = negate . pos
 
 -- |Calcualte the repel force exerted by the first particle on the second.
 forceRepel :: Particle -> Particle -> Force
