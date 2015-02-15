@@ -2,7 +2,6 @@
 module Grapher.Vector2F
   ( Vector2F((:+))
 
-  , vtup
   , zero
   , (.*)
   , (/.)
@@ -27,13 +26,9 @@ data Vector2F = !Float :+ !Float
 
 infixr 7 :+
 
-{-# INLINE vtup #-}
-vtup :: Vector2F -> (Float, Float)
-vtup (x:+y) = (x,y)
-
 derivingUnbox "Vector2F"
   [t| Vector2F -> (Float, Float) |]
-  [| vtup |]
+  [| \(x:+y) -> (x, y) |]
   [| uncurry (:+) |]
 
 zero :: Vector2F

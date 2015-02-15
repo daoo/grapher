@@ -17,6 +17,9 @@ import Graphics.Gloss.Interface.Pure.Game
 import System.Environment
 import qualified Data.Vector.Unboxed as V
 
+vtup :: Vector2F -> (Float, Float)
+vtup (x:+y) = (x, y)
+
 tupv :: (Float, Float) -> Vector2F
 tupv = uncurry (:+)
 
