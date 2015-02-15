@@ -38,7 +38,6 @@ benchmark grapher-bench
   build-depends:
     base,
     grapher,
-    QuickCheck,
     criterion
   main-is: Main.hs
   hs-source-dirs: bench
