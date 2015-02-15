@@ -9,12 +9,11 @@ module Grapher.Particle
   ) where
 
 import Data.Vector.Unboxed.Deriving
-import Grapher.Types
 import Grapher.Vector2F
 
 data Particle = Particle
-  { x1     :: !Point
-  , x2     :: !Point
+  { x1     :: !Vector2F
+  , x2     :: !Vector2F
   , accel  :: !Vector2F
   } deriving Show
 
@@ -40,7 +39,7 @@ move :: Particle -> Vector2F -> Particle
 move n p = n { x1 = p, x2 = x1 n }
 
 {-# INLINE force #-}
-force :: Mass -> Force -> Particle -> Particle
+force :: Float -> Vector2F -> Particle -> Particle
 force m f p = p { accel = f /. m }
 
 {-# INLINE integrate #-}

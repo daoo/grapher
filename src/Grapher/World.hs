@@ -15,7 +15,6 @@ import Data.Vector.Unboxed (Vector)
 import Grapher.AdjacencyMatrix
 import Grapher.Particle
 import Grapher.Physics
-import Grapher.Types
 import Grapher.Vector2F
 import Prelude hiding (pi)
 import qualified Data.Vector.Unboxed as V
@@ -66,14 +65,14 @@ iteration delta w = w { nodes = V.imap f $ nodes w }
   where
     f i b = integrate delta $ force particleMass (forces w i b) b
 
-forces :: World -> Int -> Particle -> Force
+forces :: World -> Int -> Particle -> Vector2F
 forces !w !i !pi =
   forceDrag pi +
   forceCenter pi +
   V.sum (V.imap (forceInteractive w i pi) (nodes w))
   where
 
-forceInteractive :: World -> Int -> Particle -> Int -> Particle -> Force
+forceInteractive :: World -> Int -> Particle -> Int -> Particle -> Vector2F
 forceInteractive !w !i !pi !j !pj
   | i == j        = zero
   | hasEdge w i j = forceAttract pi pj + frepel
@@ -85,21 +84,21 @@ forceInteractive !w !i !pi !j !pj
 -- |Calculate the air drag force exerted on a particle.
 --
 -- The force is linearly proportional to the speed of the particle.
-forceDrag :: Particle -> Force
+forceDrag :: Particle -> Vector2F
 forceDrag p = negate (airDragConstant .* vel p)
 
 -- |Calculates the pulling force towards the center.
 --
 -- The force is linearly proportional to the distance from the center.
-forceCenter :: Particle -> Force
+forceCenter :: Particle -> Vector2F
 forceCenter = negate . pos
 
 -- |Calcualte the repel force exerted by the first particle on the second.
-forceRepel :: Particle -> Particle -> Force
+forceRepel :: Particle -> Particle -> Vector2F
 forceRepel this other = interaction repelConstant (f other) (f this)
   where
     f x = (pos x, particleCharge)
 
 -- |Calculate the attractive force between two connected particles.
-forceAttract :: Particle -> Particle -> Force
+forceAttract :: Particle -> Particle -> Vector2F
 forceAttract this other = hookes springConstant (pos other) (pos this)

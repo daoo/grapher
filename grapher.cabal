@@ -13,7 +13,6 @@ library
     Grapher.Generation
     Grapher.Parser
     Grapher.Particle
-    Grapher.Types
     Grapher.Vector2F
     Grapher.World
   hs-source-dirs: src
