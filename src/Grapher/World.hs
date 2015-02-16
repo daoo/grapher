@@ -56,7 +56,7 @@ newWorld n es = World (V.generate n new) (newMatrix n es)
     b = round a
 
     new :: Int -> Particle
-    new i = mkParticle (fromIntegral x :+ fromIntegral y)
+    new i = fromPoint (fromIntegral x :+ fromIntegral y)
       where
         (x, y) = i `quotRem` b
 

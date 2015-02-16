@@ -1,7 +1,8 @@
 {-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, TypeFamilies #-}
 module Grapher.Particle
-  ( Particle
-  , mkParticle
+  ( Particle(x1, x2, accel)
+  , unsafeParticle
+  , fromPoint
   , pos
   , vel
   , integrate
@@ -22,9 +23,13 @@ derivingUnbox "Particle"
   [| \p -> (x1 p, x2 p, accel p) |]
   [| \(a, b, c) -> Particle a b c |]
 
-{-# INLINE mkParticle #-}
-mkParticle :: Vector2F -> Particle
-mkParticle p = Particle p p zero
+{-# INLINE fromPoint #-}
+fromPoint :: Vector2F -> Particle
+fromPoint p = Particle p p zero
+
+{-# INLINE unsafeParticle #-}
+unsafeParticle :: Vector2F -> Vector2F -> Vector2F -> Particle
+unsafeParticle = Particle
 
 {-# INLINE pos #-}
 pos :: Particle -> Vector2F

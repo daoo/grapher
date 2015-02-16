@@ -83,7 +83,7 @@ input event ui = case event of
 updateDragging :: UI -> UI
 updateDragging ui = maybe
   ui
-  (\i -> ui { world = modify (const (mkParticle (mousePos ui))) i (world ui) })
+  (\i -> ui { world = modify (const (fromPoint (mousePos ui))) i (world ui) })
   (activeNode ui)
 
 update :: Float -> UI -> UI
