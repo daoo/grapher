@@ -16,7 +16,10 @@ module Grapher.Vector2F
   , project
   ) where
 
-import Data.Vector.Unboxed.Deriving
+import Control.Monad (liftM)
+import Data.Vector.Unboxed.Base
+import qualified Data.Vector.Generic as G
+import qualified Data.Vector.Generic.Mutable as M
 
 square :: Float -> Float
 square x = x * x
@@ -24,12 +27,46 @@ square x = x * x
 data Vector2F = !Float :+ !Float
   deriving Show
 
-infixr 7 :+
+newtype instance MVector s Vector2F = MV_Vector2F (MVector s Float)
+newtype instance Vector    Vector2F = V_Vector2F  (Vector    Float)
+instance Unbox Vector2F
 
-derivingUnbox "Vector2F"
-  [t| Vector2F -> (Float, Float) |]
-  [| \(x:+y) -> (x, y) |]
-  [| uncurry (:+) |]
+instance M.MVector MVector Vector2F where
+  basicLength (MV_Vector2F v) = M.basicLength v `quot` 2
+
+  basicUnsafeSlice a b (MV_Vector2F v) = MV_Vector2F $ M.basicUnsafeSlice (a*2) (b*2) v
+
+  basicOverlaps (MV_Vector2F v0) (MV_Vector2F v1) = M.basicOverlaps v0 v1
+
+  basicUnsafeNew n = liftM MV_Vector2F (M.basicUnsafeNew (2*n))
+
+  basicUnsafeRead (MV_Vector2F v) n = do
+    let n' = 2*n
+    x <- M.basicUnsafeRead v n'
+    y <- M.basicUnsafeRead v (n'+1)
+    return (x:+y)
+
+  basicUnsafeWrite (MV_Vector2F v) n (x:+y) = do
+    let n' = 2*n
+    M.basicUnsafeWrite v n'     x
+    M.basicUnsafeWrite v (n'+1) y
+
+instance G.Vector Vector Vector2F where
+  basicUnsafeFreeze (MV_Vector2F v) = liftM V_Vector2F (G.basicUnsafeFreeze v)
+
+  basicUnsafeThaw (V_Vector2F v) = liftM MV_Vector2F (G.basicUnsafeThaw v)
+
+  basicLength (V_Vector2F v) = G.basicLength v `quot` 2
+
+  basicUnsafeSlice a b (V_Vector2F v) = V_Vector2F $ G.basicUnsafeSlice (a*2) (b*2) v
+
+  basicUnsafeIndexM (V_Vector2F v) n = do
+    let n' = 2*n
+    x <- G.basicUnsafeIndexM v n'
+    y <- G.basicUnsafeIndexM v (n'+1)
+    return (x:+y)
+
+infixr 7 :+
 
 zero :: Vector2F
 zero = 0 :+ 0
