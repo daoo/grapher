@@ -32,34 +32,45 @@ newtype instance Vector    Vector2F = V_Vector2F  (Vector    Float)
 instance Unbox Vector2F
 
 instance M.MVector MVector Vector2F where
+  {-# INLINE basicLength #-}
   basicLength (MV_Vector2F v) = M.basicLength v `quot` 2
 
+  {-# INLINE basicUnsafeSlice #-}
   basicUnsafeSlice a b (MV_Vector2F v) = MV_Vector2F $ M.basicUnsafeSlice (a*2) (b*2) v
 
+  {-# INLINE basicOverlaps #-}
   basicOverlaps (MV_Vector2F v0) (MV_Vector2F v1) = M.basicOverlaps v0 v1
 
+  {-# INLINE basicUnsafeNew #-}
   basicUnsafeNew n = liftM MV_Vector2F (M.basicUnsafeNew (2*n))
 
+  {-# INLINE basicUnsafeRead #-}
   basicUnsafeRead (MV_Vector2F v) n = do
     let n' = 2*n
     x <- M.basicUnsafeRead v n'
     y <- M.basicUnsafeRead v (n'+1)
     return (x:+y)
 
+  {-# INLINE basicUnsafeWrite #-}
   basicUnsafeWrite (MV_Vector2F v) n (x:+y) = do
     let n' = 2*n
     M.basicUnsafeWrite v n'     x
     M.basicUnsafeWrite v (n'+1) y
 
 instance G.Vector Vector Vector2F where
+  {-# INLINE basicUnsafeFreeze #-}
   basicUnsafeFreeze (MV_Vector2F v) = liftM V_Vector2F (G.basicUnsafeFreeze v)
 
+  {-# INLINE basicUnsafeThaw #-}
   basicUnsafeThaw (V_Vector2F v) = liftM MV_Vector2F (G.basicUnsafeThaw v)
 
+  {-# INLINE basicLength #-}
   basicLength (V_Vector2F v) = G.basicLength v `quot` 2
 
+  {-# INLINE basicUnsafeSlice #-}
   basicUnsafeSlice a b (V_Vector2F v) = V_Vector2F $ G.basicUnsafeSlice (a*2) (b*2) v
 
+  {-# INLINE basicUnsafeIndexM #-}
   basicUnsafeIndexM (V_Vector2F v) n = do
     let n' = 2*n
     x <- G.basicUnsafeIndexM v n'
