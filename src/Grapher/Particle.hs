@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, TypeFamilies #-}
 module Grapher.Particle
-  ( Particle(x1, x2, accel)
+  ( Particle
   , unsafeParticle
   , fromPoint
   , pos
