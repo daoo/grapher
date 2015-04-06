@@ -3,7 +3,6 @@ module Main (main) where
 
 import Data.Function
 import Data.Maybe
-import Data.Monoid
 import Data.Text.IO as T
 import Grapher.AdjacencyMatrix
 -- import Grapher.Generation
