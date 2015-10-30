@@ -1,12 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Grapher.Parser where
+module Grapher.Parser (parseGraph, toGraph) where
 
 import Control.Applicative
-import Data.Attoparsec.Text
+import Data.Attoparsec.Text (Parser)
 import Data.Char
 import Data.Text (Text)
+import qualified Data.Attoparsec.Text as P
 import qualified Data.Set as S
 import qualified Data.Text as T
+
+splitBy :: (a -> Bool) -> [a] -> ([a], [a])
+splitBy _ [] = ([], [])
+splitBy p (x:xs)
+  | p x       = ([], xs)
+  | otherwise = (x:ys, zs)
+  where
+    (ys, zs) = splitBy p xs
 
 data Direction = N | NE | E | SE | S | SW | W | NW | U | D
   deriving Show
@@ -18,7 +27,7 @@ data Edge = Edge { from :: Text, to :: Text, direction :: Direction }
   deriving Show
 
 identifier :: Parser Text
-identifier = takeTill isSpace
+identifier = P.takeTill isSpace
 
 parseDirection :: Parser Direction
 parseDirection =
@@ -30,17 +39,20 @@ parseDirection =
   ("N"  *> pure N) <|>
   ("S"  *> pure S) <|>
   ("W"  *> pure W) <|>
-  ("U"  *> pure W) <|>
-  ("D"  *> pure W)
+  ("U"  *> pure U) <|>
+  ("D"  *> pure D)
 
 parseNode :: Parser Node
-parseNode = Node <$> (identifier <* skipSpace) <*> takeText
+parseNode = Node <$> (identifier <* P.skipSpace) <*> P.takeText
 
 parseEdge :: Parser Edge
-parseEdge = Edge <$> (identifier <* skipSpace) <*> (identifier <* skipSpace) <*> parseDirection
+parseEdge = Edge <$> (identifier <* P.skipSpace) <*> (identifier <* P.skipSpace) <*> parseDirection
 
 parseGraph :: Text -> Either String ([Node], [Edge])
-parseGraph txt = (,) <$> mapM (parseOnly parseNode) ns <*> mapM (parseOnly parseEdge) es
+parseGraph txt = do
+  nodes <- mapM (P.parseOnly parseNode) ns
+  edges <- mapM (P.parseOnly parseEdge) es
+  return (nodes, edges)
   where
     notEmpty = not . T.null
     notComment = not . T.isPrefixOf "//"
@@ -48,14 +60,6 @@ parseGraph txt = (,) <$> mapM (parseOnly parseNode) ns <*> mapM (parseOnly parse
     ls = filter (\l -> notEmpty l && notComment l) $ T.lines txt
 
     (ns, es) = splitBy (=="#") ls
-
-splitBy :: (a -> Bool) -> [a] -> ([a], [a])
-splitBy _ [] = ([], [])
-splitBy p (x:xs)
-  | p x       = ([], xs)
-  | otherwise = (x:ys, zs)
-  where
-    (ys, zs) = splitBy p xs
 
 toGraph :: ([Node], [Edge]) -> (Int, [(Int, Int)])
 toGraph (nodes, edges) = (n, es)
