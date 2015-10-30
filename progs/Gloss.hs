@@ -51,12 +51,12 @@ main = do
   txt <- T.readFile path
   case parseGraph txt of
     Left err -> error err
-    Right apa ->
+    Right graph ->
       play
         (InWindow "Force Graph" (800, 600) (0, 0))
         white
         100
-        (UI Nothing (0:+0) (uncurry newWorld (toGraph apa)) viewStateInit)
+        (UI Nothing (0:+0) (uncurry newWorld (discardNodeData graph)) viewStateInit)
         render
         input
         update

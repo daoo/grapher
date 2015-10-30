@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Grapher.Parser (parseGraph, toGraph) where
+module Grapher.Parser (parseGraph, discardNodeData) where
 
 import Control.Applicative
 import Data.Attoparsec.Text (Parser)
@@ -61,8 +61,8 @@ parseGraph txt = do
 
     (ns, es) = splitBy (=="#") ls
 
-toGraph :: ([Node], [Edge]) -> (Int, [(Int, Int)])
-toGraph (nodes, edges) = (n, es)
+discardNodeData :: ([Node], [Edge]) -> (Int, [(Int, Int)])
+discardNodeData (nodes, edges) = (n, es)
   where
     n = length nodes
 
