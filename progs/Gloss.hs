@@ -9,12 +9,13 @@ import Grapher.AdjacencyMatrix
 import Grapher.Parser
 import Grapher.Particle
 import Grapher.Vector2F
-import Grapher.World
+import Grapher.World hiding (nodes, edges)
 import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Interface.Pure.Game
 import System.Environment
 import qualified Data.Vector.Unboxed as V
+import qualified Grapher.World as W
 
 vtup :: Vector2F -> (Float, Float)
 vtup (x:+y) = (x, y)
@@ -28,71 +29,61 @@ tupv = uncurry (:+)
 --worldInit = uncurry newWorld (grid 10 10)
 --worldInit = uncurry newWorld (Grapher.Generation.circle 50)
 
-data UI = UI
-  { activeNode :: !(Maybe Int)
-  , mousePos   :: !Vector2F
-  , world      :: !World
-  , viewState  :: !ViewState
-  }
+data UI = UI !(Maybe Int) !Vector2F !ViewState !World
 
-nodesUI :: UI -> V.Vector Particle
-nodesUI = nodes . world
-
-invertUI :: UI -> Point -> Vector2F
-invertUI ui p = tupv (invertViewPort (viewStateViewPort (viewState ui)) p)
-
-updateViewStateWithEventUI :: UI -> Event -> UI
-updateViewStateWithEventUI ui event = ui
-  { viewState = updateViewStateWithEvent event (viewState ui) }
+uiInit :: World -> UI
+uiInit w = UI Nothing (0:+0) viewStateInit w
 
 main :: IO ()
 main = do
   [path] <- getArgs
   txt <- T.readFile path
-  case parseGraph txt of
+  world <- case parseGraph txt of
     Left err -> error err
-    Right graph ->
-      play
-        (InWindow "Force Graph" (800, 600) (0, 0))
-        white
-        100
-        (UI Nothing (0:+0) (uncurry newWorld (discardNodeData graph)) viewStateInit)
-        render
-        input
-        update
+    Right graph -> return (uncurry newWorld (discardNodeData graph))
+
+  play (InWindow "Force Graph" (800, 600) (0, 0))
+    white 100 (uiInit world) render input update
 
 input :: Event -> UI -> UI
-input event ui = case event of
+input event (UI active mouse view world) = case event of
 
-  EventKey (MouseButton LeftButton) Down _ p
-    | isJust i -> ui { activeNode = i, mousePos = p' }
+  EventKey (MouseButton LeftButton) Down _ mouse'
+    | isJust ix -> UI ix point view world
     where
-      p' = invertUI ui p
-      i = V.findIndex (f p') (nodesUI ui)
+      point = tupv (invertViewPort (viewStateViewPort view) mouse')
+      ix = V.findIndex (isSelected point) (W.nodes world)
 
-  EventKey (MouseButton LeftButton) Up _ _ | isJust (activeNode ui) -> ui { activeNode = Nothing }
+  EventKey (MouseButton LeftButton) Up _ _
+    | isJust active -> UI Nothing mouse view world
 
-  EventMotion p | isJust (activeNode ui) -> ui { mousePos = invertUI ui p }
+  EventMotion mouse'
+    | isJust active ->
+      UI active (tupv (invertViewPort (viewStateViewPort view) mouse')) view world
 
-  _ -> updateViewStateWithEventUI ui event
-
-  where
-    f x p = (x `dist2` pos p) < nodeRadiusSquared
+  _ -> UI active mouse (updateViewStateWithEvent event view) world
 
 updateDragging :: UI -> UI
-updateDragging ui = maybe
-  ui
-  (\i -> ui { world = modify (const (fromPoint (mousePos ui))) i (world ui) })
-  (activeNode ui)
+updateDragging ui@(UI Nothing _ _ _) = ui
+updateDragging (UI active@(Just ix) mouse view world) =
+  UI active mouse view (modify (const (fromPoint mouse)) ix world)
 
 update :: Float -> UI -> UI
-update t ui = updateDragging $ ui { world = iteration t (world ui) }
+update time (UI active mouse view world) =
+  updateDragging $ UI active mouse view (iteration time world)
 
 render :: UI -> Picture
-render ui = applyViewPortToPicture (viewStateViewPort $ viewState ui) $ mconcat $
-  [maybe mempty (renderHighlight . pos . particle (world ui)) (activeNode ui)] ++
-  map (renderNode . pos) (V.toList $ nodes (world ui)) ++
-  withAdjacent (renderEdge `on` (pos . particle (world ui))) (edges (world ui))
+render (UI active _ view world) = applyViewPortToPicture (viewStateViewPort view) picture
+  where
+    picture = mconcat (highlight : nodes ++ edges)
+
+    highlight = maybe mempty renderh active
+    nodes = map rendern (V.toList $ W.nodes world)
+    edges = withAdjacent rendere (W.edges world)
+
+    renderh = renderHighlight . pos . particle world
+    rendern = renderNode . pos
+    rendere = renderEdge `on` (pos . particle world)
 
 renderEdge :: Vector2F -> Vector2F -> Picture
 renderEdge pa pb = line [vtup pa, vtup pb]
@@ -105,7 +96,10 @@ renderHighlight :: Vector2F -> Picture
 renderHighlight p = color green $ uncurry translate (vtup p) $
   circleSolid highlightRadius
 
-nodeRadius, nodeRadiusSquared, highlightRadius :: Float
-nodeRadius        = 10
-nodeRadiusSquared = nodeRadius * nodeRadius
-highlightRadius   = 20
+isSelected :: Vector2F -> Particle -> Bool
+isSelected point part = (point `dist2` pos part) < highlightRadiusSquared
+
+nodeRadius, highlightRadius, highlightRadiusSquared :: Float
+nodeRadius = 10
+highlightRadius = 20
+highlightRadiusSquared = highlightRadius * highlightRadius
