@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, TypeFamilies #-}
+{-# LANGUAGE MultiParamTypeClasses, TypeFamilies #-}
 module Grapher.Vector2F
   ( Vector2F((:+))
 
@@ -43,6 +43,8 @@ instance M.MVector MVector Vector2F where
 
   {-# INLINE basicUnsafeNew #-}
   basicUnsafeNew n = liftM MV_Vector2F (M.basicUnsafeNew (2*n))
+
+  basicInitialize (MV_Vector2F v) = M.basicInitialize v
 
   {-# INLINE basicUnsafeRead #-}
   basicUnsafeRead (MV_Vector2F v) n = do
