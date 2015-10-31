@@ -1,6 +1,7 @@
 {-# LANGUAGE BangPatterns #-}
 module Grapher.World
-  ( World(nodes, edges)
+  ( Graph
+  , World(worldNodes, worldEdges)
   , newWorld
   , particle
   , hasEdge
@@ -29,30 +30,32 @@ particleMass, particleCharge :: Float
 particleMass   = 1.0
 particleCharge = 10.0
 
+type Graph = (Int, [(Int, Int)])
+
 data World = World
-  { nodes :: !(Vector Particle)
-  , edges :: !Matrix
+  { worldNodes :: !(Vector Particle)
+  , worldEdges :: !Matrix
   } deriving Show
 
 {-# INLINE particle #-}
 particle :: World -> Int -> Particle
-particle w !i = nodes w `V.unsafeIndex` i
+particle w !i = worldNodes w `V.unsafeIndex` i
 
 modify :: (Particle -> Particle) -> Int -> World -> World
-modify f !i w = w { nodes = V.modify helper (nodes w) }
+modify f !i w = w { worldNodes = V.modify helper (worldNodes w) }
   where
     helper v = V.unsafeRead v i >>= \p -> V.unsafeWrite v i (f p)
 
 {-# INLINE hasEdge #-}
 hasEdge :: World -> Int -> Int -> Bool
-hasEdge = isAdjacent . edges
+hasEdge = isAdjacent . worldEdges
 
 -- |Create a new world from a number of nodes and a list of edges.
-newWorld :: Int -> [(Int, Int)] -> World
-newWorld n es = World (V.generate n new) (newMatrix n es)
+newWorld :: Graph -> World
+newWorld (count, edges) = World (V.generate count new) (newMatrix count edges)
   where
     a :: Double
-    a = sqrt $ fromIntegral n
+    a = sqrt $ fromIntegral count
 
     b :: Int
     b = round a
@@ -63,7 +66,7 @@ newWorld n es = World (V.generate n new) (newMatrix n es)
         (x, y) = i `quotRem` b
 
 iteration :: Float -> World -> World
-iteration delta w = w { nodes = V.imap f $ nodes w }
+iteration delta w = w { worldNodes = V.imap f $ worldNodes w }
   where
     f i b = integrate delta $ force particleMass (forceAll w i b) b
 
@@ -72,7 +75,7 @@ forceAll :: World -> Int -> Particle -> Vector2F
 forceAll !w !i !pi =
   forceDrag pi +
   forceCenter pi +
-  V.sum (V.imap (forceInteractive w i pi) (nodes w))
+  V.sum (V.imap (forceInteractive w i pi) (worldNodes w))
   where
 
 {-# INLINE forceInteractive #-}

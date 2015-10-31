@@ -1,21 +1,19 @@
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE BangPatterns, LambdaCase #-}
 module Main (main) where
 
 import Data.Function
 import Data.Maybe
-import Data.Text.IO as T
 import Grapher.AdjacencyMatrix
 -- import Grapher.Generation
 import Grapher.Parser
 import Grapher.Particle
 import Grapher.Vector2F
-import Grapher.World hiding (nodes, edges)
+import Grapher.World
 import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Interface.Pure.Game
 import System.Environment
 import qualified Data.Vector.Unboxed as V
-import qualified Grapher.World as W
 
 vtup :: Vector2F -> (Float, Float)
 vtup (x:+y) = (x, y)
@@ -24,10 +22,10 @@ tupv :: (Float, Float) -> Vector2F
 tupv = uncurry (:+)
 
 --worldInit :: World
---worldInit = uncurry newWorld (binaryTree 1 50)
---worldInit = uncurry newWorld (binaryTree 2 9)
---worldInit = uncurry newWorld (grid 10 10)
---worldInit = uncurry newWorld (Grapher.Generation.circle 50)
+--worldInit = newWorld (binaryTree 1 50)
+--worldInit = newWorld (binaryTree 2 9)
+--worldInit = newWorld (grid 10 10)
+--worldInit = newWorld (Grapher.Generation.circle 50)
 
 data UI = UI !(Maybe Int) !Vector2F !ViewState !World
 
@@ -35,15 +33,15 @@ uiInit :: World -> UI
 uiInit w = UI Nothing (0:+0) viewStateInit w
 
 main :: IO ()
-main = do
-  [path] <- getArgs
-  txt <- T.readFile path
-  world <- case parseGraph txt of
-    Left err -> error err
-    Right graph -> return (uncurry newWorld (discardNodeData graph))
+main = getArgs >>= \case
+  [path] -> readFile path >>= either error prog . parseDot
+  _ -> getContents >>= either error prog . parseDot
 
-  play (InWindow "Force Graph" (800, 600) (0, 0))
-    white 100 (uiInit world) render input update
+prog :: Graph -> IO ()
+prog graph = play window white 100 world render input update
+  where
+    window = InWindow "Force Graph" (800, 600) (0, 0)
+    world = uiInit (newWorld graph)
 
 input :: Event -> UI -> UI
 input event (UI active mouse view world) = case event of
@@ -52,7 +50,7 @@ input event (UI active mouse view world) = case event of
     | isJust ix -> UI ix point view world
     where
       point = tupv (invertViewPort (viewStateViewPort view) mouse')
-      ix = V.findIndex (isSelected point) (W.nodes world)
+      ix = V.findIndex (isSelected point) (worldNodes world)
 
   EventKey (MouseButton LeftButton) Up _ _
     | isJust active -> UI Nothing mouse view world
@@ -78,8 +76,8 @@ render (UI active _ view world) = applyViewPortToPicture (viewStateViewPort view
     picture = mconcat (highlight : nodes ++ edges)
 
     highlight = maybe mempty renderh active
-    nodes = map rendern (V.toList $ W.nodes world)
-    edges = withAdjacent rendere (W.edges world)
+    nodes = map rendern (V.toList $ worldNodes world)
+    edges = withAdjacent rendere (worldEdges world)
 
     renderh = renderHighlight . pos . particle world
     rendern = renderNode . pos
