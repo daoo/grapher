@@ -4,7 +4,6 @@ module Main (main) where
 import Data.Function
 import Data.Maybe
 import Grapher.AdjacencyMatrix
--- import Grapher.Generation
 import Grapher.Parser
 import Grapher.Particle
 import Grapher.Vector2F
@@ -20,12 +19,6 @@ vtup (x:+y) = (x, y)
 
 tupv :: (Float, Float) -> Vector2F
 tupv = uncurry (:+)
-
---worldInit :: World
---worldInit = newWorld (binaryTree 1 50)
---worldInit = newWorld (binaryTree 2 9)
---worldInit = newWorld (grid 10 10)
---worldInit = newWorld (Grapher.Generation.circle 50)
 
 data UI = UI !(Maybe Int) !Vector2F !ViewState !World
 

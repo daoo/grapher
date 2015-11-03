@@ -1,6 +1,7 @@
 {-# LANGUAGE BangPatterns #-}
 module Grapher.Generation
-  ( grid
+  ( Graph
+  , grid
   , binaryTree
   , circle
   ) where
