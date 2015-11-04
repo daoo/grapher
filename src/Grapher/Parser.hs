@@ -4,6 +4,7 @@ module Grapher.Parser (parseDot) where
 import Data.Bifunctor
 import Data.List
 import Data.Maybe
+import Data.Tuple
 import Language.Dot.Syntax
 import qualified Data.Map as M
 import qualified Language.Dot.Parser as P
@@ -56,6 +57,3 @@ pair (a:b:xs) = (a, b) : pair (b : xs)
 
 duplicate :: [(a, a)] -> [(a, a)]
 duplicate = concatMap (\x -> [x, swap x])
-  where
-    swap (a, b) = (b, a)
-
