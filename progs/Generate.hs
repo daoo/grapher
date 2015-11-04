@@ -29,6 +29,6 @@ main = getArgs >>= \case
     go = T.putStrLn . toLazyText . builder
 
 builder :: Graph -> Builder
-builder graph = "digraph {" <> mmconcat (map edge (snd graph)) <> "}"
+builder graph = "digraph {" <> mconcat (map edge (snd graph)) <> "}"
   where
     edge (i, j) = decimal i <> "--" <> decimal j <> ";"
