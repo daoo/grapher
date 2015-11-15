@@ -28,7 +28,7 @@ library
 
 executable grapher-interactive
   main-is: progs/Gloss.hs
-  build-depends: base, grapher, text, vector, gloss
+  build-depends: base, grapher, vector, gloss
 
 executable grapher-png
   main-is: progs/PNG.hs

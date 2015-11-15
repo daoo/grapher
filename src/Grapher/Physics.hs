@@ -13,9 +13,9 @@ hookes k p1 p2 = k .* (p1 - p2)
 -- point 1.
 --
 -- Based on Coulombs and Newtons laws.
-interaction :: Float          -- ^ Constant factor
+interaction :: Float -- ^ Constant factor
             -> (Vector2F, Float) -- ^ Point 1
             -> (Vector2F, Float) -- ^ Point 2
             -> Vector2F
-interaction c (p1, v1) (p2, v2) = (c * v1 * v2 / mag2 u) .* u
+interaction c (p1, v1) (p2, v2) = (c * v1 * v2 / quadrance u) .* u
   where u = p1 - p2

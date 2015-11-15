@@ -14,16 +14,10 @@ import Graphics.Gloss.Interface.Pure.Game
 import System.Environment
 import qualified Data.Vector.Unboxed as V
 
-vtup :: Vector2F -> (Float, Float)
-vtup (x:+y) = (x, y)
-
-tupv :: (Float, Float) -> Vector2F
-tupv = uncurry (:+)
-
 data UI = UI !(Maybe Int) !Vector2F !ViewState !World
 
 uiInit :: World -> UI
-uiInit w = UI Nothing (0:+0) viewStateInit w
+uiInit w = UI Nothing zero viewStateInit w
 
 main :: IO ()
 main = getArgs >>= \case
@@ -42,7 +36,7 @@ input event (UI active mouse view world) = case event of
   EventKey (MouseButton LeftButton) Down _ mouse'
     | isJust ix -> UI ix point view world
     where
-      point = tupv (invertViewPort (viewStateViewPort view) mouse')
+      point = uncurry (:+) (invertViewPort (viewStateViewPort view) mouse')
       ix = V.findIndex (isSelected point) (worldNodes world)
 
   EventKey (MouseButton LeftButton) Up _ _
@@ -50,7 +44,7 @@ input event (UI active mouse view world) = case event of
 
   EventMotion mouse'
     | isJust active ->
-      UI active (tupv (invertViewPort (viewStateViewPort view) mouse')) view world
+      UI active (uncurry (:+) (invertViewPort (viewStateViewPort view) mouse')) view world
 
   _ -> UI active mouse (updateViewStateWithEvent event view) world
 
@@ -77,18 +71,18 @@ render (UI active _ view world) = applyViewPortToPicture (viewStateViewPort view
     rendere = renderEdge `on` (pos . particle world)
 
 renderEdge :: Vector2F -> Vector2F -> Picture
-renderEdge pa pb = line [vtup pa, vtup pb]
+renderEdge (ax:+ay) (bx:+by) = line [(ax,ay), (bx,by)]
 
 renderNode :: Vector2F -> Picture
-renderNode p = uncurry translate (vtup p) $
+renderNode (x:+y) = uncurry translate (x,y) $
   circleSolid nodeRadius
 
 renderHighlight :: Vector2F -> Picture
-renderHighlight p = color green $ uncurry translate (vtup p) $
+renderHighlight (x:+y) = color green $ uncurry translate (x,y) $
   circleSolid highlightRadius
 
 isSelected :: Vector2F -> Particle -> Bool
-isSelected point part = (point `dist2` pos part) < highlightRadiusSquared
+isSelected point part = (point `qd` pos part) < highlightRadiusSquared
 
 nodeRadius, highlightRadius, highlightRadiusSquared :: Float
 nodeRadius = 10
