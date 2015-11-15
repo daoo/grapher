@@ -1,8 +1,9 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE TupleSections #-}
 module Grapher.Generation
   ( Graph
   , grid
-  , binaryTree
+  , tree
   , circle
   ) where
 
@@ -12,45 +13,50 @@ import Control.Monad.State
 type Graph = (Int, [(Int, Int)])
 
 -- |Generate an n-by-m grid.
+--
+-- >>> grid 0 0
+-- (0,[])
+-- >>> grid 1 1
+-- (1,[])
+-- >>> grid 2 1
+-- (2,[(0,1)])
+-- >>> grid 1 2
+-- (2,[(0,1)])
+-- >>> grid 2 2
+-- (4,[(0,1),(0,2),(1,3),(2,3)])
 grid :: Int -> Int -> Graph
-grid n m = assert (n > 0 && m > 0) (n*m, go 0 0)
+grid w h = (w*h, go 0 0)
   where
-    go !i !j
-      | j >= m    = go (i+1) 0
-      | i >= n    = []
-      | otherwise = edges (i, j) $ go i (j+1)
+    go !x !y
+      | y >= (h-1) = map (edger . (,y)) [0..(w-2)]
+      | x >= (w-1) = edged (x,y) : go 0 (y+1)
+      | otherwise = edger (x,y) : edged (x,y) : go (x+1) y
 
-    edges ix = edge a (edgel ix)
-             . edge a (edger ix)
-             . edge a (edged ix)
-             . edge a (edgeu ix)
-      where
-        a = index ix
+    edger ix@(x, y) = (index ix, index (x+1, y))
+    edged ix@(x, y) = (index ix, index (x, y+1))
 
-    edge a ix@(i, j) xs
-      | i >= 0 && i < n && j >= 0 && j < m = (a, b) : xs
-      | otherwise                          = xs
-
-        where b = index ix
-
-    edgel (i, j) = (i, j+1)
-    edger (i, j) = (i, j-1)
-    edged (i, j) = (i+1, j)
-    edgeu (i, j) = (i-1, j)
-
-    index (i, j) = i*m+j
+    index (x, y) = y*w+x
 
 -- |Generate an n-ary tree with given height.
-binaryTree :: Int -> Int -> Graph
-binaryTree n height = assert (n > 0 && n > 0)
+--
+-- >>> tree 1 3
+-- (3,[(0,1),(1,2)])
+-- >>> tree 2 2
+-- (3,[(0,1),(0,2)])
+-- >>> tree 3 3
+-- (13,[(0,1),(0,2),(0,3),(1,4),(1,5),(1,6),(2,7),(2,8),(2,9),(3,10),(3,11),(3,12)])
+tree :: Int -> Int -> Graph
+tree n height = assert (n > 0 && height > 1)
   (count, evalState (go 1 0) 1)
   where
+    count = sum $ map (n^) [0..(height-1)]
+
     go :: Int -> Int -> State Int [(Int, Int)]
     go !h !i
       | h < height = do
         frees <- replicateM n free
         subtrees <- mapM (go (h+1)) frees
-        return $ concatMap (\j -> [(i, j), (j,i)]) frees ++ concat subtrees
+        return $ map (edge i) frees ++ concat subtrees
 
       | otherwise = return []
 
@@ -59,9 +65,24 @@ binaryTree n height = assert (n > 0 && n > 0)
       put (i+1)
       return i
 
-    count = sum $ map (n^) [0..(height-1)]
+    edge = (,)
 
+-- |Generate a circle with n nodes.
+--
+-- >>> circle 0
+-- (0,[])
+-- >>> circle 1
+-- (1,[])
+-- >>> circle 2
+-- (2,[(0,1)])
+-- >>> circle 3
+-- (3,[(0,1),(1,2),(2,0)])
+-- >>> circle 4
+-- (4,[(0,1),(1,2),(2,3),(3,0)])
 circle :: Int -> Graph
-circle n = (n, concatMap f [0..(n-1)])
+circle 0 = (0, [])
+circle 1 = (1, [])
+circle 2 = (2, [(0,1)])
+circle n = (n, map edge [0..(n-1)])
   where
-    f i = let j = (i+1) `mod` n in [(i, j), (j, i)]
+    edge i = (i, (i+1) `mod` n)

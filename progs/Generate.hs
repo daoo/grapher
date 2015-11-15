@@ -12,7 +12,7 @@ import qualified Data.Text.Lazy.IO as T
 
 main :: IO ()
 main = getArgs >>= \case
-  ["bin-tree", n, h] -> go (binaryTree (read n) (read h))
+  ["bin-tree", n, h] -> go (tree (read n) (read h))
   ["grid", w, h] -> go (grid (read w) (read h))
   ["circle", n] -> go (circle (read n))
 
