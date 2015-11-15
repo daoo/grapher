@@ -7,7 +7,6 @@ import Data.Function
 import Grapher.AdjacencyMatrix
 import Grapher.Generation (grid)
 import Grapher.Particle
-import Grapher.Vector2F
 import Grapher.World
 import Graphics.Rasterific
 import Graphics.Rasterific.Texture
@@ -40,14 +39,11 @@ strokeLine = stroke w j (c, c)
     j = JoinMiter 0
     c = CapStraight 0
 
-renderNode :: Vector2F -> [Primitive]
-renderNode p = circle (toV2 p) nodeRadius
+renderNode :: V2 Float -> [Primitive]
+renderNode = (`circle` nodeRadius)
 
-renderEdge :: Vector2F -> Vector2F -> [Primitive]
-renderEdge pa pb = line (toV2 pa) (toV2 pb)
-
-toV2 :: Vector2F -> V2 Float
-toV2 (x:+y) = V2 x y
+renderEdge :: V2 Float -> V2 Float -> [Primitive]
+renderEdge = line
 
 width, height :: Int
 width  = 2000

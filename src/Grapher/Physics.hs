@@ -1,12 +1,13 @@
 module Grapher.Physics where
 
-import Grapher.Vector2F
+import Linear.Metric
+import Linear.V2
 
 -- |Calculate the spring attraction force from one point to another.
 --
 -- Based on Hooke's law.
-hookes :: Float -> Vector2F -> Vector2F -> Vector2F
-hookes k p1 p2 = k .* (p1 - p2)
+hookes :: Float -> V2 Float -> V2 Float -> V2 Float
+hookes k p1 p2 = realToFrac k * (p1 - p2)
 
 -- |Calculate the force a particle exerts on another particle.
 -- The force (for a positive constant) will be directed from point 2 towards
@@ -14,8 +15,8 @@ hookes k p1 p2 = k .* (p1 - p2)
 --
 -- Based on Coulombs and Newtons laws.
 interaction :: Float -- ^ Constant factor
-            -> (Vector2F, Float) -- ^ Point 1
-            -> (Vector2F, Float) -- ^ Point 2
-            -> Vector2F
-interaction c (p1, v1) (p2, v2) = (c * v1 * v2 / quadrance u) .* u
+            -> (V2 Float, Float) -- ^ Point 1
+            -> (V2 Float, Float) -- ^ Point 2
+            -> V2 Float
+interaction c (p1, v1) (p2, v2) = realToFrac (c * v1 * v2 / quadrance u) * u
   where u = p1 - p2

@@ -6,15 +6,17 @@ import Data.Maybe
 import Grapher.AdjacencyMatrix
 import Grapher.Parser
 import Grapher.Particle
-import Grapher.Vector2F
 import Grapher.World
 import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Interface.Pure.Game
+import Linear.Metric
+import Linear.V2
+import Linear.Vector
 import System.Environment
 import qualified Data.Vector.Unboxed as V
 
-data UI = UI !(Maybe Int) !Vector2F !ViewState !World
+data UI = UI !(Maybe Int) !(V2 Float) !ViewState !World
 
 uiInit :: World -> UI
 uiInit w = UI Nothing zero viewStateInit w
@@ -36,7 +38,7 @@ input event (UI active mouse view world) = case event of
   EventKey (MouseButton LeftButton) Down _ mouse'
     | isJust ix -> UI ix point view world
     where
-      point = uncurry (:+) (invertViewPort (viewStateViewPort view) mouse')
+      point = uncurry V2 (invertViewPort (viewStateViewPort view) mouse')
       ix = V.findIndex (isSelected point) (worldNodes world)
 
   EventKey (MouseButton LeftButton) Up _ _
@@ -44,7 +46,7 @@ input event (UI active mouse view world) = case event of
 
   EventMotion mouse'
     | isJust active ->
-      UI active (uncurry (:+) (invertViewPort (viewStateViewPort view) mouse')) view world
+      UI active (uncurry V2 (invertViewPort (viewStateViewPort view) mouse')) view world
 
   _ -> UI active mouse (updateViewStateWithEvent event view) world
 
@@ -70,18 +72,18 @@ render (UI active _ view world) = applyViewPortToPicture (viewStateViewPort view
     rendern = renderNode . pos
     rendere = renderEdge `on` (pos . particle world)
 
-renderEdge :: Vector2F -> Vector2F -> Picture
-renderEdge (ax:+ay) (bx:+by) = line [(ax,ay), (bx,by)]
+renderEdge :: V2 Float -> V2 Float -> Picture
+renderEdge (V2 ax ay) (V2 bx by) = line [(ax,ay), (bx,by)]
 
-renderNode :: Vector2F -> Picture
-renderNode (x:+y) = uncurry translate (x,y) $
+renderNode :: V2 Float -> Picture
+renderNode (V2 x y) = uncurry translate (x,y) $
   circleSolid nodeRadius
 
-renderHighlight :: Vector2F -> Picture
-renderHighlight (x:+y) = color green $ uncurry translate (x,y) $
+renderHighlight :: V2 Float -> Picture
+renderHighlight (V2 x y) = color green $ uncurry translate (x,y) $
   circleSolid highlightRadius
 
-isSelected :: Vector2F -> Particle -> Bool
+isSelected :: V2 Float -> Particle -> Bool
 isSelected point part = (point `qd` pos part) < highlightRadiusSquared
 
 nodeRadius, highlightRadius, highlightRadiusSquared :: Float

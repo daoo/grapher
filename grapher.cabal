@@ -13,7 +13,6 @@ library
     Grapher.Generation
     Grapher.Parser
     Grapher.Particle
-    Grapher.Vector2F
     Grapher.World
   hs-source-dirs: src
   build-depends:
@@ -21,6 +20,7 @@ library
     base,
     containers,
     language-dot,
+    linear,
     mtl,
     text,
     vector,
@@ -28,11 +28,11 @@ library
 
 executable grapher-interactive
   main-is: progs/Gloss.hs
-  build-depends: base, grapher, vector, gloss
+  build-depends: base, grapher, linear, vector, gloss
 
 executable grapher-png
   main-is: progs/PNG.hs
-  build-depends: base, grapher, vector, JuicyPixels, Rasterific
+  build-depends: base, grapher, linear, vector, JuicyPixels, Rasterific
 
 executable grapher-generate
   main-is: progs/Generate.hs

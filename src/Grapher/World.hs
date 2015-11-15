@@ -16,7 +16,8 @@ import Data.Vector.Unboxed (Vector)
 import Grapher.AdjacencyMatrix
 import Grapher.Particle
 import Grapher.Physics
-import Grapher.Vector2F
+import Linear.V2
+import Linear.Vector
 import Prelude hiding (pi)
 import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as V (unsafeRead, unsafeWrite)
@@ -61,7 +62,7 @@ newWorld (count, edges) = World (V.generate count new) (newMatrix count edges)
     b = round a
 
     new :: Int -> Particle
-    new i = fromPoint (fromIntegral x :+ fromIntegral y)
+    new i = fromPoint (V2 (fromIntegral x) (fromIntegral y))
       where
         (x, y) = i `quotRem` b
 
@@ -71,7 +72,7 @@ iteration delta w = w { worldNodes = V.imap f $ worldNodes w }
     f i b = integrate delta $ force particleMass (forceAll w i b) b
 
 {-# INLINE forceAll #-}
-forceAll :: World -> Int -> Particle -> Vector2F
+forceAll :: World -> Int -> Particle -> V2 Float
 forceAll !w !i !pi =
   forceDrag pi +
   forceCenter pi +
@@ -79,7 +80,7 @@ forceAll !w !i !pi =
   where
 
 {-# INLINE forceInteractive #-}
-forceInteractive :: World -> Int -> Particle -> Int -> Particle -> Vector2F
+forceInteractive :: World -> Int -> Particle -> Int -> Particle -> V2 Float
 forceInteractive !w !i !pi !j !pj
   | i == j        = zero
   | hasEdge w i j = forceAttract pi pj + frepel
@@ -92,24 +93,24 @@ forceInteractive !w !i !pi !j !pj
 -- |Calculate the air drag force exerted on a particle.
 --
 -- The force is linearly proportional to the speed of the particle.
-forceDrag :: Particle -> Vector2F
-forceDrag p = negate (airDragConstant .* vel p)
+forceDrag :: Particle -> V2 Float
+forceDrag p = negated (realToFrac airDragConstant * vel p)
 
 {-# INLINE forceCenter #-}
 -- |Calculates the pulling force towards the center.
 --
 -- The force is linearly proportional to the distance from the center.
-forceCenter :: Particle -> Vector2F
-forceCenter = negate . pos
+forceCenter :: Particle -> V2 Float
+forceCenter = negated . pos
 
 {-# INLINE forceRepel #-}
 -- |Calculate the repel force exerted by the first particle on the second.
-forceRepel :: Particle -> Particle -> Vector2F
+forceRepel :: Particle -> Particle -> V2 Float
 forceRepel this other = interaction repelConstant (f other) (f this)
   where
     f x = (pos x, particleCharge)
 
 {-# INLINE forceAttract #-}
 -- |Calculate the attractive force between two connected particles.
-forceAttract :: Particle -> Particle -> Vector2F
+forceAttract :: Particle -> Particle -> V2 Float
 forceAttract this other = hookes springConstant (pos other) (pos this)

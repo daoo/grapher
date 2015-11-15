@@ -10,43 +10,44 @@ module Grapher.Particle
   ) where
 
 import Data.Vector.Unboxed.Deriving
-import Grapher.Vector2F
+import Linear.V2
+import Linear.Vector
 
 data Particle = Particle
-  { x1     :: !Vector2F
-  , x2     :: !Vector2F
-  , accel  :: !Vector2F
+  { x1     :: !(V2 Float)
+  , x2     :: !(V2 Float)
+  , accel  :: !(V2 Float)
   } deriving Show
 
 derivingUnbox "Particle"
-  [t| Particle -> (Vector2F, Vector2F, Vector2F) |]
+  [t| Particle -> (V2 Float, V2 Float, V2 Float) |]
   [| \p -> (x1 p, x2 p, accel p) |]
   [| \(a, b, c) -> Particle a b c |]
 
 {-# INLINE fromPoint #-}
-fromPoint :: Vector2F -> Particle
+fromPoint :: V2 Float -> Particle
 fromPoint p = Particle p p zero
 
 {-# INLINE unsafeParticle #-}
-unsafeParticle :: Vector2F -> Vector2F -> Vector2F -> Particle
+unsafeParticle :: V2 Float -> V2 Float -> V2 Float -> Particle
 unsafeParticle = Particle
 
 {-# INLINE pos #-}
-pos :: Particle -> Vector2F
+pos :: Particle -> V2 Float
 pos = x1
 
 {-# INLINE vel #-}
-vel :: Particle -> Vector2F
+vel :: Particle -> V2 Float
 vel n = x1 n - x2 n
 
 {-# INLINE move #-}
-move :: Particle -> Vector2F -> Particle
+move :: Particle -> V2 Float -> Particle
 move n p = n { x1 = p, x2 = x1 n }
 
 {-# INLINE force #-}
-force :: Float -> Vector2F -> Particle -> Particle
-force m f p = p { accel = f /. m }
+force :: Float -> V2 Float -> Particle -> Particle
+force m f p = p { accel = f / realToFrac m }
 
 {-# INLINE integrate #-}
 integrate :: Float -> Particle -> Particle
-integrate t p = move p $ pos p + vel p + (t * t) .* accel p
+integrate t p = move p $ pos p + vel p + realToFrac (t * t) * accel p
